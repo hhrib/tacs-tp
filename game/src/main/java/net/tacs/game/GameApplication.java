@@ -1,4 +1,4 @@
-package net.tadp.game;
+package net.tacs.game;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

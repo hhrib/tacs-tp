@@ -8,11 +8,11 @@
 		<version>2.3.3.RELEASE</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>net.tadp</groupId>
+	<groupId>net.tacs</groupId>
 	<artifactId>game</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>game</name>
-	<description>TP for TADP</description>
+	<description>TP for TACS</description>
 
 	<properties>
 		<java.version>11</java.version>
@@ -44,6 +44,7 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+
 	</dependencies>
 
 	<build>
