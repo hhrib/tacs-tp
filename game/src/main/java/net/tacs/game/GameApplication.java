@@ -11,7 +11,7 @@ public class GameApplication {
 
 	@RequestMapping("/")
 	public String home() {
-		return "Hello Docker World";
+		return "¡Bienvenidos a TACticaS, el juego de la pandemia!";
 	}
 
 	public static void main(String[] args) {
