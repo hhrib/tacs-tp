@@ -9,7 +9,7 @@ Segundo Cuatrimestre 2020 - UTN FRBA - El Mejor Grupo :)
 1. Colocarse a la altura del directorio src
 2. mvn package -> Esto generará la carpeta /target
 3. docker build -t nombreContainer . -> Buildea contenedor
-4. docker run -p puertoLocal:puertoContainer nombreContainer -> Ejecuta el contenedor
+4. docker run -p 8080:8080 nombreContainer -> Ejecuta el contenedor
 
 -----
 # Decisiones de Diseño:
