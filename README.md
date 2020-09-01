@@ -7,14 +7,16 @@ Segundo Cuatrimestre 2020 - UTN FRBA - El Mejor Grupo :)
 # Docker:
 
 1. Colocarse a la altura del directorio src
-2. docker build -t nombreContainer .
-3. docker run -p puertoLocal:puertoContainer nombreContainer
+2. mvn package -> Esto generará la carpeta /target
+3. docker build -t nombreContainer . -> Buildea contenedor
+4. docker run -p puertoLocal:puertoContainer nombreContainer -> Ejecuta el contenedor
 
 -----
 # Decisiones de Diseño:
-1. Spring-Boot para BackEnd
-2. Angular para FrontEnd
-3. DER: https://drive.google.com/file/d/1NlseerFxcISJEXySQQ5WB8tqhcmMn-Rl/view?usp=sharing
+1. Spring-Boot
+2. Angular
+3. Maven
+4. DER: https://drive.google.com/file/d/1NlseerFxcISJEXySQQ5WB8tqhcmMn-Rl/view?usp=sharing
 
 -----
 # Suposiciones:
