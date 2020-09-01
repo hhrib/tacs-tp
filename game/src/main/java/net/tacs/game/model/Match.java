@@ -1,5 +1,7 @@
 package net.tacs.game.model;
 
+import net.tacs.game.model.enums.MatchStatus;
+
 import java.util.List;
 import java.util.Objects;
 
@@ -8,6 +10,7 @@ public class Match {
     private List<User> users;
     private MatchStatus status;
     private Province map;
+    private User winner;
 
     //TODO ¿Fecha en ISO8601? YYYYMMDDThhmmssZ
     private String date;

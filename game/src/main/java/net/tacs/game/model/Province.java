@@ -4,6 +4,8 @@ import java.util.Objects;
 
 public class Province {
 
+    private Integer id;
+
     private String name;
 
     public String getName() {

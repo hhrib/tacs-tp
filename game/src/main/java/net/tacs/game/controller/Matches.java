@@ -1,7 +1,7 @@
 package net.tacs.game.controller;
 
 import net.tacs.game.model.Match;
-import net.tacs.game.model.MatchStatus;
+import net.tacs.game.model.enums.MatchStatus;
 import net.tacs.game.model.Province;
 import net.tacs.game.model.User;
 import org.slf4j.Logger;
@@ -10,10 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
+import javax.websocket.server.PathParam;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -43,5 +42,9 @@ public class Matches {
         LOGGER.info(newMatch.toString());
         return new ResponseEntity<Match>(newMatch, HttpStatus.CREATED);
     }
+
+    @PatchMapping(value = "/matches")
+    public ResponseEntity<Match> modifyMatch(@RequestBody(required = true) RequestMovement request,
+                                             @PathParam(value = "bank_code", required = false) String bankCode)
 
 }
