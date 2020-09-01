@@ -7,6 +7,7 @@ import java.util.Objects;
 
 public class Match {
 
+    private Integer id;
     private List<User> users;
     private MatchStatus status;
     private Province map;
@@ -14,6 +15,14 @@ public class Match {
 
     //TODO ¿Fecha en ISO8601? YYYYMMDDThhmmssZ
     private String date;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     public List<User> getUsers() {
         return users;
@@ -50,9 +59,11 @@ public class Match {
     @Override
     public String toString() {
         return "Match{" +
-                "users=" + users +
+                "id=" + id +
+                ", users=" + users +
                 ", status=" + status +
                 ", map=" + map +
+                ", winner=" + winner +
                 ", date='" + date + '\'' +
                 '}';
     }
@@ -62,14 +73,16 @@ public class Match {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Match match = (Match) o;
-        return users.equals(match.users) &&
+        return Objects.equals(id, match.id) &&
+                Objects.equals(users, match.users) &&
                 status == match.status &&
-                map.equals(match.map) &&
+                Objects.equals(map, match.map) &&
+                Objects.equals(winner, match.winner) &&
                 Objects.equals(date, match.date);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(users, status, map, date);
+        return Objects.hash(id, users, status, map, winner, date);
     }
 }

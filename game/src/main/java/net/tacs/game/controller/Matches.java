@@ -25,12 +25,8 @@ public class Matches {
     @GetMapping("/matches")
     public List<Match> getAllMatches() {
         List<Match> matches = new ArrayList<>();
-        Match match = new Match();
-        match.setDate("20200901T220000Z");
-        match.setStatus(MatchStatus.IN_PROGRESS);
-        match.setUsers(Arrays.asList(new User("testUser"), new User("testUserRival")));
-        match.setMap(new Province("Córdoba"));
-        matches.add(match);
+        matches.add(dummyMatch());
+
         return matches;
     }
 
@@ -43,8 +39,19 @@ public class Matches {
         return new ResponseEntity<Match>(newMatch, HttpStatus.CREATED);
     }
 
-    @PatchMapping(value = "/matches")
-    public ResponseEntity<Match> modifyMatch(@RequestBody(required = true) RequestMovement request,
-                                             @PathParam(value = "bank_code", required = false) String bankCode)
+    @PatchMapping(value = "/matches/{id}")
+    public ResponseEntity<Match> modifyMatchState(@RequestBody(required = true) MatchStatus statusRequest,
+                                                    @PathParam(value = "id") String id){
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+    }
+
+    private Match dummyMatch() {
+        Match match = new Match();
+        match.setDate("20200901T220000Z");
+        match.setStatus(MatchStatus.IN_PROGRESS);
+        match.setUsers(Arrays.asList(new User("testUser"), new User("testUserRival")));
+        match.setMap(new Province("Córdoba"));
+        return match;
+    }
 
 }
