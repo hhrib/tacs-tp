@@ -8,7 +8,7 @@ Segundo Cuatrimestre 2020 - UTN FRBA - El Mejor Grupo :)
 
 1. Colocarse a la altura del directorio src
 2. docker build -t nombreContainer .
-3. docker run -p <puertoLocal>:<puertoContainer> nombreContainer
+3. docker run -p puertoLocal:puertoContainer nombreContainer
 
 -----
 # Decisiones de Diseño:
