@@ -16,8 +16,7 @@ public class Provinces {
     @GetMapping("/provinces")
     public List<Province> getAllProvinces() {
         List<Province> provinces = new ArrayList<>();
-        Province province = new Province();
-        province.setName("Buenos aires");
+        Province province = new Province("Buenos Aires");
         provinces.add(province);
         LOGGER.info(province.toString());
         return provinces;
