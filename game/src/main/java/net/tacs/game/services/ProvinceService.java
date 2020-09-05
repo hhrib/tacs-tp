@@ -24,6 +24,10 @@ public class ProvinceService {
 	private static final String URL_MUNICIPIOS = "https://apis.datos.gob.ar/georef/api/municipios?provincia=%s&campos=id,nombre,centroide.lat,centroide.lon";
 	private static final String URL_ELEVATION = "https://api.opentopodata.org/v1/srtm90m?locations=";
 
+	/**
+	 * 
+	 * @return all provinces
+	 */
 	public List<Province> findAll() {
 		RestTemplate restTemplate = new RestTemplate();
 		ResponseEntity<GeoRefProvinceAPIResponse> response = restTemplate.getForEntity(URL_ALL_PROVINCES,
@@ -31,6 +35,12 @@ public class ProvinceService {
 		return Arrays.asList(response.getBody().getProvincias());
 	}
 
+	/**
+	 * 
+	 * @param provinceId
+	 * @param qty
+	 * @return all provinces for a determined province
+	 */
 	public Municipality[] findMunicipios(int provinceId, Integer qty) {
 		RestTemplate restTemplate = new RestTemplate();
 
@@ -42,6 +52,13 @@ public class ProvinceService {
 		return response.getBody().getMunicipios();
 	}
 
+	/**
+	 * 
+	 * @param provinceId
+	 * @param qty
+	 * @return all municipios with elevator
+	 */
+	@Deprecated
 	public Municipality[] findMunicipiosWithElevation(int provinceId, Integer qty) {
 		RestTemplate restTemplate = new RestTemplate();
 
@@ -53,24 +70,25 @@ public class ProvinceService {
 		return findElevation(Arrays.asList(response.getBody().getMunicipios()));
 	}
 
-	public Municipality[] findElevation(List<Municipality> municipalities) {
-		RestTemplate restTemplate = new RestTemplate();
+	@Deprecated
+	private Municipality[] findElevation(List<Municipality> municipalities) {
 		Map<String, Municipality> responseMap = new HashMap<>();
-		StringBuilder sb = new StringBuilder();
 		List<Municipality> aux = new LinkedList<Municipality>();
 		for (int i = 0; i < municipalities.size(); i++) {
 			aux.add(municipalities.get(i));
 			if (i % 90 == 0) {
-				getElevations(aux, restTemplate, responseMap, sb);
+				getElevations(aux, responseMap);
 				aux.clear();
 			}
 		}
-		getElevations(aux, restTemplate, responseMap, sb);
+		getElevations(aux, responseMap);
 		return (Municipality[]) responseMap.values().toArray(new Municipality[responseMap.values().size()]);
 	}
 
-	private void getElevations(List<Municipality> municipalities, RestTemplate restTemplate,
-			Map<String, Municipality> responseMap, StringBuilder sb) {
+	@Deprecated
+	private void getElevations(List<Municipality> municipalities, Map<String, Municipality> responseMap) {
+		RestTemplate restTemplate = new RestTemplate();
+		StringBuilder sb = new StringBuilder();
 		for (Municipality m : municipalities) {
 			sb.append(m.getCentroide().getLat().concat(",").concat(m.getCentroide().getLon()).concat("|"));
 			responseMap.put(m.getCentroide().getLat().concat(",").concat(m.getCentroide().getLon()), m);
@@ -84,6 +102,12 @@ public class ProvinceService {
 		}
 	}
 
+	/**
+	 * 
+	 * @param lat
+	 * @param lon
+	 * @return Elvation for determined latitude and longitude
+	 */
 	public Double getElevation(String lat, String lon) {
 		RestTemplate restTemplate = new RestTemplate();
 		ResponseEntity<ElevationResponse> response = restTemplate.getForEntity(
