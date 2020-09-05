@@ -1,6 +1,12 @@
 package net.tacs.game.model;
 
+import net.tacs.game.exceptions.UserNotFoundException;
+import net.tacs.game.repositories.UserRepository;
+import net.tacs.game.services.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -8,20 +14,19 @@ import java.util.Objects;
 @Table(name = "match")
 public class Match {
 
-    private @Id @GeneratedValue int id;
+    private @Id @GeneratedValue long id;
 
-    //TODO POR AHORA LO DEJO EN TRANSIENT
-    @Transient
+    @OneToMany(cascade = {CascadeType.ALL})
     private List<User> users;
     private MatchStatus status;
-
-    //TODO POR AHORA LO DEJO EN TRANSIENT
-    @Transient
-    //TODO provincia por ahora no tiene metodos
+    @OneToOne
     private Province map;
 
     //TODO ¿Fecha en ISO8601? YYYYMMDDThhmmssZ
     private String date;
+
+    @Transient
+    private UserService userService;
 
     public List<User> getUsers() {
         return users;
@@ -60,8 +65,11 @@ public class Match {
     }
     //User story 2.a
     //TODO? agregar configuraciones al crear partida
-    public Match(String province, int cant_municipalities, int[] player_ids)
+    @Autowired
+    public Match(String province, int cant_municipalities, long[] player_ids, UserService userService)
     {
+        this.userService = userService;
+        this.users = new ArrayList<User>();
         map = new Province(province, cant_municipalities);
 
         search_users(player_ids);
@@ -74,12 +82,11 @@ public class Match {
      * @param player_ids
      * Busca en la aplicacion los usuarios que corresponden a la partida y los agrega a la lista
      */
-    private void search_users(int[] player_ids)
+    private void search_users(long[] player_ids)
     {
-        for(int i = 0; i < player_ids.length; i++)
-        {
-            //users.add(User user = repository.findById(player_ids[i])
-            //                .orElseThrow(() -> new UserNotFoundException(player_ids[i]));)
+        for (long player_id : player_ids) {
+            User user = userService.findById(player_id).orElseThrow(() -> new UserNotFoundException(player_id));
+            users.add(user);
         }
     }
 

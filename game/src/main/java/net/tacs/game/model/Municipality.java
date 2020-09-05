@@ -1,7 +1,10 @@
 package net.tacs.game.model;
 
+import javax.persistence.*;
 import java.util.Objects;
 
+@Entity
+@Table(name = "municipality")
 public class Municipality {
 
     public Municipality() {
@@ -11,8 +14,12 @@ public class Municipality {
         this.name = name;
     }
 
+    @Id @GeneratedValue
+    private long id;
     private String name;
+    @OneToOne
     private Province province;
+    @OneToOne
     private User user;
     private MunicipalityState state;
     private int gauchos;

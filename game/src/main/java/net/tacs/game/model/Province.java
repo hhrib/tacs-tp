@@ -2,14 +2,26 @@ package net.tacs.game.model;
 
 import net.tacs.game.exceptions.NotEnoughMunicipalitiesException;
 
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+@Entity
+@Table(name = "province")
 public class Province {
 
+    @Id
+    @GeneratedValue
+    private long id;
     private String name;
+    @OneToMany(cascade = {CascadeType.ALL})
     private List<Municipality> municipalities;
+
+    public Province()
+    {
+
+    }
 
     public Province(String name) {
         this.name = name;
@@ -31,7 +43,7 @@ public class Province {
      */
     private void search_municipalities(int cant_municipalities) throws NotEnoughMunicipalitiesException
     {
-        //municipalities = MunicipalitiesAPI.GetMunicipalities(cant_municipalities);
+        //municipalities = municipalitiesAPI.GetMunicipalities(cant_municipalities);
     }
 
     public String getName() {

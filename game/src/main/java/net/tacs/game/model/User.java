@@ -1,7 +1,13 @@
 package net.tacs.game.model;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.util.Objects;
 
+@Entity
+@Table(name = "user")
 public class User {
 
     public User() {
@@ -11,6 +17,8 @@ public class User {
         this.username = username;
     }
 
+    @Id @GeneratedValue
+    private long id;
     private String username;
 
     public String getUsername() {
@@ -39,5 +47,13 @@ public class User {
     @Override
     public int hashCode() {
         return Objects.hash(username);
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public long getId() {
+        return id;
     }
 }
