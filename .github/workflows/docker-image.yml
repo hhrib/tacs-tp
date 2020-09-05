@@ -2,9 +2,9 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ master | integration-georef-provinces | develop]
+    branches: [ master ]
   pull_request:
-    branches: [ master | integration-georef-provinces | develop]
+    branches: [ master ]
 
 jobs:
 
