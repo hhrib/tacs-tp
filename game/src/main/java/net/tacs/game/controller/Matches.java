@@ -50,7 +50,7 @@ public class Matches {
         match.setDate("20200901T220000Z");
         match.setStatus(MatchStatus.IN_PROGRESS);
         match.setUsers(Arrays.asList(new User("testUser"), new User("testUserRival")));
-        match.setMap(new Province("CÃ³rdoba"));
+        match.setMap(new Province("Córdoba"));
         return match;
     }
 
