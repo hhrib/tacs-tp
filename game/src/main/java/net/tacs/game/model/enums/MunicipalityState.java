@@ -1,6 +1,6 @@
 package net.tacs.game.model.enums;
 
-public enum MunicipalityStatus {
+public enum MunicipalityState {
     PRODUCTION,
     DEFENSE;
 }

@@ -3,11 +3,20 @@ Segundo Cuatrimestre 2020 - UTN FRBA - El Mejor Grupo :)
 
 # Como levantar la aplicacion:
 
+
+# Docker:
+
+1. Colocarse a la altura del directorio src
+2. mvn clean package-> Genera .jar en directorio /target
+3. docker build -t nombreContainer . -> Buildea contenedor
+4. docker run -p 8080:8080 nombreContainer -> Ejecuta el contenedor
+
 -----
 # Decisiones de Diseño:
-1. Spring-Boot para BackEnd
-2. Angular para FrontEnd
-3. DER: https://drive.google.com/file/d/1NlseerFxcISJEXySQQ5WB8tqhcmMn-Rl/view?usp=sharing
+1. Spring-Boot
+2. Angular
+3. Maven
+4. DER: https://drive.google.com/file/d/1NlseerFxcISJEXySQQ5WB8tqhcmMn-Rl/view?usp=sharing
 
 -----
 # Suposiciones:

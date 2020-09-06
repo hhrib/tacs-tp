@@ -1,18 +1,20 @@
 package net.tacs.game.model;
 
-import net.tacs.game.model.enums.MunicipalityStatus;
+import net.tacs.game.model.enums.MunicipalityState;
 
 public class Municipality {
 
     private Integer id;
 
-    private String nombre;
+    private String name;
+
+    private Province province;
 
     private Centroide centroide;
     
     private Double elevation;
 
-    private MunicipalityStatus status;
+    private MunicipalityState state;
 
     private User owner;
 
@@ -22,6 +24,10 @@ public class Municipality {
 		super();
 	}
 
+	public Municipality(String name) {
+	    this.name = name;
+    }
+
 	public Integer getId() {
 		return id;
 	}
@@ -30,13 +36,29 @@ public class Municipality {
 		this.id = id;
 	}
 
-	public String getNombre() {
-		return nombre;
+	public String getName() {
+		return name;
 	}
 
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
+	public void setName(String name) {
+		this.name = name;
 	}
+
+    public Province getProvince() {
+        return province;
+    }
+
+    public void setProvince(Province province) {
+        this.province = province;
+    }
+
+    public Centroide getCentroide() {
+        return centroide;
+    }
+
+    public void setCentroide(Centroide centroide) {
+        this.centroide = centroide;
+    }
 
 	public Double getElevation() {
 		return elevation;
@@ -46,12 +68,12 @@ public class Municipality {
 		this.elevation = elevation;
 	}
 
-	public MunicipalityStatus getStatus() {
-		return status;
+	public MunicipalityState getState() {
+		return state;
 	}
 
-	public void setStatus(MunicipalityStatus status) {
-		this.status = status;
+	public void setState(MunicipalityState state) {
+		this.state = state;
 	}
 
 	public User getOwner() {
@@ -68,14 +90,6 @@ public class Municipality {
 
 	public void setGauchosQty(Integer gauchosQty) {
 		this.gauchosQty = gauchosQty;
-	}
-
-	public Centroide getCentroide() {
-		return centroide;
-	}
-
-	public void setCentroide(Centroide centroide) {
-		this.centroide = centroide;
 	}
 
 }

@@ -6,7 +6,7 @@ public class Province {
 
 	private Integer id;
 
-	private String nombre;
+	private String name;
 
 	private Centroide centroide;
 
@@ -15,9 +15,9 @@ public class Province {
 	}
 	
 	
-	public Province(String nombre) {
+	public Province(String name) {
 		super();
-		this.nombre = nombre;
+		this.name = name;
 	}
 
 
@@ -38,17 +38,17 @@ public class Province {
 	}
 
 	
-	public String getNombre() {
-		return nombre;
+	public String getName() {
+		return name;
 	}
 
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	@Override
 	public String toString() {
-		return "Province{" + "name='" + nombre + '\'' + '}';
+		return "Province{" + "name='" + name + '\'' + '}';
 	}
 
 	@Override
@@ -58,11 +58,11 @@ public class Province {
 		if (o == null || getClass() != o.getClass())
 			return false;
 		Province province = (Province) o;
-		return Objects.equals(nombre, province.nombre);
+		return Objects.equals(name, province.name);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(nombre);
+		return Objects.hash(name);
 	}
 }
