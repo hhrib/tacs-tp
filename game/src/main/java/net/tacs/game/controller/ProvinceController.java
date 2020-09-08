@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import net.tacs.game.model.Centroide;
 import net.tacs.game.model.Municipality;
 import net.tacs.game.model.Province;
 import net.tacs.game.services.ProvinceService;
@@ -31,6 +32,6 @@ public class ProvinceController {
 
 	@GetMapping("/elevation/{LAT}/{LON}")
 	public Double getElevation(@PathVariable("LAT") String lat, @PathVariable("LON") String lon) {
-		return provinceService.getElevation(lat, lon);
+		return provinceService.getElevation(new Centroide(lat, lon));
 	}
 }

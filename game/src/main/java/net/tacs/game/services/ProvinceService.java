@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import net.tacs.game.model.Centroide;
 import net.tacs.game.model.GeoRefMunicipioAPIResponse;
 import net.tacs.game.model.GeoRefProvinceAPIResponse;
 import net.tacs.game.model.Municipality;
@@ -19,11 +20,12 @@ import net.tacs.game.model.opentopodata.ElevationResponse;
 
 @Service
 public class ProvinceService {
-	private static final String URL_GEO = "https://api.opentopodata.org/v1/test-dataset?locations=%s,%s";
 	private static final String URL_ALL_PROVINCES = "https://apis.datos.gob.ar/georef/api/provincias";
 	private static final String URL_MUNICIPIOS = "https://apis.datos.gob.ar/georef/api/municipios?provincia=%s&campos=id,nombre,centroide.lat,centroide.lon";
 	private static final String URL_ELEVATION = "https://api.opentopodata.org/v1/srtm90m?locations=";
 
+	private Map<Centroide, Double> elevations = new HashMap<>();
+	
 	/**
 	 * 
 	 * @return all provinces
@@ -104,15 +106,18 @@ public class ProvinceService {
 
 	/**
 	 * 
-	 * @param lat
-	 * @param lon
+	 * @param location
 	 * @return Elvation for determined latitude and longitude
 	 */
-	public Double getElevation(String lat, String lon) {
-		RestTemplate restTemplate = new RestTemplate();
-		ResponseEntity<ElevationResponse> response = restTemplate.getForEntity(
-				URL_ELEVATION.concat(lat).concat(",").concat(lon).concat("&interpolation=cubic"),
-				ElevationResponse.class);
-		return response.getBody().getResults()[0].getElevation();
+	public synchronized Double getElevation(Centroide location) {
+		Double elevation = elevations.get(location);
+		if (elevation == null) {
+			RestTemplate restTemplate = new RestTemplate();
+			ResponseEntity<ElevationResponse> response = restTemplate.getForEntity(
+					URL_ELEVATION.concat(location.toString()).concat("&interpolation=cubic"), ElevationResponse.class);
+			elevation = response.getBody().getResults()[0].getElevation();
+		}
+
+		return elevation;
 	}
 }
