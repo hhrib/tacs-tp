@@ -25,6 +25,7 @@ public class ProvinceService {
 	private static final String URL_ELEVATION = "https://api.opentopodata.org/v1/srtm90m?locations=";
 
 	private Map<Centroide, Double> elevations = new HashMap<>();
+	private List<Province> provinces;
 	
 	/**
 	 * 
@@ -32,9 +33,12 @@ public class ProvinceService {
 	 */
 	public List<Province> findAll() {
 		RestTemplate restTemplate = new RestTemplate();
-		ResponseEntity<GeoRefProvinceAPIResponse> response = restTemplate.getForEntity(URL_ALL_PROVINCES,
-				GeoRefProvinceAPIResponse.class);
-		return Arrays.asList(response.getBody().getProvincias());
+		if (provinces.isEmpty()) {
+			ResponseEntity<GeoRefProvinceAPIResponse> response = restTemplate.getForEntity(URL_ALL_PROVINCES,
+					GeoRefProvinceAPIResponse.class);
+			provinces.addAll(Arrays.asList(response.getBody().getProvincias()));
+		}
+		return provinces;
 	}
 
 	/**
