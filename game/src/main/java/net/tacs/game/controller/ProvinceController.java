@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-public class Provinces {
+public class ProvinceController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Province.class);
 

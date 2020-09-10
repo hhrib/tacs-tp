@@ -1,32 +1,22 @@
 package net.tacs.game.model;
 
-import net.tacs.game.exceptions.UserNotFoundException;
-import net.tacs.game.repositories.UserRepository;
-import net.tacs.game.services.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import net.tacs.game.model.enums.MatchState;
 
-import javax.persistence.*;
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
-@Entity
-@Table(name = "match")
 public class Match {
 
-    private @Id @GeneratedValue long id;
+    private Long id;
 
-    @OneToMany(cascade = {CascadeType.ALL})
+    // @OneToMany(cascade = {CascadeType.ALL})
     private List<User> users;
-    private MatchStatus status;
-    @OneToOne
+    private MatchState state;
+   // @OneToOne
     private Province map;
 
-    //TODO ¿Fecha en ISO8601? YYYYMMDDThhmmssZ
-    private String date;
-
-    @Transient
-    private UserService userService;
+    private LocalDateTime date;
 
     public List<User> getUsers() {
         return users;
@@ -36,20 +26,20 @@ public class Match {
         this.users = users;
     }
 
-    public MatchStatus getStatus() {
-        return status;
+    public MatchState getState() {
+        return state;
     }
 
     //User story 2.c
-    public void setStatus(MatchStatus status) {
-        this.status = status;
+    public void setState(MatchState state) {
+        this.state = state;
     }
 
-    public String getDate() {
+    public LocalDateTime getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(LocalDateTime date) {
         this.date = date;
     }
 
@@ -64,38 +54,38 @@ public class Match {
     public Match(){
     }
     //User story 2.a
-    //TODO? agregar configuraciones al crear partida
-    @Autowired
-    public Match(String province, int cant_municipalities, long[] player_ids, UserService userService)
-    {
-        this.userService = userService;
-        this.users = new ArrayList<User>();
-        map = new Province(province, cant_municipalities);
+//    TODO? agregar configuraciones al crear partida
+//    @Autowired
+//    public Match(String provinceName, Integer municipalitiesQty, long[] player_ids, UserService userService)
+//    {
+//        this.userService = userService;
+//        this.users = new ArrayList<User>();
+//        map = new Province(provinceName, municipalitiesQty);
+//
+//        search_users(player_ids);
+//
+//        state = MatchState.CREATED;
+//    }
 
-        search_users(player_ids);
-
-        status = MatchStatus.CREATED;
-    }
-
-    /**
-     * @method search_users
-     * @param player_ids
-     * Busca en la aplicacion los usuarios que corresponden a la partida y los agrega a la lista
-     */
-    private void search_users(long[] player_ids)
-    {
-        for (long player_id : player_ids) {
-            User user = userService.findById(player_id).orElseThrow(() -> new UserNotFoundException(player_id));
-            users.add(user);
-        }
-    }
+//    /**
+//     * @method search_users
+//     * @param player_ids
+//     * Busca en la aplicacion los usuarios que corresponden a la partida y los agrega a la lista
+//     */
+//    private void search_users(long[] player_ids)
+//    {
+//        for (long player_id : player_ids) {
+//            User user = userService.findById(player_id).orElseThrow(() -> new UserNotFoundException(player_id));
+//            users.add(user);
+//        }
+//    }
 
 
     @Override
     public String toString() {
         return "Match{" +
                 "users=" + users +
-                ", status=" + status +
+                ", status=" + state +
                 ", map=" + map +
                 ", date='" + date + '\'' +
                 '}';
@@ -107,13 +97,13 @@ public class Match {
         if (o == null || getClass() != o.getClass()) return false;
         Match match = (Match) o;
         return users.equals(match.users) &&
-                status == match.status &&
+                state == match.state &&
                 map.equals(match.map) &&
                 Objects.equals(date, match.date);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(users, status, map, date);
+        return Objects.hash(users, state, map, date);
     }
 }

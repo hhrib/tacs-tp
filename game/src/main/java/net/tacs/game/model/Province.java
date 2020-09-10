@@ -3,47 +3,30 @@ package net.tacs.game.model;
 import net.tacs.game.exceptions.NotEnoughMunicipalitiesException;
 
 import javax.persistence.*;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-@Entity
-@Table(name = "province")
+//@Entity
+//@Table(name = "province")
 public class Province {
 
-    @Id
-    @GeneratedValue
-    private long id;
+//    @Id
+//    @GeneratedValue
+    private Long id;
     private String name;
-    @OneToMany(cascade = {CascadeType.ALL})
+//    @OneToMany(cascade = {CascadeType.ALL})
     private List<Municipality> municipalities;
 
-    public Province()
-    {
-
+    public Province() {
+        this.id = new SecureRandom().nextLong();
     }
 
+    //TODO Random para el id es temporal hasta que implementemos persistencia
     public Province(String name) {
+        this.id = new SecureRandom().nextLong();
         this.name = name;
-    }
-
-    public Province(String province, int cant_municipalities)
-    {
-        this.name = province;
-
-        search_municipalities(cant_municipalities);
-    }
-
-    /**
-     * @method search_municipalities
-     * @param cant_municipalities
-     * @throws NotEnoughMunicipalitiesException
-     * Pide a la API de municipios que le devuelva una lista de X cantidad municipios,
-     * en caso de que la cantidad elegida supere la cantidad actual se envia un mensaje de error
-     */
-    private void search_municipalities(int cant_municipalities) throws NotEnoughMunicipalitiesException
-    {
-        //municipalities = municipalitiesAPI.GetMunicipalities(cant_municipalities);
     }
 
     public String getName() {
@@ -52,6 +35,14 @@ public class Province {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public List<Municipality> getMunicipalities() {
+        return municipalities;
+    }
+
+    public void setMunicipalities(List<Municipality> municipalities) {
+        this.municipalities = municipalities;
     }
 
     @Override

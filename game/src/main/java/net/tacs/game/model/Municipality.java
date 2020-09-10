@@ -1,10 +1,12 @@
 package net.tacs.game.model;
 
+import net.tacs.game.model.enums.MunicipalityState;
+
 import javax.persistence.*;
 import java.util.Objects;
 
-@Entity
-@Table(name = "municipality")
+//@Entity
+//@Table(name = "municipality")
 public class Municipality {
 
     public Municipality() {
@@ -14,16 +16,20 @@ public class Municipality {
         this.name = name;
     }
 
-    @Id @GeneratedValue
-    private long id;
+    @Id //@GeneratedValue
+    private Long id;
+
     private String name;
-    @OneToOne
+//    @ManyToOne
     private Province province;
-    @OneToOne
-    private User user;
+//    @ManyToOne
+    private User owner;
+
     private MunicipalityState state;
-    private int gauchos;
-    private float height;
+
+    private Integer gauchosQty;
+
+    private Double elevation;
 
     public String getName() {
         return name;
@@ -41,12 +47,12 @@ public class Municipality {
         this.province = province;
     }
 
-    public User getUser() {
-        return user;
+    public User getOwner() {
+        return owner;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setOwner(User owner) {
+        this.owner = owner;
     }
 
     public MunicipalityState getState() {
@@ -57,20 +63,20 @@ public class Municipality {
         this.state = state;
     }
 
-    public int getGauchos() {
-        return gauchos;
+    public Integer getGauchosQty() {
+        return gauchosQty;
     }
 
-    public void setGauchos(int gauchos) {
-        this.gauchos = gauchos;
+    public void setGauchosQty(Integer gauchosQty) {
+        this.gauchosQty = gauchosQty;
     }
 
-    public float getHeight() {
-        return height;
+    public Double getElevation() {
+        return elevation;
     }
 
-    public void setHeight(float height) {
-        this.height = height;
+    public void setElevation(Double elevation) {
+        this.elevation = elevation;
     }
 
 
