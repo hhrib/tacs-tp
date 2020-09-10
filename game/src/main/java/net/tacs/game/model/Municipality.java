@@ -9,35 +9,45 @@ import java.util.Objects;
 //@Table(name = "municipality")
 public class Municipality {
 
-    public Municipality() {
-    }
-
-    public Municipality(String name) {
-        this.name = name;
-    }
-
-    @Id //@GeneratedValue
-    private Long id;
+    private Integer id;
 
     private String name;
-//    @ManyToOne
+
     private Province province;
-//    @ManyToOne
-    private User owner;
+
+    private Centroide centroide;
+    
+    private Double elevation;
 
     private MunicipalityState state;
 
+    private User owner;
+
     private Integer gauchosQty;
 
-    private Double elevation;
+	public Municipality() {
+		super();
+	}
 
-    public String getName() {
-        return name;
+	public Municipality(String name) {
+	    this.name = name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
 
     public Province getProvince() {
         return province;
@@ -47,21 +57,37 @@ public class Municipality {
         this.province = province;
     }
 
-    public User getOwner() {
-        return owner;
+    public Centroide getCentroide() {
+        return centroide;
     }
 
-    public void setOwner(User owner) {
-        this.owner = owner;
+    public void setCentroide(Centroide centroide) {
+        this.centroide = centroide;
     }
 
-    public MunicipalityState getState() {
-        return state;
-    }
+	public Double getElevation() {
+		return elevation;
+	}
 
-    public void setState(MunicipalityState state) {
-        this.state = state;
-    }
+	public void setElevation(Double elevation) {
+		this.elevation = elevation;
+	}
+
+	public MunicipalityState getState() {
+		return state;
+	}
+
+	public void setState(MunicipalityState state) {
+		this.state = state;
+	}
+
+	public User getOwner() {
+		return owner;
+	}
+
+	public void setOwner(User owner) {
+		this.owner = owner;
+	}
 
     public Integer getGauchosQty() {
         return gauchosQty;
@@ -71,22 +97,12 @@ public class Municipality {
         this.gauchosQty = gauchosQty;
     }
 
-    public Double getElevation() {
-        return elevation;
-    }
-
-    public void setElevation(Double elevation) {
-        this.elevation = elevation;
-    }
-
-
     @Override
     public String toString() {
         return "Municipality{" +
                 "name='" + name + '\'' +
                 '}';
     }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -94,7 +110,6 @@ public class Municipality {
         Municipality municipality = (Municipality) o;
         return Objects.equals(name, municipality.name);
     }
-
     @Override
     public int hashCode() {
         return Objects.hash(name);

@@ -15,8 +15,17 @@ public class Match {
     private MatchState state;
    // @OneToOne
     private Province map;
+    private User winner;
 
     private LocalDateTime date;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public List<User> getUsers() {
         return users;
@@ -84,9 +93,11 @@ public class Match {
     @Override
     public String toString() {
         return "Match{" +
-                "users=" + users +
-                ", status=" + state +
+                "id=" + id +
+                ", users=" + users +
+                ", state=" + state +
                 ", map=" + map +
+                ", winner=" + winner +
                 ", date='" + date + '\'' +
                 '}';
     }
@@ -96,14 +107,16 @@ public class Match {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Match match = (Match) o;
-        return users.equals(match.users) &&
+        return Objects.equals(id, match.id) &&
+                Objects.equals(users, match.users) &&
                 state == match.state &&
-                map.equals(match.map) &&
+                Objects.equals(map, match.map) &&
+                Objects.equals(winner, match.winner) &&
                 Objects.equals(date, match.date);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(users, state, map, date);
+        return Objects.hash(id, users, state, map, winner, date);
     }
 }

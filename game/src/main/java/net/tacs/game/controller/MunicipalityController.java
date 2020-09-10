@@ -25,6 +25,7 @@ public class MunicipalityController {
         List<Municipality> municipalities = new ArrayList<>();
         Municipality municipalityDefense = new Municipality("Cordoba");
         municipalityDefense.setProvince(new Province("Cordoba"));
+
         municipalityDefense.setOwner(new User("testUser"));
         municipalityDefense.setGauchosQty(5);
         municipalityDefense.setElevation(100D);

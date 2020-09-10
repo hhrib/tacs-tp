@@ -4,7 +4,7 @@ ARG MVN_LOCAL_REPO=.m2/repository
 WORKDIR /build
 COPY . ./
 
-RUN mvn clean install -Dmaven.repo.local=${MVN_LOCAL_REPO}
+RUN mvn clean install -f game/pom.xml -Dmaven.repo.local=${MVN_LOCAL_REPO}
 
 #stage 2
 FROM openjdk:11
