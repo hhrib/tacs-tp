@@ -59,6 +59,8 @@ public class Province {
         this.municipalities = municipalities;
 	}
 
+	public void addMunicipality(Municipality municipality){ this.municipalities.add(municipality);}
+
 	@Override
 	public String toString() {
 		return "Province{" + "name='" + name + '\'' + '}';

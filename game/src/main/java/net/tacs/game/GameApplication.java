@@ -13,7 +13,7 @@ import java.util.List;
 public class GameApplication {
 
 	private static List<Match> matches;
-	private static List<Province> provinces;
+	public static List<Province> provinces;
 	private static List<Municipality> municipalities;
 	private static List<User> users;
 

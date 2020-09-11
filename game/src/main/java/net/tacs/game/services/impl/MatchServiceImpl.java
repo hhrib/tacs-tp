@@ -20,6 +20,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
+
+import static net.tacs.game.GameApplication.provinces;
 
 @Service("matchService")
 //@Transactional
@@ -59,6 +62,7 @@ public class MatchServiceImpl implements MatchService {
         //Quizás no recibamos un Match entero, quizás recibamos el Bean de creación (dependiendo lo que elijamos)
         //en ese caso va a haber que hacer la lógica de buscar usuarios y provincia y luego crear el objeto match para
         //persistir
+
         return newMatch;
     }
 
@@ -79,23 +83,71 @@ public class MatchServiceImpl implements MatchService {
             throw new MatchException(HttpStatus.BAD_REQUEST, errors);
         }
 
-        //TODO Buscar Provincia, y Users en el mapa que persiste en memoria para primeras entregas:
-        // Si no se encuentra alguno, se agrega error de 404 NOT_FOUND
+        //Buscar Provincia, y Users en el mapa que persiste en memoria para primeras entregas:
+        //Si no se encuentra alguno, se agrega error de 404 NOT_FOUND
 
-        //Por ahora devuelvo Match creado a mano
         Match newMatch = new Match();
-        Province province = new Province("Jujuy");
-        Municipality muni = new Municipality();
-        muni.setOwner(new User("Juan"));
-        muni.setElevation(30D);
-        muni.setGauchosQty(30);
-        muni.setProvince(province);
-        muni.setState(MunicipalityState.DEFENSE);
 
-        province.setMunicipalities(Arrays.asList(muni));
-        newMatch.setMap(province);
+        Province newProvince = new Province();
+
+        //TODO temporary province hasta que tener la base de datos
+        Province tempProvince;
+
+        //TODO Buscar en base de datos
+        for (Province aProvince: provinces) {
+            if(aProvince.getId() == newMatchBean.getProvinceId())
+            {
+                //Copia de Provincia
+                newProvince.setName(aProvince.getName());
+                tempProvince = aProvince;
+
+                if (newMatchBean.getMunicipalitiesQty() < newMatch.getMap().getMunicipalities().size()) {
+                    errors.add(new ApiError("EXCEEDED_MUNICIPALITIES_LIMIT",
+                            "Amount of municipalities selected exceeds amount of province's amount of municipalities"));
+                }
+
+                Random random = new Random();
+                List<Municipality> tempMunicipalities = tempProvince.getMunicipalities();
+                List<Integer> selectedIndexes = new ArrayList<>();
+
+                //Asignar Municipalidades
+                for(int i = 1; i <= newMatchBean.getMunicipalitiesQty(); i++)
+                {
+                    //TODO Crear Municipios con dueño aleatoriamente
+                    Municipality muni = new Municipality();
+
+                    int selectedMuniIndex = random.nextInt(tempMunicipalities.size());
+                    while(selectedIndexes.contains(selectedMuniIndex))
+                    {
+                        selectedMuniIndex = random.nextInt(tempMunicipalities.size());
+                    }
+
+                    muni.setName(tempMunicipalities.get(selectedMuniIndex).getName());
+                    selectedIndexes.add(selectedMuniIndex);
+
+                    //TODO tambien aleatorio
+                    muni.setOwner(new User("Juan"));
+
+                    //TODO o buscar de la api o de la cache
+                    muni.setElevation(30D);
+                    muni.setGauchosQty(30);
+
+                    //TODO muni.setProvince(province); <--- la municipalidad necesita saber la provincia a la que pertenece?
+
+                    muni.setState(MunicipalityState.DEFENSE);
+
+                    newProvince.addMunicipality(muni);
+                }
+
+                newMatch.setMap(newProvince);
+            }
+
+            return newMatch;
+        }
+
+        errors.add(new ApiError("PROVINCE_NOT_FOUND",
+                "Province Id does not exist"));
 
         return newMatch;
     }
-
 }
