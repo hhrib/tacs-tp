@@ -12,14 +12,11 @@ import java.util.List;
 @SpringBootApplication
 public class GameApplication {
 
-<<<<<<< HEAD
 	private static List<Match> matches;
 	private static List<Province> provinces;
 	private static List<Municipality> municipalities;
 	private static List<User> users;
 
-=======
->>>>>>> e948dff49ed358d6fefba7b80274808399db8955
 	public static void main(String[] args) {
 		SpringApplication.run(GameApplication.class, args);
 	}
