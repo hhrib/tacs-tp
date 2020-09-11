@@ -1,0 +1,21 @@
+<div class="container">
+    <h1 mat-dialog-title style="text-align: center;">Settings</h1>
+    <div mat-dialog-content>
+        <mat-label>Provincia</mat-label>
+        <mat-select>
+            <mat-option value="option">(empty)</mat-option>
+        </mat-select>
+        <mat-label>Cantidad de municipios</mat-label>
+        <mat-select>
+            <mat-option value="option">(empty))</mat-option>
+        </mat-select>
+        <mat-label>Jugadores</mat-label>
+        <mat-select>
+            <mat-option value="option">(empty)</mat-option>
+        </mat-select>
+        <div mat-dialog-actions>
+            <button mat-button (click)="onNoClick()">No Thanks</button>
+            <button mat-button [mat-dialog-close]="data.animal" cdkFocusInitial>Ok</button>
+        </div>
+    </div>
+</div>
