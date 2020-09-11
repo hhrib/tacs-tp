@@ -1,8 +1,7 @@
 package net.tacs.game.model.enums;
 
-public enum MatchStatus {
+public enum MatchState {
     CREATED,
     IN_PROGRESS,
-    FINISHED,
-    CANCELLED;
+    FINISHED;
 }

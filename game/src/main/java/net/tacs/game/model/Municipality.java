@@ -2,6 +2,11 @@ package net.tacs.game.model;
 
 import net.tacs.game.model.enums.MunicipalityState;
 
+import javax.persistence.*;
+import java.util.Objects;
+
+//@Entity
+//@Table(name = "municipality")
 public class Municipality {
 
     private Integer id;
@@ -84,12 +89,29 @@ public class Municipality {
 		this.owner = owner;
 	}
 
-	public Integer getGauchosQty() {
-		return gauchosQty;
-	}
+    public Integer getGauchosQty() {
+        return gauchosQty;
+    }
 
-	public void setGauchosQty(Integer gauchosQty) {
-		this.gauchosQty = gauchosQty;
-	}
+    public void setGauchosQty(Integer gauchosQty) {
+        this.gauchosQty = gauchosQty;
+    }
 
+    @Override
+    public String toString() {
+        return "Municipality{" +
+                "name='" + name + '\'' +
+                '}';
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Municipality municipality = (Municipality) o;
+        return Objects.equals(name, municipality.name);
+    }
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
+    }
 }

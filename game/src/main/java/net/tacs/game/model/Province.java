@@ -1,33 +1,38 @@
 package net.tacs.game.model;
 
+
+import java.security.SecureRandom;
+import java.util.List;
 import java.util.Objects;
 
+//@Entity
+//@Table(name = "province")
 public class Province {
 
-	private Integer id;
+//    @Id
+//    @GeneratedValue
+    private Long id;
 
 	private String name;
+//    @OneToMany(cascade = {CascadeType.ALL})
+    private List<Municipality> municipalities;
 
 	private Centroide centroide;
 
 	public Province() {
-		super();
+        this.id = new SecureRandom().nextLong();
 	}
 	
-	
 	public Province(String name) {
-		super();
+        this.id = new SecureRandom().nextLong();
 		this.name = name;
 	}
 
 
-	public Integer getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
-		this.id = id;
-	}
 
 	public Centroide getCentroide() {
 		return centroide;
@@ -44,6 +49,14 @@ public class Province {
 
 	public void setName(String name) {
 		this.name = name;
+    }
+
+    public List<Municipality> getMunicipalities() {
+        return municipalities;
+    }
+
+    public void setMunicipalities(List<Municipality> municipalities) {
+        this.municipalities = municipalities;
 	}
 
 	@Override
