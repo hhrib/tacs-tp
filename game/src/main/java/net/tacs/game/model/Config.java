@@ -6,11 +6,11 @@ public class Config {
     }
 
     private Match match;
-    private float defenseMultiplier;
-    private float gauchosDefMult;
-    private float gauchosProMult;
-    private float heightMultiplier;
-    private float distanceMultiplier;
+    private Double defenseMultiplier;
+    private Double gauchosDefMult;
+    private Double gauchosProMult;
+    private Double heightMultiplier;
+    private Double distanceMultiplier;
 
     public Match getMatch() {
         return match;
@@ -20,43 +20,43 @@ public class Config {
         this.match = match;
     }
 
-    public float getDefenseMultiplier() {
+    public Double getDefenseMultiplier() {
         return defenseMultiplier;
     }
 
-    public void setDefenseMultiplier(float defenseMultiplier) {
+    public void setDefenseMultiplier(Double defenseMultiplier) {
         this.defenseMultiplier = defenseMultiplier;
     }
 
-    public float getGauchosDefMult() {
+    public Double getGauchosDefMult() {
         return gauchosDefMult;
     }
 
-    public void setGauchosDefMult(float gauchosDefMult) {
+    public void setGauchosDefMult(Double gauchosDefMult) {
         this.gauchosDefMult = gauchosDefMult;
     }
 
-    public float getGauchosProMult() {
+    public Double getGauchosProMult() {
         return gauchosProMult;
     }
 
-    public void setGauchosProMult(float gauchosProMult) {
+    public void setGauchosProMult(Double gauchosProMult) {
         this.gauchosProMult = gauchosProMult;
     }
 
-    public float getHeightMultiplier() {
+    public Double getHeightMultiplier() {
         return heightMultiplier;
     }
 
-    public void setHeightMultiplier(float heightMultiplier) {
+    public void setHeightMultiplier(Double heightMultiplier) {
         this.heightMultiplier = heightMultiplier;
     }
 
-    public float getDistanceMultiplier() {
+    public Double getDistanceMultiplier() {
         return distanceMultiplier;
     }
 
-    public void setDistanceMultiplier(float distanceMultiplier) {
+    public void setDistanceMultiplier(Double distanceMultiplier) {
         this.distanceMultiplier = distanceMultiplier;
     }
 }

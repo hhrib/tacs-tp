@@ -1,37 +1,25 @@
 package net.tacs.game.controller;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import net.tacs.game.model.Centroide;
-import net.tacs.game.model.Municipality;
 import net.tacs.game.model.Province;
-import net.tacs.game.services.ProvinceService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 public class ProvinceController {
 
-	@Autowired
-	private ProvinceService provinceService;
+    private static final Logger LOGGER = LoggerFactory.getLogger(Province.class);
 
-	@GetMapping("/provinces")
-	public List<Province> findAll() {
-		return provinceService.findAll();
-	}
+    @GetMapping("/provinces")
+    public List<Province> getAllProvinces() {
+        List<Province> provinces = new ArrayList<>();
+        Province province = new Province("Buenos Aires");
+        provinces.add(province);
+        LOGGER.info(province.toString());
+        return provinces;
+    }
 
-	@GetMapping("/provinces/{PROVINCE_ID}/municipalities")
-	public Municipality[] getMuni(@PathVariable("PROVINCE_ID") int provinceId,
-			@RequestParam(value = "qty", required = false) Integer qty) {
-		return provinceService.findMunicipios(provinceId, qty);
-	}
-
-	@GetMapping("/elevation/{LAT}/{LON}")
-	public Double getElevation(@PathVariable("LAT") String lat, @PathVariable("LON") String lon) {
-		return provinceService.getElevation(new Centroide(lat, lon));
-	}
 }
