@@ -2,6 +2,7 @@ package net.tacs.game.model;
 
 
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -15,7 +16,7 @@ public class Province {
 
 	private String name;
 //    @OneToMany(cascade = {CascadeType.ALL})
-    private List<Municipality> municipalities;
+    private List<Municipality> municipalities = new ArrayList<>();
 
 	private Centroide centroide;
 
@@ -31,6 +32,11 @@ public class Province {
 
 	public Long getId() {
 		return id;
+	}
+
+	public void setId(long id)
+	{
+		this.id = id;
 	}
 
 

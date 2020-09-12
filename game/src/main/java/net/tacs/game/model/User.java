@@ -22,6 +22,11 @@ public class User {
         this.username = username;
     }
 
+    //TODO ver si es auto generado, por ahora lo necesito en los tests
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     //@Id @GeneratedValue
     private Long id;
     private String username;
