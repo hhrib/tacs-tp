@@ -17,13 +17,15 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatDialogModule} from '@angular/material/dialog';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatSelectModule} from '@angular/material/select';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 
 @NgModule({
   declarations: [
     AppComponent,
     MenuComponent,
     HomeComponent,
-    MatchCreateDialogComponent
+    MatchCreateDialogComponent,
+   
   ],
   imports: [
     BrowserModule,
@@ -35,8 +37,13 @@ import {MatSelectModule} from '@angular/material/select';
     MatDialogModule,
     MatFormFieldModule,
     MatSelectModule,
+    ReactiveFormsModule,
+    FormsModule,
     HttpClientModule,
     AppRoutes
+  ],
+  entryComponents: [
+    MatchCreateDialogComponent
   ],
   providers: [],
   bootstrap: [AppComponent]

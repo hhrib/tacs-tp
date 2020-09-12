@@ -38,7 +38,7 @@ export class MenuComponent implements OnInit {
     //this.matchService.createMatch(match);
     const dialogRef = this.dialog.open(MatchCreateDialogComponent, {
       height: '400px',
-      width: '600px',
+      width: '300px',
       data: {name: this.name, animal: this.animal}
     });
 
