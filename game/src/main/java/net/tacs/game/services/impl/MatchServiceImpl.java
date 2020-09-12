@@ -22,7 +22,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-import static net.tacs.game.GameApplication.provinces;
+import static net.tacs.game.GameApplication.*;
 
 @Service("matchService")
 //@Transactional
@@ -88,32 +88,52 @@ public class MatchServiceImpl implements MatchService {
 
         Match newMatch = new Match();
 
+        List<User> usersInMatch = new ArrayList<>();
+        for(long aId : newMatchBean.getUserIds())
+        {
+            boolean bUserFound = false;
+
+            for(User aUser : getUsers())
+            {
+                if(aUser.getId() == aId)
+                {
+                    bUserFound = true;
+                    usersInMatch.add(aUser);
+                }
+            }
+
+            if(!bUserFound)
+            {
+                errors.add(new ApiError("USER_NOT_FOUND", "Users not found"));
+                return newMatch;
+            }
+        }
+
+        newMatch.setUsers(usersInMatch);
+
         Province newProvince = new Province();
 
-        //TODO temporary province hasta que tener la base de datos
-        Province tempProvince;
-
         //TODO Buscar en base de datos
-        for (Province aProvince: provinces) {
-            if(aProvince.getId() == newMatchBean.getProvinceId())
+        for (Province aProvince: getProvinces()) {
+            if(aProvince.getId().equals(newMatchBean.getProvinceId()))
             {
                 //Copia de Provincia
                 newProvince.setName(aProvince.getName());
-                tempProvince = aProvince;
 
-                if (newMatchBean.getMunicipalitiesQty() < newMatch.getMap().getMunicipalities().size()) {
+                if (newMatchBean.getMunicipalitiesQty() < aProvince.getMunicipalities().size()) {
                     errors.add(new ApiError("EXCEEDED_MUNICIPALITIES_LIMIT",
                             "Amount of municipalities selected exceeds amount of province's amount of municipalities"));
+
+                    return newMatch;
                 }
 
                 Random random = new Random();
-                List<Municipality> tempMunicipalities = tempProvince.getMunicipalities();
+                List<Municipality> tempMunicipalities = aProvince.getMunicipalities();
                 List<Integer> selectedIndexes = new ArrayList<>();
 
-                //Asignar Municipalidades
+                //Crear Municipalidades
                 for(int i = 1; i <= newMatchBean.getMunicipalitiesQty(); i++)
                 {
-                    //TODO Crear Municipios con dueño aleatoriamente
                     Municipality muni = new Municipality();
 
                     int selectedMuniIndex = random.nextInt(tempMunicipalities.size());
@@ -125,21 +145,24 @@ public class MatchServiceImpl implements MatchService {
                     muni.setName(tempMunicipalities.get(selectedMuniIndex).getName());
                     selectedIndexes.add(selectedMuniIndex);
 
-                    //TODO tambien aleatorio
-                    muni.setOwner(new User("Juan"));
-
                     //TODO o buscar de la api o de la cache
-                    muni.setElevation(30D);
-                    muni.setGauchosQty(30);
+                    muni.setElevation(tempMunicipalities.get(selectedMuniIndex).getElevation());
+
+                    //TODO Gauchos son los mismos para todos?
+                    muni.setGauchosQty(tempMunicipalities.get(selectedMuniIndex).getGauchosQty());
 
                     //TODO muni.setProvince(province); <--- la municipalidad necesita saber la provincia a la que pertenece?
 
+                    //TODO Por defecto se pone en defensa?
                     muni.setState(MunicipalityState.DEFENSE);
 
                     newProvince.addMunicipality(muni);
                 }
 
                 newMatch.setMap(newProvince);
+
+                //asignar municipalidades a usuarios
+                assignMunicipalities(newMatch.getMap().getMunicipalities(), newMatch.getUsers());
             }
 
             return newMatch;
@@ -149,5 +172,21 @@ public class MatchServiceImpl implements MatchService {
                 "Province Id does not exist"));
 
         return newMatch;
+    }
+
+    private void assignMunicipalities(List<Municipality> municipalities, List<User> users)
+    {
+        int usersIndex = 0;
+        for(Municipality aMuni : municipalities)
+        {
+            aMuni.setOwner(users.get(usersIndex));
+
+            usersIndex++;
+
+            if(usersIndex == users.size())
+            {
+                usersIndex = 0;
+            }
+        }
     }
 }
