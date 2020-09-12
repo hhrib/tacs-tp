@@ -19,4 +19,6 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
           repository: hhrib/tacs-utn
-          snapshot: true
+          tags: ${{ github.sha }}
+          tag_with_ref: true
+
