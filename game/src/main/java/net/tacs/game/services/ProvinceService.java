@@ -60,56 +60,6 @@ public class ProvinceService {
 
 	/**
 	 * 
-	 * @param provinceId
-	 * @param qty
-	 * @return all municipios with elevator
-	 */
-	@Deprecated
-	public Municipality[] findMunicipiosWithElevation(int provinceId, Integer qty) {
-		RestTemplate restTemplate = new RestTemplate();
-
-		String url = String.format(URL_MUNICIPIOS, provinceId, qty);
-		if (qty != null)
-			url += "&max=" + qty;
-		ResponseEntity<GeoRefMunicipioAPIResponse> response = restTemplate.getForEntity(url,
-				GeoRefMunicipioAPIResponse.class);
-		return findElevation(Arrays.asList(response.getBody().getMunicipios()));
-	}
-
-	@Deprecated
-	private Municipality[] findElevation(List<Municipality> municipalities) {
-		Map<String, Municipality> responseMap = new HashMap<>();
-		List<Municipality> aux = new LinkedList<Municipality>();
-		for (int i = 0; i < municipalities.size(); i++) {
-			aux.add(municipalities.get(i));
-			if (i % 90 == 0) {
-				getElevations(aux, responseMap);
-				aux.clear();
-			}
-		}
-		getElevations(aux, responseMap);
-		return (Municipality[]) responseMap.values().toArray(new Municipality[responseMap.values().size()]);
-	}
-
-	@Deprecated
-	private void getElevations(List<Municipality> municipalities, Map<String, Municipality> responseMap) {
-		RestTemplate restTemplate = new RestTemplate();
-		StringBuilder sb = new StringBuilder();
-		for (Municipality m : municipalities) {
-			sb.append(m.getCentroide().getLat().concat(",").concat(m.getCentroide().getLon()).concat("|"));
-			responseMap.put(m.getCentroide().getLat().concat(",").concat(m.getCentroide().getLon()), m);
-		}
-		ResponseEntity<ElevationResponse> response = restTemplate.getForEntity(
-				URL_ELEVATION.concat(sb.toString()).concat("&interpolation=cubic"), ElevationResponse.class);
-		for (ElevationBean elevation : response.getBody().getResults()) {
-			Municipality m = responseMap
-					.get(elevation.getLocation().getLat().concat(",").concat(elevation.getLocation().getLng()));
-			m.setElevation(elevation.getElevation());
-		}
-	}
-
-	/**
-	 * 
 	 * @param location
 	 * @return Elvation for determined latitude and longitude
 	 */
