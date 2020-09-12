@@ -1,5 +1,8 @@
 package net.tacs.game.controller;
 
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import net.tacs.game.exceptions.MatchException;
 import net.tacs.game.model.ApiError;
 import net.tacs.game.model.Match;
@@ -28,7 +31,14 @@ public class MatchController {
     private UserService userService;
 
 
-    //User story 2.b
+    @ApiOperation(value = "Buscar todas las partidas almacenadas", produces = "application/json")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successful matches search"),
+            @ApiResponse(code = 401, message = "Unauthorized"),
+            @ApiResponse(code = 403, message = "Forbidden"),
+            @ApiResponse(code = 404, message = "Resource not found"),
+            @ApiResponse(code = 500, message = "Internal Server Error")
+    })
     @GetMapping("/matches")
     public ResponseEntity<List<Match>> getAllMatches() {
         List<Match> matches =  matchService.findAll();

@@ -100,9 +100,17 @@ public class Municipality {
     @Override
     public String toString() {
         return "Municipality{" +
-                "name='" + name + '\'' +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", province=" + province +
+                ", centroide=" + centroide +
+                ", elevation=" + elevation +
+                ", state=" + state +
+                ", owner=" + owner +
+                ", gauchosQty=" + gauchosQty +
                 '}';
     }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
