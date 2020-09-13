@@ -3,30 +3,29 @@ package net.tacs.game.services.impl;
 import net.tacs.game.GameApplication;
 import net.tacs.game.controller.MatchController;
 import net.tacs.game.exceptions.MatchException;
-import net.tacs.game.model.*;
 import net.tacs.game.model.bean.CreateMatchBean;
 import net.tacs.game.model.enums.MatchState;
 import net.tacs.game.model.enums.MunicipalityState;
-import net.tacs.game.repositories.UserRepository;
 import net.tacs.game.services.MatchService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import net.tacs.game.repositories.MatchRepository;
+import static net.tacs.game.GameApplication.getProvinces;
+import static net.tacs.game.GameApplication.getUsers;
 
-import java.lang.reflect.Array;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static net.tacs.game.GameApplication.provinces;
+import net.tacs.game.model.ApiError;
+import net.tacs.game.model.Match;
+import net.tacs.game.model.Municipality;
+import net.tacs.game.model.Province;
+import net.tacs.game.model.User;
 
 @Service("matchService")
 //@Transactional
@@ -42,7 +41,7 @@ public class MatchServiceImpl implements MatchService {
 
     @Override
     public List<Match> findAll() {
-        List<Match> matches = GameApplication.findMatches();
+        List<Match> matches = GameApplication.getMatches();
         return matches;
     }
 
@@ -58,7 +57,7 @@ public class MatchServiceImpl implements MatchService {
             LOGGER.error("Invalid match number id", e);
             throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError("MATCH_ID_INVALID", "Must provide a valid id")));
         }
-        Optional<Match> matchToRetrieve = GameApplication.findMatches().stream().filter(match -> match.getId().equals(idLong)).findFirst();
+        Optional<Match> matchToRetrieve = GameApplication.getMatches().stream().filter(match -> match.getId().equals(idLong)).findFirst();
         return matchToRetrieve.orElseThrow(() -> new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError("MATCH_NOT_FOUND", "Match not found for provided id"))));
     }
 
@@ -67,7 +66,7 @@ public class MatchServiceImpl implements MatchService {
             List<LocalDateTime> dates = validateDatesToSearch(isoDateFrom, isoDateTo);
             LocalDateTime dateFrom = dates.get(0);
             LocalDateTime dateTo = dates.get(1);
-            List<Match> matches = GameApplication.findMatches();
+            List<Match> matches = GameApplication.getMatches();
 
             if (matches == null || matches.isEmpty()) {
                 throw new MatchException(HttpStatus.NOT_FOUND, Arrays.asList(new ApiError("MATCHES_NOT_FOUND", "Matches not found for dates")));
@@ -121,32 +120,52 @@ public class MatchServiceImpl implements MatchService {
 
         Match newMatch = new Match();
 
+        List<User> usersInMatch = new ArrayList<>();
+        for(long aId : newMatchBean.getUserIds())
+        {
+            boolean bUserFound = false;
+
+            for(User aUser : getUsers())
+            {
+                if(aUser.getId() == aId)
+                {
+                    bUserFound = true;
+                    usersInMatch.add(aUser);
+                }
+            }
+
+            if(!bUserFound)
+            {
+                errors.add(new ApiError("USER_NOT_FOUND", "Users not found"));
+                return newMatch;
+            }
+        }
+
+        newMatch.setUsers(usersInMatch);
+
         Province newProvince = new Province();
 
-        //TODO temporary province hasta que tener la base de datos
-        Province tempProvince;
-
         //TODO Buscar en base de datos
-        for (Province aProvince: provinces) {
-            if(aProvince.getId() == newMatchBean.getProvinceId())
+        for (Province aProvince: getProvinces()) {
+            if(aProvince.getId().equals(newMatchBean.getProvinceId()))
             {
                 //Copia de Provincia
-                newProvince.setName(aProvince.getName());
-                tempProvince = aProvince;
+                newProvince.setNombre(aProvince.getNombre());
 
-                if (newMatchBean.getMunicipalitiesQty() < newMatch.getMap().getMunicipalities().size()) {
+                if (newMatchBean.getMunicipalitiesQty() < aProvince.getMunicipalities().size()) {
                     errors.add(new ApiError("EXCEEDED_MUNICIPALITIES_LIMIT",
                             "Amount of municipalities selected exceeds amount of province's amount of municipalities"));
+
+                    return newMatch;
                 }
 
                 Random random = new Random();
-                List<Municipality> tempMunicipalities = tempProvince.getMunicipalities();
+                List<Municipality> tempMunicipalities = aProvince.getMunicipalities();
                 List<Integer> selectedIndexes = new ArrayList<>();
 
-                //Asignar Municipalidades
+                //Crear Municipalidades
                 for(int i = 1; i <= newMatchBean.getMunicipalitiesQty(); i++)
                 {
-                    //TODO Crear Municipios con dueño aleatoriamente
                     Municipality muni = new Municipality();
 
                     int selectedMuniIndex = random.nextInt(tempMunicipalities.size());
@@ -155,24 +174,27 @@ public class MatchServiceImpl implements MatchService {
                         selectedMuniIndex = random.nextInt(tempMunicipalities.size());
                     }
 
-                    muni.setName(tempMunicipalities.get(selectedMuniIndex).getName());
+                    muni.setNombre(tempMunicipalities.get(selectedMuniIndex).getNombre());
                     selectedIndexes.add(selectedMuniIndex);
 
-                    //TODO tambien aleatorio
-                    muni.setOwner(new User("Juan"));
-
                     //TODO o buscar de la api o de la cache
-                    muni.setElevation(30D);
-                    muni.setGauchosQty(30);
+                    muni.setElevation(tempMunicipalities.get(selectedMuniIndex).getElevation());
+
+                    //TODO Gauchos son los mismos para todos?
+                    muni.setGauchosQty(tempMunicipalities.get(selectedMuniIndex).getGauchosQty());
 
                     //TODO muni.setProvince(province); <--- la municipalidad necesita saber la provincia a la que pertenece?
 
+                    //TODO Por defecto se pone en defensa?
                     muni.setState(MunicipalityState.DEFENSE);
 
                     newProvince.addMunicipality(muni);
                 }
 
                 newMatch.setMap(newProvince);
+
+                //asignar municipalidades a usuarios
+                assignMunicipalities(newMatch.getMap().getMunicipalities(), newMatch.getUsers());
             }
 
             return newMatch;
@@ -190,7 +212,7 @@ public class MatchServiceImpl implements MatchService {
             if (isoDateFrom == null) {
                 throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError("DATE_FROM_EMPTY", "'Date from' cannot be empty")));
             }
-            if(isoDateTo == null) {
+            if (isoDateTo == null) {
                 throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError("DATE_TO_EMPTY", "'Date to' cannot be empty")));
             }
             LocalDateTime dateFrom = LocalDate.parse(isoDateFrom, DateTimeFormatter.ISO_LOCAL_DATE).atStartOfDay();
@@ -205,5 +227,21 @@ public class MatchServiceImpl implements MatchService {
             throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError("INVALID_DATES_FORMAT", "Invalid date format received")));
         }
         return dates;
+    }
+
+    private void assignMunicipalities(List<Municipality> municipalities, List<User> users)
+    {
+        int usersIndex = 0;
+        for(Municipality aMuni : municipalities)
+        {
+            aMuni.setOwner(users.get(usersIndex));
+
+            usersIndex++;
+
+            if(usersIndex == users.size())
+            {
+                usersIndex = 0;
+            }
+        }
     }
 }

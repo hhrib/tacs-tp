@@ -1,23 +1,31 @@
 package net.tacs.game.controller;
 
-import net.tacs.game.model.Municipality;
-import net.tacs.game.model.enums.MunicipalityState;
-import net.tacs.game.model.Province;
-import net.tacs.game.model.User;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.List;
+import net.tacs.game.model.Centroide;
+import net.tacs.game.model.Municipality;
+import net.tacs.game.model.Province;
+import net.tacs.game.model.User;
+import net.tacs.game.model.enums.MunicipalityState;
+import net.tacs.game.services.MunicipalityService;
 
 @RestController
 public class MunicipalityController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Municipality.class);
+    
+    @Autowired
+	private MunicipalityService municipalityService;
 
     @GetMapping("/municipalities")
     public ResponseEntity<List<Municipality>> getAllMunicipalities() {
@@ -45,4 +53,8 @@ public class MunicipalityController {
         return new ResponseEntity<>(municipalities, HttpStatus.OK);
     }
 
+    @GetMapping("/elevation/{LAT}/{LON}")
+	public Double getElevation(@PathVariable("LAT") String lat, @PathVariable("LON") String lon) {
+		return municipalityService.getElevation(new Centroide(lat, lon));
+	}
 }

@@ -2,6 +2,7 @@ package net.tacs.game.model;
 
 
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -13,9 +14,9 @@ public class Province {
 //    @GeneratedValue
     private Long id;
 
-	private String name;
+	private String nombre;
 //    @OneToMany(cascade = {CascadeType.ALL})
-    private List<Municipality> municipalities;
+    private List<Municipality> municipalities = new ArrayList<>();
 
 	private Centroide centroide;
 
@@ -23,14 +24,19 @@ public class Province {
         this.id = new SecureRandom().nextLong();
 	}
 	
-	public Province(String name) {
+	public Province(String nombre) {
         this.id = new SecureRandom().nextLong();
-		this.name = name;
+		this.nombre = nombre;
 	}
 
 
 	public Long getId() {
 		return id;
+	}
+
+	public void setId(long id)
+	{
+		this.id = id;
 	}
 
 
@@ -43,15 +49,19 @@ public class Province {
 	}
 
 	
-	public String getName() {
-		return name;
+    public String getNombre() {
+		return nombre;
 	}
 
-	public void setName(String name) {
-		this.name = name;
-    }
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
 
-    public List<Municipality> getMunicipalities() {
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public List<Municipality> getMunicipalities() {
         return municipalities;
     }
 
@@ -63,7 +73,7 @@ public class Province {
 
 	@Override
 	public String toString() {
-		return "Province{" + "name='" + name + '\'' + '}';
+		return "Province{" + "nombre='" + nombre + '\'' + '}';
 	}
 
 	@Override
@@ -73,11 +83,11 @@ public class Province {
 		if (o == null || getClass() != o.getClass())
 			return false;
 		Province province = (Province) o;
-		return Objects.equals(name, province.name);
+		return Objects.equals(nombre, province.nombre);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(name);
+		return Objects.hash(nombre);
 	}
 }

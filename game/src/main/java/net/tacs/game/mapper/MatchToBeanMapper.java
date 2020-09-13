@@ -12,7 +12,7 @@ public class MatchToBeanMapper {
         MatchBeanResponse bean = new MatchBeanResponse();
         bean.setId(matchToMap.getId());
         bean.setDate(matchToMap.getDate());
-        bean.setMap(matchToMap.getMap().getName());
+        bean.setMap(matchToMap.getMap().getNombre());
         bean.setState(matchToMap.getState());
         bean.setUsers(matchToMap.getUsers());
 

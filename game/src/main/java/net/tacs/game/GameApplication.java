@@ -14,9 +14,9 @@ import java.util.List;
 public class GameApplication {
 
 	private static List<Match> matches = new ArrayList<>();
-	public static List<Province> provinces;
-	private static List<Municipality> municipalities;
-	private static List<User> users;
+	private static List<Province> provinces = new ArrayList<>();
+	private static List<Municipality> municipalities = new ArrayList<>();
+	private static List<User> users = new ArrayList<>();
 
 	public static void main(String[] args) {
 		SpringApplication.run(GameApplication.class, args);
@@ -38,22 +38,22 @@ public class GameApplication {
 		users.add(newUser);
 	}
 
-	public static List<Match> findMatches() {
+	public static List<Match> getMatches()
+	{
 		return matches;
 	}
 
-	public static List<Province> findProvinces() {
+	public static List<Province> getProvinces() {
 		return provinces;
 	}
 
-	public static List<Municipality> findMunicipalities() {
+	public static List<Municipality> getMunicipalities() {
 		return municipalities;
 	}
 
-	public static List<User> findUsers() {
+	public static List<User> getUsers() {
 		return users;
 	}
 
 	//Agregar los métodos para buscar/guardar en memoria que hagan falta (hasta que tengamos persistencia)
-
 }
