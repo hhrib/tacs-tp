@@ -1,20 +1,7 @@
 package net.tacs.game.services.impl;
 
-import net.tacs.game.controller.MatchController;
-import net.tacs.game.exceptions.MatchException;
-import net.tacs.game.model.*;
-import net.tacs.game.model.bean.CreateMatchBean;
-import net.tacs.game.model.enums.MatchState;
-import net.tacs.game.model.enums.MunicipalityState;
-import net.tacs.game.repositories.UserRepository;
-import net.tacs.game.services.MatchService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-import net.tacs.game.repositories.MatchRepository;
+import static net.tacs.game.GameApplication.getProvinces;
+import static net.tacs.game.GameApplication.getUsers;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -22,7 +9,22 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-import static net.tacs.game.GameApplication.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+
+import net.tacs.game.controller.MatchController;
+import net.tacs.game.exceptions.MatchException;
+import net.tacs.game.model.ApiError;
+import net.tacs.game.model.Match;
+import net.tacs.game.model.Municipality;
+import net.tacs.game.model.Province;
+import net.tacs.game.model.User;
+import net.tacs.game.model.bean.CreateMatchBean;
+import net.tacs.game.model.enums.MatchState;
+import net.tacs.game.model.enums.MunicipalityState;
+import net.tacs.game.services.MatchService;
 
 @Service("matchService")
 //@Transactional
@@ -118,7 +120,7 @@ public class MatchServiceImpl implements MatchService {
             if(aProvince.getId().equals(newMatchBean.getProvinceId()))
             {
                 //Copia de Provincia
-                newProvince.setName(aProvince.getName());
+                newProvince.setNombre(aProvince.getNombre());
 
                 if (newMatchBean.getMunicipalitiesQty() < aProvince.getMunicipalities().size()) {
                     errors.add(new ApiError("EXCEEDED_MUNICIPALITIES_LIMIT",
@@ -142,7 +144,7 @@ public class MatchServiceImpl implements MatchService {
                         selectedMuniIndex = random.nextInt(tempMunicipalities.size());
                     }
 
-                    muni.setName(tempMunicipalities.get(selectedMuniIndex).getName());
+                    muni.setNombre(tempMunicipalities.get(selectedMuniIndex).getNombre());
                     selectedIndexes.add(selectedMuniIndex);
 
                     //TODO o buscar de la api o de la cache

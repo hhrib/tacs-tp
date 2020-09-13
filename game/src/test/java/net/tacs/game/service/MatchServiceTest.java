@@ -1,5 +1,19 @@
 package net.tacs.game.service;
 
+import static net.tacs.game.GameApplication.addMunicipality;
+import static net.tacs.game.GameApplication.addProvince;
+import static net.tacs.game.GameApplication.addUser;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+
 import net.tacs.game.exceptions.MatchException;
 import net.tacs.game.model.Match;
 import net.tacs.game.model.Municipality;
@@ -7,19 +21,6 @@ import net.tacs.game.model.Province;
 import net.tacs.game.model.User;
 import net.tacs.game.model.bean.CreateMatchBean;
 import net.tacs.game.services.MatchService;
-import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.junit4.SpringRunner;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static net.tacs.game.GameApplication.*;
 
 @SpringBootTest
 public class MatchServiceTest {
@@ -88,7 +89,7 @@ public class MatchServiceTest {
         //chequea que se hayan agregado correctamente los usuarios, la provincia y los municipios
         assertEquals("Pepe" , match.getUsers().get(0).getUsername());
         assertEquals("Paula" , match.getUsers().get(1).getUsername());
-        assertEquals("Buenos Aires", match.getMap().getName());
+        assertEquals("Buenos Aires", match.getMap().getNombre());
         assertTrue(match.getMap().getMunicipalities().contains(lanus));
         assertTrue(match.getMap().getMunicipalities().contains(avellaneda));
         assertTrue(match.getMap().getMunicipalities().contains(quilmes));

@@ -4,6 +4,10 @@ public class Centroide {
 	private String lat;
 	private String lon;
 
+	public Centroide() {
+		super();
+	}
+
 	public Centroide(String lat, String lon) {
 		super();
 		this.lat = lat;

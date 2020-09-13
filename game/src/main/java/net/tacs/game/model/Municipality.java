@@ -1,9 +1,8 @@
 package net.tacs.game.model;
 
-import net.tacs.game.model.enums.MunicipalityState;
-
-import javax.persistence.*;
 import java.util.Objects;
+
+import net.tacs.game.model.enums.MunicipalityState;
 
 //@Entity
 //@Table(name = "municipality")
@@ -11,7 +10,7 @@ public class Municipality {
 
     private Integer id;
 
-    private String name;
+    private String nombre;
 
     private Province province;
 
@@ -29,8 +28,8 @@ public class Municipality {
 		super();
 	}
 
-	public Municipality(String name) {
-	    this.name = name;
+	public Municipality(String nombre) {
+	    this.nombre = nombre;
     }
 
 	public Integer getId() {
@@ -41,12 +40,12 @@ public class Municipality {
 		this.id = id;
 	}
 
-	public String getName() {
-		return name;
+	public String getNombre() {
+		return nombre;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
 	}
 
     public Province getProvince() {
@@ -101,7 +100,7 @@ public class Municipality {
     public String toString() {
         return "Municipality{" +
                 "id=" + id +
-                ", name='" + name + '\'' +
+                ", nombre='" + nombre + '\'' +
                 ", province=" + province +
                 ", centroide=" + centroide +
                 ", elevation=" + elevation +
@@ -116,10 +115,10 @@ public class Municipality {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Municipality municipality = (Municipality) o;
-        return Objects.equals(name, municipality.name);
+        return Objects.equals(nombre, municipality.nombre);
     }
     @Override
     public int hashCode() {
-        return Objects.hash(name);
+        return Objects.hash(nombre);
     }
 }
