@@ -17,6 +17,7 @@ Segundo Cuatrimestre 2020 - UTN FRBA - El Mejor Grupo :)
 2. Angular
 3. Maven
 4. DER: https://drive.google.com/file/d/1NlseerFxcISJEXySQQ5WB8tqhcmMn-Rl/view?usp=sharing
+5. Diagrama de Clases (Relación Partida-Provincia-Municipio): https://drive.google.com/file/d/1OYIo54e2kQI0-9aefVhQ_q7i0KizMqq9/view?usp=sharing
 
 -----
 # Suposiciones:
