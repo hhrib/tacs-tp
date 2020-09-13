@@ -10,6 +10,9 @@ public interface MatchService {
 
     public List<Match> findAll();
 
+    public List<Match> findMatchesByDate(String isoDateFrom, String isoDateTo) throws MatchException;
+
     public Match createMatch(CreateMatchBean createMatchBean) throws MatchException;
 
+    public Match getMatchById(String id) throws MatchException;
 }

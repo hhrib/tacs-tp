@@ -1,5 +1,6 @@
 package net.tacs.game.services.impl;
 
+import net.tacs.game.GameApplication;
 import net.tacs.game.controller.MatchController;
 import net.tacs.game.exceptions.MatchException;
 import net.tacs.game.model.*;
@@ -16,11 +17,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import net.tacs.game.repositories.MatchRepository;
 
+import java.lang.reflect.Array;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static net.tacs.game.GameApplication.provinces;
 
@@ -38,16 +42,45 @@ public class MatchServiceImpl implements MatchService {
 
     @Override
     public List<Match> findAll() {
-        //SOLO PARA PROBAR
-//        User userPepe = new User("pepe");
-//        userRepository.save(userPepe);
-//        User userPaula = new User("paula");
-//        userRepository.save(userPaula);
-//        matchRepository.save(new Match("Buenos Aires", 10, new long[]{1,2}, userService));
-//        return matchRepository.findAll();
-        //TODO Ir a buscar al mapa que persiste en memoria para primeras entregas.
-        List<Match> matches = Arrays.asList(new Match());
+        List<Match> matches = GameApplication.findMatches();
         return matches;
+    }
+
+    @Override
+    public Match getMatchById(String id) throws MatchException {
+        Long idLong;
+        if (id == null || id.isEmpty()) {
+            throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError("MATCH_ID_EMPTY", "Must provide an id")));
+        }
+        try {
+            idLong = Long.valueOf(id);
+        } catch (NumberFormatException e) {
+            LOGGER.error("Invalid match number id", e);
+            throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError("MATCH_ID_INVALID", "Must provide a valid id")));
+        }
+        Optional<Match> matchToRetrieve = GameApplication.findMatches().stream().filter(match -> match.getId().equals(idLong)).findFirst();
+        return matchToRetrieve.orElseThrow(() -> new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError("MATCH_NOT_FOUND", "Match not found for provided id"))));
+    }
+
+    @Override
+    public List<Match> findMatchesByDate(String isoDateFrom, String isoDateTo) throws MatchException {
+            List<LocalDateTime> dates = validateDatesToSearch(isoDateFrom, isoDateTo);
+            LocalDateTime dateFrom = dates.get(0);
+            LocalDateTime dateTo = dates.get(1);
+            List<Match> matches = GameApplication.findMatches();
+
+            if (matches == null || matches.isEmpty()) {
+                throw new MatchException(HttpStatus.NOT_FOUND, Arrays.asList(new ApiError("MATCHES_NOT_FOUND", "Matches not found for dates")));
+            }
+
+            List<Match> filteredMatches = matches.stream().filter(match -> (match.getDate().toLocalDate().isEqual(dateFrom.toLocalDate()) || match.getDate().toLocalDate().isAfter(dateFrom.toLocalDate())) &&
+                                                                           (match.getDate().toLocalDate().isEqual(dateFrom.toLocalDate()) || match.getDate().toLocalDate().isBefore(dateTo.toLocalDate())))
+                                                          .collect(Collectors.toList());
+
+            if (filteredMatches.isEmpty()) {
+                throw new MatchException(HttpStatus.NOT_FOUND, Arrays.asList(new ApiError("MATCHES_NOT_FOUND", "Matches not found for dates")));
+            }
+            return filteredMatches;
     }
 
     @Override
@@ -149,5 +182,28 @@ public class MatchServiceImpl implements MatchService {
                 "Province Id does not exist"));
 
         return newMatch;
+    }
+
+    private List<LocalDateTime> validateDatesToSearch(String isoDateFrom, String isoDateTo) throws MatchException {
+        List<LocalDateTime> dates = new ArrayList<>();
+        try {
+            if (isoDateFrom == null) {
+                throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError("DATE_FROM_EMPTY", "'Date from' cannot be empty")));
+            }
+            if(isoDateTo == null) {
+                throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError("DATE_TO_EMPTY", "'Date to' cannot be empty")));
+            }
+            LocalDateTime dateFrom = LocalDate.parse(isoDateFrom, DateTimeFormatter.ISO_LOCAL_DATE).atStartOfDay();
+            LocalDateTime dateTo = LocalDate.parse(isoDateTo, DateTimeFormatter.ISO_LOCAL_DATE).atStartOfDay();
+            if (dateFrom.isAfter(dateTo)) {
+                throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError("DATE_FROM_AFTER_DATE_TO", "'Date from' must not be after 'date to'")));
+            }
+            dates.add(dateFrom);
+            dates.add(dateTo);
+        } catch (DateTimeParseException e) {
+            LOGGER.error("Error al parsear las fechas de búsqueda", e);
+            throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError("INVALID_DATES_FORMAT", "Invalid date format received")));
+        }
+        return dates;
     }
 }

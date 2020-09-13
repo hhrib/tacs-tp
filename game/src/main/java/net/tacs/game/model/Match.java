@@ -1,5 +1,6 @@
 package net.tacs.game.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import net.tacs.game.model.enums.MatchState;
 
 import java.time.LocalDateTime;

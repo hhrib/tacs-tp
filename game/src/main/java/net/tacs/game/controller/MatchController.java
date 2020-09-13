@@ -3,10 +3,15 @@ package net.tacs.game.controller;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import net.tacs.game.GameApplication;
 import net.tacs.game.exceptions.MatchException;
+import net.tacs.game.mapper.MatchToBeanMapper;
 import net.tacs.game.model.ApiError;
 import net.tacs.game.model.Match;
+import net.tacs.game.model.Province;
 import net.tacs.game.model.bean.CreateMatchBean;
+import net.tacs.game.model.bean.MatchBeanResponse;
+import net.tacs.game.model.enums.MatchState;
 import net.tacs.game.services.MatchService;
 import net.tacs.game.services.UserService;
 import org.slf4j.Logger;
@@ -16,7 +21,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.websocket.server.PathParam;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -31,18 +40,62 @@ public class MatchController {
     private UserService userService;
 
 
-    @ApiOperation(value = "Buscar todas las partidas almacenadas", produces = "application/json")
+    @ApiOperation(value = "Buscar partidas", produces = "application/json")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successful matches search"),
+            @ApiResponse(code = 400, message = "Bad Request - Date problem"),
             @ApiResponse(code = 401, message = "Unauthorized"),
             @ApiResponse(code = 403, message = "Forbidden"),
             @ApiResponse(code = 404, message = "Resource not found"),
             @ApiResponse(code = 500, message = "Internal Server Error")
     })
     @GetMapping("/matches")
-    public ResponseEntity<List<Match>> getAllMatches() {
-        List<Match> matches =  matchService.findAll();
-        return new ResponseEntity<>(matches, HttpStatus.OK);
+    public ResponseEntity<List<MatchBeanResponse>> getMatches(@RequestParam(name = "dateFrom", required = false) String dateFrom, @RequestParam(name = "dateTo", required = false) String dateTo) throws MatchException {
+        Match match1 = new Match();
+        match1.setDate(LocalDateTime.of(2020, 04, 23, 13,33));
+        match1.setMap(new Province("Cordoba"));
+        match1.setState(MatchState.FINISHED);
+        Match match2 = new Match();
+        match2.setDate(LocalDateTime.of(2020, 04, 21, 10, 14));
+        match2.setMap(new Province("Misiones"));
+        match2.setState(MatchState.FINISHED);
+        GameApplication.addMatch(match1);
+        GameApplication.addMatch(match2);
+        List<Match> matches = new ArrayList<>();
+        if (dateFrom == null && dateTo == null) {
+            matches = matchService.findAll();
+        } else {
+            matches = matchService.findMatchesByDate(dateFrom, dateTo);
+        }
+
+        return new ResponseEntity<>(MatchToBeanMapper.mapMatches(matches), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "Buscar partida por ID", produces = "application/json")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successful matches search"),
+            @ApiResponse(code = 400, message = "Bad Request - ID Problem"),
+            @ApiResponse(code = 401, message = "Unauthorized"),
+            @ApiResponse(code = 403, message = "Forbidden"),
+            @ApiResponse(code = 404, message = "Resource not found"),
+            @ApiResponse(code = 500, message = "Internal Server Error")
+    })
+    @GetMapping("/matches/{id}")
+    public ResponseEntity<MatchBeanResponse> getMatchById(@PathVariable("id") String id) throws MatchException {
+        Match match1 = new Match();
+        match1.setDate(LocalDateTime.of(2020, 04, 23, 13,33));
+        match1.setMap(new Province("Cordoba"));
+        match1.setState(MatchState.FINISHED);
+        match1.setId(1234L);
+        GameApplication.addMatch(match1);
+        Match match = this.matchService.getMatchById(id);
+
+        return new ResponseEntity<>(MatchToBeanMapper.mapMatch(match), HttpStatus.OK);
+    }
+
+
+    public MatchController() {
+        super();
     }
 
     //User story 2.a
