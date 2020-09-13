@@ -51,16 +51,6 @@ public class MatchController {
     })
     @GetMapping("/matches")
     public ResponseEntity<List<MatchBeanResponse>> getMatches(@RequestParam(name = "dateFrom", required = false) String dateFrom, @RequestParam(name = "dateTo", required = false) String dateTo) throws MatchException {
-        Match match1 = new Match();
-        match1.setDate(LocalDateTime.of(2020, 04, 23, 13,33));
-        match1.setMap(new Province("Cordoba"));
-        match1.setState(MatchState.FINISHED);
-        Match match2 = new Match();
-        match2.setDate(LocalDateTime.of(2020, 04, 21, 10, 14));
-        match2.setMap(new Province("Misiones"));
-        match2.setState(MatchState.FINISHED);
-        GameApplication.addMatch(match1);
-        GameApplication.addMatch(match2);
         List<Match> matches = new ArrayList<>();
         if (dateFrom == null && dateTo == null) {
             matches = matchService.findAll();
@@ -82,14 +72,7 @@ public class MatchController {
     })
     @GetMapping("/matches/{id}")
     public ResponseEntity<MatchBeanResponse> getMatchById(@PathVariable("id") String id) throws MatchException {
-        Match match1 = new Match();
-        match1.setDate(LocalDateTime.of(2020, 04, 23, 13,33));
-        match1.setMap(new Province("Cordoba"));
-        match1.setState(MatchState.FINISHED);
-        match1.setId(1234L);
-        GameApplication.addMatch(match1);
         Match match = this.matchService.getMatchById(id);
-
         return new ResponseEntity<>(MatchToBeanMapper.mapMatch(match), HttpStatus.OK);
     }
 
