@@ -1,21 +1,27 @@
 <p>
   <mat-toolbar style="background: #eaf0f1; color:rgb(53 50 50 / 87%)">
-   <button mat-icon-button [matMenuTriggerFor]="menuOptions">
-    <mat-icon>menu</mat-icon>
-  </button>
-  <span>Menu</span>
-  <span class="example-spacer" style="flex: auto;"></span>
-  <button mat-icon-button class="example-icon favorite-icon" aria-label="Example icon-button with heart icon">
-    <mat-icon>favorite</mat-icon>
-  </button>
-  <button mat-icon-button class="example-icon" aria-label="Example icon-button with share icon">
-   <mat-icon>share</mat-icon>
- </button>
-</mat-toolbar>
-<mat-menu #menuOptions="matMenu"> 
-  <button mat-menu-item (click)="openDialogCreateMatch()">New game</button>
-  <button mat-menu-item (click)="openDialogSearchMatches()">Search matches</button>
-</mat-menu>
+    <button mat-button (click)="auth.login()" *ngIf="!auth.loggedIn">Log In</button>
+    
+    <ng-container *ngIf="auth.loggedIn">
+      <button mat-icon-button [matMenuTriggerFor]="menuOptions">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <span>Menu</span>
+      <span class="example-spacer" style="flex: auto;"></span>
+      <button mat-icon-button class="example-icon favorite-icon" aria-label="Example icon-button with heart icon">
+        <mat-icon>favorite</mat-icon>
+      </button>
+      <button mat-icon-button class="example-icon" aria-label="Example icon-button with share icon">
+        <mat-icon>share</mat-icon>
+      </button>
+    </ng-container>
+  </mat-toolbar>
+  
+  <mat-menu #menuOptions="matMenu"> 
+    <button mat-menu-item (click)="openDialogCreateMatch()">New game</button>
+    <button mat-menu-item (click)="openDialogSearchMatches()">Search matches</button>
+    <button mat-menu-item (click)="auth.logout()" *ngIf="auth.loggedIn">Log Out</button>
+  </mat-menu>
 </p>
 
 
