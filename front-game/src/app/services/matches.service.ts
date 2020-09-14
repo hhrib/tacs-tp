@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
-import { MatchDTO } from '../dtos/match.dto';
+import { MatchDTO } from '../models/match.dto';
 
 const MATCH_URL = environment.BASE_URL + 'matches';
 
@@ -23,6 +23,7 @@ export class MatchService {
 
     public createMatch(match: MatchDTO): any {
         //return this.http.post<MatchResponse>(`${MATCH_URL}/`, match);
+        console.log("PEGANDOLE A LA API REST... ")
         return this.http.post<any>(`${MATCH_URL}/`, match);
     }
 

@@ -18,6 +18,7 @@ import {MatDialogModule} from '@angular/material/dialog';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatSelectModule} from '@angular/material/select';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import { MatchDTO } from './models/match.dto';
 
 @NgModule({
   declarations: [
@@ -45,7 +46,7 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
   entryComponents: [
     MatchCreateDialogComponent
   ],
-  providers: [],
+  providers: [MatchDTO],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

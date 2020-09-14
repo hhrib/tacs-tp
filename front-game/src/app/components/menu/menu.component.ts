@@ -6,11 +6,6 @@ import {MatSelectModule} from '@angular/material/select';
 
 import { MatchCreateDialogComponent } from '../../components/match/match-create-dialog/match-create-dialog.component';
 
-export interface DialogData {
-  animal: string;
-  name: string;
-}
-
 @Component({
   selector: 'app-menu',
   templateUrl: './menu.component.html',
@@ -20,9 +15,6 @@ export interface DialogData {
   ]
 })
 export class MenuComponent implements OnInit {
-
-  animal: string;
-  name: string;
 
   constructor(
     public matchService: MatchService,
@@ -39,12 +31,13 @@ export class MenuComponent implements OnInit {
     const dialogRef = this.dialog.open(MatchCreateDialogComponent, {
       height: '400px',
       width: '300px',
-      data: {name: this.name, animal: this.animal}
     });
 
     dialogRef.afterClosed().subscribe(result => {
       console.log('The dialog was closed');
-      this.animal = result;
+      console.log(result);
+      
+      this.matchService.createMatch(result);
     });
   }
 
