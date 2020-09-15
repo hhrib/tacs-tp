@@ -38,8 +38,11 @@ export class MenuComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       console.log('The dialog was closed');
       console.log(result);
-
-      this.matchService.createMatch(result);
+      
+      this.matchService.createMatch(result).subscribe(
+        response => console.log(response),
+        err => console.log(err)
+      );
     });
   }
 

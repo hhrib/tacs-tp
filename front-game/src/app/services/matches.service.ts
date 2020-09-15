@@ -1,9 +1,15 @@
-import { HttpClient } from '@angular/common/http';
+import { JsonPipe } from '@angular/common';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { MatchDTO } from '../models/match.dto';
 
 const MATCH_URL = environment.BASE_URL + 'matches';
+
+const httpOptions = {
+    headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+  };
 
 
 //TODO: Agregar tipos de retorno a cada función (sacar el any)!!! 
@@ -21,16 +27,19 @@ export class MatchService {
         return this.http.get<any>(`${MATCH_URL}/${matchId}`);
     }
 
-    public createMatch(match: MatchDTO): any {
+    public createMatch(match: MatchDTO): Observable<MatchDTO> {
         //return this.http.post<MatchResponse>(`${MATCH_URL}/`, match);
-        console.log("PEGANDOLE A LA API REST... ")
-        return this.http.post<any>(`${MATCH_URL}/`, match);
+        let matchJSON = JSON.stringify(match);
+        console.log("PEGANDOLE A LA API REST... ");
+        console.log(matchJSON);
+        console.log(MATCH_URL)
+        return this.http.post<any>(`${MATCH_URL}/`, matchJSON, httpOptions);
     }
 
-    public editMatch(match: MatchDTO, matchId: any = match.id): any {
+    /*public editMatch(match: MatchDTO, matchId: any = match.id): any {
        //return this.http.put<MatchResponse>(`${MATCH_URL}/${matchId}`, match);
         return this.http.put<any>(`${MATCH_URL}/${matchId}`, match);
-    }
+    }*/
 
     public deleteMatch(matchId: any): any {
         return this.http.delete<any>(`${MATCH_URL}/${matchId}`);

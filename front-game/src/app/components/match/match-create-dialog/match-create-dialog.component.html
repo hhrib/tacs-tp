@@ -5,7 +5,7 @@
         <mat-form-field>
             <mat-label>Province</mat-label>
                 <mat-select name="province" ngModel>
-                    <mat-option *ngFor="let province of provinceList" [value]="province">{{province}}</mat-option>
+                    <mat-option *ngFor="let province of provinceList" [value]="province.id">{{province.name}}</mat-option>
                 </mat-select>
         </mat-form-field>
 
@@ -19,7 +19,7 @@
         <mat-form-field>
             <mat-label>Players</mat-label>
             <mat-select multiple name="players" ngModel>
-                <mat-option *ngFor="let player of playersList" [value]="player">{{player}}</mat-option> 
+                <mat-option *ngFor="let player of playersList" [value]="player.id">{{player.name}}</mat-option> 
             </mat-select>
         </mat-form-field>
 
