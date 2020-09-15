@@ -12,6 +12,10 @@ Segundo Cuatrimestre 2020 - UTN FRBA - El Mejor Grupo :)
 4. docker run -p 8080:8080 nombreContainer -> Ejecuta el contenedor
 5. Desde otra terminal, entrar al directorio front-game y ejecutar -> ng serve --open
 
+# Swagger UI - Ver especificación de la API Rest:
+* Se puede verificar ingresando por navegador al endpoint /swagger-ui.html
+  Por ejemplo, si se levantó local -> http://localhost:8080/swagger-ui.html
+
 -----
 # Decisiones de Diseño:
 1. Spring-Boot
