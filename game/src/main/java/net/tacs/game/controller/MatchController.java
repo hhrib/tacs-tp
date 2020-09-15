@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 
 
 @RestController
+@CrossOrigin(origins = "http://localhost:4200")
 public class MatchController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MatchController.class);
