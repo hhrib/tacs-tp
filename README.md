@@ -13,7 +13,7 @@ Segundo Cuatrimestre 2020 - UTN FRBA - El Mejor Grupo :)
 5. Desde otra terminal, entrar al directorio front-game y ejecutar -> ng serve --open
 
 # Swagger UI - Ver especificación de la API Rest:
-* Se puede verificar ingresando por navegador al endpoint /swagger-ui.html
+* Se puede verificar ingresando por navegador al endpoint /swagger-ui.html <br />
   Por ejemplo, si se levantó local -> http://localhost:8080/swagger-ui.html
 
 -----
