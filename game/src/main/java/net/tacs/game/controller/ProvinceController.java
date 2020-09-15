@@ -2,6 +2,8 @@ package net.tacs.game.controller;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,22 +17,22 @@ import net.tacs.game.services.ProvinceService;
 @RestController
 public class ProvinceController {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(Province.class);
+
 	@Autowired
 	private ProvinceService provinceService;
 
 	@GetMapping("/provinces")
-	public List<Province> findAll() {
-		return provinceService.findAll();
+	public List<Province> getAllProvinces() {
+		List<Province> provinces = provinceService.findAll();
+		LOGGER.info("provinces qty: {}", provinces.size());
+		return provinces;
 	}
 
 	@GetMapping("/provinces/{PROVINCE_ID}/municipalities")
-	public Municipality[] getMuni(@PathVariable("PROVINCE_ID") int provinceId,
+	public Municipality[] getMunicipios(@PathVariable("PROVINCE_ID") int provinceId,
 			@RequestParam(value = "qty", required = false) Integer qty) {
 		return provinceService.findMunicipios(provinceId, qty);
 	}
 
-	@GetMapping("/elevation/{LAT}/{LON}")
-	public Double getElevation(@PathVariable("LAT") String lat, @PathVariable("LON") String lon) {
-		return provinceService.getElevation(lat, lon);
-	}
 }

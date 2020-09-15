@@ -1,12 +1,16 @@
 package net.tacs.game.model;
 
+import java.util.Objects;
+
 import net.tacs.game.model.enums.MunicipalityState;
 
+//@Entity
+//@Table(name = "municipality")
 public class Municipality {
 
     private Integer id;
 
-    private String name;
+    private String nombre;
 
     private Province province;
 
@@ -24,8 +28,8 @@ public class Municipality {
 		super();
 	}
 
-	public Municipality(String name) {
-	    this.name = name;
+	public Municipality(String nombre) {
+	    this.nombre = nombre;
     }
 
 	public Integer getId() {
@@ -36,12 +40,12 @@ public class Municipality {
 		this.id = id;
 	}
 
-	public String getName() {
-		return name;
+	public String getNombre() {
+		return nombre;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
 	}
 
     public Province getProvince() {
@@ -84,12 +88,37 @@ public class Municipality {
 		this.owner = owner;
 	}
 
-	public Integer getGauchosQty() {
-		return gauchosQty;
-	}
+    public Integer getGauchosQty() {
+        return gauchosQty;
+    }
 
-	public void setGauchosQty(Integer gauchosQty) {
-		this.gauchosQty = gauchosQty;
-	}
+    public void setGauchosQty(Integer gauchosQty) {
+        this.gauchosQty = gauchosQty;
+    }
 
+    @Override
+    public String toString() {
+        return "Municipality{" +
+                "id=" + id +
+                ", nombre='" + nombre + '\'' +
+                ", province=" + province +
+                ", centroide=" + centroide +
+                ", elevation=" + elevation +
+                ", state=" + state +
+                ", owner=" + owner +
+                ", gauchosQty=" + gauchosQty +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Municipality municipality = (Municipality) o;
+        return Objects.equals(nombre, municipality.nombre);
+    }
+    @Override
+    public int hashCode() {
+        return Objects.hash(nombre);
+    }
 }

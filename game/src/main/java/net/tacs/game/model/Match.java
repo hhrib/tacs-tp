@@ -1,26 +1,30 @@
 package net.tacs.game.model;
 
-import net.tacs.game.model.enums.MatchStatus;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import net.tacs.game.model.enums.MatchState;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
 public class Match {
 
-    private Integer id;
+    private Long id;
+
+    // @OneToMany(cascade = {CascadeType.ALL})
     private List<User> users;
-    private MatchStatus status;
+    private MatchState state;
+   // @OneToOne
     private Province map;
     private User winner;
 
-    //TODO ¿Fecha en ISO8601? YYYYMMDDThhmmssZ
-    private String date;
+    private LocalDateTime date;
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -32,19 +36,20 @@ public class Match {
         this.users = users;
     }
 
-    public MatchStatus getStatus() {
-        return status;
+    public MatchState getState() {
+        return state;
     }
 
-    public void setStatus(MatchStatus status) {
-        this.status = status;
+    //User story 2.c
+    public void setState(MatchState state) {
+        this.state = state;
     }
 
-    public String getDate() {
+    public LocalDateTime getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(LocalDateTime date) {
         this.date = date;
     }
 
@@ -56,12 +61,42 @@ public class Match {
         this.map = map;
     }
 
+    public Match(){
+    }
+    //User story 2.a
+//    TODO? agregar configuraciones al crear partida
+//    @Autowired
+//    public Match(String provinceName, Integer municipalitiesQty, long[] player_ids, UserService userService)
+//    {
+//        this.userService = userService;
+//        this.users = new ArrayList<User>();
+//        map = new Province(provinceName, municipalitiesQty);
+//
+//        search_users(player_ids);
+//
+//        state = MatchState.CREATED;
+//    }
+
+//    /**
+//     * @method search_users
+//     * @param player_ids
+//     * Busca en la aplicacion los usuarios que corresponden a la partida y los agrega a la lista
+//     */
+//    private void search_users(long[] player_ids)
+//    {
+//        for (long player_id : player_ids) {
+//            User user = userService.findById(player_id).orElseThrow(() -> new UserNotFoundException(player_id));
+//            users.add(user);
+//        }
+//    }
+
+
     @Override
     public String toString() {
         return "Match{" +
                 "id=" + id +
                 ", users=" + users +
-                ", status=" + status +
+                ", state=" + state +
                 ", map=" + map +
                 ", winner=" + winner +
                 ", date='" + date + '\'' +
@@ -75,7 +110,7 @@ public class Match {
         Match match = (Match) o;
         return Objects.equals(id, match.id) &&
                 Objects.equals(users, match.users) &&
-                status == match.status &&
+                state == match.state &&
                 Objects.equals(map, match.map) &&
                 Objects.equals(winner, match.winner) &&
                 Objects.equals(date, match.date);
@@ -83,6 +118,6 @@ public class Match {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, users, status, map, winner, date);
+        return Objects.hash(id, users, state, map, winner, date);
     }
 }

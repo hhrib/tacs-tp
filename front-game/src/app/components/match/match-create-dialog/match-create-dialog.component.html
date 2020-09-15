@@ -1,0 +1,32 @@
+<div class="container" style="text-align: center;">
+    <form #matchCreation="ngForm" (ngSubmit)="onSubmit(matchCreation)">
+    <h1 mat-dialog-title style="text-align: center;">Settings</h1>
+    <div mat-dialog-content>
+        <mat-form-field>
+            <mat-label>Province</mat-label>
+                <mat-select name="province" ngModel>
+                    <mat-option *ngFor="let province of provinceList" [value]="province.id">{{province.name}}</mat-option>
+                </mat-select>
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>Number of municipalities</mat-label>
+                <mat-select name="quantity" ngModel >
+                    <mat-option *ngFor="let quantity of quantityList" [value]="quantity">{{quantity}}</mat-option>
+                </mat-select>
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>Players</mat-label>
+            <mat-select multiple name="players" ngModel>
+                <mat-option *ngFor="let player of playersList" [value]="player.id">{{player.name}}</mat-option> 
+            </mat-select>
+        </mat-form-field>
+
+        <div mat-dialog-actions style="display: block;">
+            <button mat-button (click)="onNoClick()">Cancel</button>
+            <button mat-button type="submit">Ok</button>
+        </div>
+    </div>
+</form>
+</div>
