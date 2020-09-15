@@ -10,6 +10,7 @@ Segundo Cuatrimestre 2020 - UTN FRBA - El Mejor Grupo :)
 2. mvn clean package-> Genera .jar en directorio /target
 3. docker build -t nombreContainer . -> Buildea contenedor
 4. docker run -p 8080:8080 nombreContainer -> Ejecuta el contenedor
+5. Desde otra terminal, entrar al directorio front-game y ejecutar -> ng serve --open
 
 -----
 # Decisiones de Diseño:
