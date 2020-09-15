@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import javax.websocket.server.PathParam;
@@ -98,6 +99,8 @@ public class MatchController {
     @ExceptionHandler(MatchException.class)
     public ResponseEntity<List<ApiError>> handleException(MatchException ex) {
         //Agregar lógica si fuese necesario
+        LOGGER.error("Error con ale", ex);
+        LOGGER.error("Errors: " + ex.getApiErrors().get(0));
         return new ResponseEntity<>(ex.getApiErrors(), ex.getHttpStatus());
     }
 
