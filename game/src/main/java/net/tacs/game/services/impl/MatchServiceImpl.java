@@ -137,7 +137,7 @@ public class MatchServiceImpl implements MatchService {
             if(!bUserFound)
             {
                 errors.add(new ApiError("USER_NOT_FOUND", "Users not found"));
-                return newMatch;
+                throw new MatchException(HttpStatus.BAD_REQUEST, errors);
             }
         }
 
@@ -156,7 +156,7 @@ public class MatchServiceImpl implements MatchService {
                     errors.add(new ApiError("EXCEEDED_MUNICIPALITIES_LIMIT",
                             "Amount of municipalities selected exceeds amount of province's amount of municipalities"));
 
-                    return newMatch;
+                    throw new MatchException(HttpStatus.BAD_REQUEST, errors);
                 }
 
                 Random random = new Random();
@@ -203,7 +203,7 @@ public class MatchServiceImpl implements MatchService {
         errors.add(new ApiError("PROVINCE_NOT_FOUND",
                 "Province Id does not exist"));
 
-        return newMatch;
+        throw new MatchException(HttpStatus.BAD_REQUEST, errors);
     }
 
     private List<LocalDateTime> validateDatesToSearch(String isoDateFrom, String isoDateTo) throws MatchException {
