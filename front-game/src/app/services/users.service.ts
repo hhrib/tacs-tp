@@ -13,8 +13,8 @@ export class UsersService {
 
   constructor(private http: HttpClient) { }
 
-  public getAllUsers(): Observable<UserDTO> {
-    return this.http.get<any>(`${MATCH_URL}/`);
+  public getAllUsers(): Observable<any> {
+    return this.http.get<any>(`${MATCH_URL}`);
   } 
 
 }

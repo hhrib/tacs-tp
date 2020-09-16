@@ -1,4 +1,4 @@
-export class PlayerDTO {
+export class UserDTO {
     public id : number
     public name : string
     

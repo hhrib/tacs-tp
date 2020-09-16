@@ -46,26 +46,7 @@ export class MenuComponent implements OnInit {
     });
   }
 
-  openDialogSearchMatches(){
+  openDialogSearchMatches(): void{
 
   }
-  /*
-    openCreateModal() {
-      const modalRef = this.modalService.open(DeviceModalComponent, { size: 'lg' });
-      const modal: DeviceModalComponent = modalRef.componentInstance;
-      modal.disabled = false;
-      modalRef.result
-          .then(device => {
-              if (device) {
-                  const createSubscription = this.deviceService.createDevice(device).subscribe(
-                      response => {
-                          createSubscription.unsubscribe();
-                          this.deviceService.getDevices();
-                      }
-                  );
-              }
-          })
-          .catch(_=>{});
-  }
-  */
 }

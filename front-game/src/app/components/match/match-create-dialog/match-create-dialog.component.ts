@@ -4,7 +4,7 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatSelectModule} from '@angular/material/select';
 import {Form, FormControl, NgForm} from '@angular/forms';
 import {MatchDTO} from '../../../models/match.dto';
-import {PlayerDTO} from '../../../models/player.dto';
+import {UserDTO} from '../../../models/user.dto';
 import {ProvinceDTO} from '../../../models/province.dto';
 
 @Component({
@@ -16,11 +16,11 @@ export class MatchCreateDialogComponent implements OnInit {
   //#region Creaciones que DEBEN SER RETIRADAS
   //TODO: Una vez integrado con api backend, retirar, porque viene de allá.
 
-  player1 : PlayerDTO = new PlayerDTO(1,"Juan")
-  player2 : PlayerDTO = new PlayerDTO(2,"Ale")
-  player3 : PlayerDTO = new PlayerDTO(3,"Fer")
-  player4 : PlayerDTO = new PlayerDTO(4,"Emi")
-  player5 : PlayerDTO = new PlayerDTO(5,"Hernán")
+  player1 : UserDTO = new UserDTO(1,"Juan")
+  player2 : UserDTO = new UserDTO(2,"Ale")
+  player3 : UserDTO = new UserDTO(3,"Fer")
+  player4 : UserDTO = new UserDTO(4,"Emi")
+  player5 : UserDTO = new UserDTO(5,"Hernán")
 
   province1 : ProvinceDTO = new ProvinceDTO(6,"Buenos Aires")
   province2 : ProvinceDTO = new ProvinceDTO(10,"Catamarca")
@@ -48,7 +48,7 @@ export class MatchCreateDialogComponent implements OnInit {
   province24 : ProvinceDTO = new ProvinceDTO(2,"CABA")
 
   //La inicialización más cabeza del siglo:
-  playersList : PlayerDTO[] = [this.player1,this.player2,this.player3,this.player4,this.player5]
+  playersList : UserDTO[] = [this.player1,this.player2,this.player3,this.player4,this.player5]
   provinceList: ProvinceDTO[] = [this.province1,this.province2,this.province3,this.province4,this.province5,this.province6,this.province7,this.province8,this.province9,this.province10,this.province11,this.province12,this.province13,this.province14,this.province15,this.province16,this.province17,this.province18,this.province19,this.province20,this.province21,this.province22,this.province23,this.province24]
   quantityList: number[] = [5,10,15,20]
   //#endregion

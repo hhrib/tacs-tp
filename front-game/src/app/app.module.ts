@@ -19,6 +19,7 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatSelectModule} from '@angular/material/select';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { MatchDTO } from './models/match.dto';
+import { MatchSearchComponent } from './components/match/match-search/match-search.component';
 
 @NgModule({
   declarations: [
@@ -26,6 +27,7 @@ import { MatchDTO } from './models/match.dto';
     MenuComponent,
     HomeComponent,
     MatchCreateDialogComponent,
+    MatchSearchComponent,
    
   ],
   imports: [
