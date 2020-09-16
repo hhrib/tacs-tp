@@ -195,9 +195,9 @@ public class MatchServiceImpl implements MatchService {
 
                 //asignar municipalidades a usuarios
                 assignMunicipalities(newMatch.getMap().getMunicipalities(), newMatch.getUsers());
-            }
 
-            return newMatch;
+                return newMatch;
+            }
         }
 
         errors.add(new ApiError("PROVINCE_NOT_FOUND",
