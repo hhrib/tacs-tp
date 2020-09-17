@@ -149,7 +149,7 @@ public class MatchServiceImpl implements MatchService {
 
         //TODO Buscar en base de datos
         for (Province aProvince: getProvinces()) {
-            if(aProvince.getId().equals(newMatchBean.getProvinceId()))
+            if(aProvince.getId() == (newMatchBean.getProvinceId()))
             {
                 //Copia de Provincia
                 newProvince.setNombre(aProvince.getNombre());
