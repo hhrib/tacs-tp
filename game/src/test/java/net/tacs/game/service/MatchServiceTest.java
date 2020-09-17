@@ -43,7 +43,7 @@ public class MatchServiceTest {
 
         CreateMatchBean bean = new CreateMatchBean();
         bean.setMunicipalitiesQty(6);
-        bean.setProvinceId(1L);
+        bean.setProvinceId(99999997L);
         bean.setUserIds(Arrays.asList(99999998L,99999999L));
 
         addProvince(buenosAires);
@@ -64,7 +64,7 @@ public class MatchServiceTest {
         municipalityList.add(lomas);
         municipalityList.add(matanza);
 
-        buenosAires.setId(1);
+        buenosAires.setId(99999997L);
         buenosAires.setMunicipalities(municipalityList);
 
         user1.setId(99999998L);
