@@ -27,6 +27,11 @@ public class GameApplication {
 		User user3 = new User("Emi");
 		User user4 = new User("Hernan");
 		User user5 = new User("Fer");
+		user1.setId(1L);
+		user2.setId(2L);
+		user3.setId(3L);
+		user4.setId(4L);
+		user5.setId(5L);
 		addUser(user1);
 		addUser(user2);
 		addUser(user3);
