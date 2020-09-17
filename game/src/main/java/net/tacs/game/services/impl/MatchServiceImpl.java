@@ -11,8 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import static net.tacs.game.GameApplication.getProvinces;
-import static net.tacs.game.GameApplication.getUsers;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -26,6 +24,8 @@ import net.tacs.game.model.Match;
 import net.tacs.game.model.Municipality;
 import net.tacs.game.model.Province;
 import net.tacs.game.model.User;
+
+import static net.tacs.game.GameApplication.*;
 
 @Service("matchService")
 //@Transactional
@@ -90,7 +90,9 @@ public class MatchServiceImpl implements MatchService {
         newMatch.setDate(LocalDateTime.now());
         newMatch.setState(MatchState.CREATED);
         LOGGER.info(newMatchBean.toString());
-        //TODO Salvar partida en el mapa que persiste en memoria para primeras entregas.
+
+        //TODO guardar en base de datos.
+        addMatch(newMatch);
         //Quizás no recibamos un Match entero, quizás recibamos el Bean de creación (dependiendo lo que elijamos)
         //en ese caso va a haber que hacer la lógica de buscar usuarios y provincia y luego crear el objeto match para
         //persistir
