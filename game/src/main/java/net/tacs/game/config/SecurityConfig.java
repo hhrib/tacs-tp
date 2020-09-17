@@ -10,11 +10,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
 import org.springframework.security.oauth2.jwt.*;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import antlr.collections.List;
 
 /**
  * Configures our application with Spring Security to restrict access to our API endpoints.
@@ -34,12 +29,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         This is where we configure the security required for our endpoints and setup our app to serve as
         an OAuth2 Resource Server, using JWT validation.
         */
-        http.cors().and().authorizeRequests()
-                .mvcMatchers("/").permitAll()
-                .mvcMatchers("/users").authenticated()
-                .mvcMatchers("/matches").authenticated()
-                .mvcMatchers("/municipalities").authenticated()
-                .mvcMatchers("/provinces").authenticated()
+        http.authorizeRequests()
+                .antMatchers("/").permitAll()
+                .antMatchers("/users/**").authenticated()
+                .antMatchers("/matches/**").authenticated()
+                .antMatchers("/municipalities/**").authenticated()
+                .antMatchers("/provinces/**").authenticated()
                 //.mvcMatchers("/api/private-scoped").hasAuthority("SCOPE_read:messages")
                 .and()
                 .oauth2ResourceServer().jwt();
@@ -62,17 +57,5 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         jwtDecoder.setJwtValidator(withAudience);
 
         return jwtDecoder;
-    }
-
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        final CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("*"));
-        configuration.setAllowedMethods(Arrays.asList("HEAD", "GET", "POST", "PUT", "DELETE", "PATCH"));
-        configuration.setAllowCredentials(true);
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
-        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
     }
 }
