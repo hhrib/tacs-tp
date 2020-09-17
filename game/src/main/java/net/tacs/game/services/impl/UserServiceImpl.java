@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+import static net.tacs.game.GameApplication.getUsers;
+
 @Service("userService")
 //@Transactional
 public class UserServiceImpl implements UserService {
@@ -18,10 +20,9 @@ public class UserServiceImpl implements UserService {
 //    @Autowired
 //    private UserRepository userRepository;
 
-    //TODO Ir a buscar al mapa que persiste en memoria para primeras entregas.
     @Override
     public List<User> findAll() {
-        return null;
+        return getUsers();
     }
 
     //TODO Ir a buscar al mapa que persiste en memoria para primeras entregas.

@@ -11,8 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import static net.tacs.game.GameApplication.getProvinces;
-import static net.tacs.game.GameApplication.getUsers;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -26,6 +24,8 @@ import net.tacs.game.model.Match;
 import net.tacs.game.model.Municipality;
 import net.tacs.game.model.Province;
 import net.tacs.game.model.User;
+
+import static net.tacs.game.GameApplication.*;
 
 @Service("matchService")
 //@Transactional
@@ -90,7 +90,9 @@ public class MatchServiceImpl implements MatchService {
         newMatch.setDate(LocalDateTime.now());
         newMatch.setState(MatchState.CREATED);
         LOGGER.info(newMatchBean.toString());
-        //TODO Salvar partida en el mapa que persiste en memoria para primeras entregas.
+
+        //TODO guardar en base de datos.
+        addMatch(newMatch);
         //Quizás no recibamos un Match entero, quizás recibamos el Bean de creación (dependiendo lo que elijamos)
         //en ese caso va a haber que hacer la lógica de buscar usuarios y provincia y luego crear el objeto match para
         //persistir
@@ -137,7 +139,7 @@ public class MatchServiceImpl implements MatchService {
             if(!bUserFound)
             {
                 errors.add(new ApiError("USER_NOT_FOUND", "Users not found"));
-                return newMatch;
+                throw new MatchException(HttpStatus.NOT_FOUND, errors);
             }
         }
 
@@ -156,7 +158,7 @@ public class MatchServiceImpl implements MatchService {
                     errors.add(new ApiError("EXCEEDED_MUNICIPALITIES_LIMIT",
                             "Amount of municipalities selected exceeds amount of province's amount of municipalities"));
 
-                    return newMatch;
+                    throw new MatchException(HttpStatus.BAD_REQUEST, errors);
                 }
 
                 Random random = new Random();
@@ -195,15 +197,15 @@ public class MatchServiceImpl implements MatchService {
 
                 //asignar municipalidades a usuarios
                 assignMunicipalities(newMatch.getMap().getMunicipalities(), newMatch.getUsers());
-            }
 
-            return newMatch;
+                return newMatch;
+            }
         }
 
         errors.add(new ApiError("PROVINCE_NOT_FOUND",
                 "Province Id does not exist"));
 
-        return newMatch;
+        throw new MatchException(HttpStatus.NOT_FOUND, errors);
     }
 
     private List<LocalDateTime> validateDatesToSearch(String isoDateFrom, String isoDateTo) throws MatchException {
