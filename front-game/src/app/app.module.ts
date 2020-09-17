@@ -20,6 +20,10 @@ import {MatSelectModule} from '@angular/material/select';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { MatchDTO } from './models/match.dto';
 import { MatchSearchComponent } from './components/match/match-search/match-search.component';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AuthHttpInterceptor } from '@auth0/auth0-angular';
+import { AuthModule } from '@auth0/auth0-angular';
+
 
 @NgModule({
   declarations: [
@@ -43,12 +47,35 @@ import { MatchSearchComponent } from './components/match/match-search/match-sear
     ReactiveFormsModule,
     FormsModule,
     HttpClientModule,
-    AppRoutes
+    AppRoutes,
+    HttpClientModule,
+    AuthModule.forRoot({
+      domain: 'L5stWjySWxTZxrtLJ221E37WE2lP2fl7',
+      clientId: 'tacticas.us.auth0.com',
+      redirectUri: window.location.origin,
+      httpInterceptor: {
+        allowedList: [
+          {
+            uri: 'https://tacticas.auth0.com/api/v2/users',
+            tokenOptions: {
+              audience: 'https://tacticas.com/api/v2/',
+              scope: 'read:users',
+            },
+          },
+          {
+            uri: 'https://your-domain.auth0.com/api/v2/users',
+            tokenOptions: {
+              audience: 'https://tacs.game/api',
+            },
+          },
+        ],
+      },
+    }),
   ],
   entryComponents: [
     MatchCreateDialogComponent
   ],
-  providers: [MatchDTO],
+  providers: [MatchDTO, { provide: HTTP_INTERCEPTORS, useClass: AuthHttpInterceptor, multi: true }], 
   bootstrap: [AppComponent]
 })
 export class AppModule { }
