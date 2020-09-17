@@ -1,10 +1,13 @@
 package net.tacs.game.model.bean;
 
-public class ProvinceBeanResponse {
+import java.util.Comparator;
+import java.util.Objects;
 
-    Long id;
+public class ProvinceBeanResponse implements Comparable<ProvinceBeanResponse> {
 
-    String name;
+    private Long id;
+
+    private String name;
 
     public ProvinceBeanResponse() {
 
@@ -24,5 +27,23 @@ public class ProvinceBeanResponse {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ProvinceBeanResponse that = (ProvinceBeanResponse) o;
+        return name.equals(that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
+    }
+
+    @Override
+    public int compareTo(ProvinceBeanResponse otherBean) {
+        return this.name.compareTo(otherBean.getName());
     }
 }
