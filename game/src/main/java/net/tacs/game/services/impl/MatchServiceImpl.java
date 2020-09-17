@@ -139,7 +139,7 @@ public class MatchServiceImpl implements MatchService {
             if(!bUserFound)
             {
                 errors.add(new ApiError("USER_NOT_FOUND", "Users not found"));
-                throw new MatchException(HttpStatus.BAD_REQUEST, errors);
+                throw new MatchException(HttpStatus.NOT_FOUND, errors);
             }
         }
 
@@ -205,7 +205,7 @@ public class MatchServiceImpl implements MatchService {
         errors.add(new ApiError("PROVINCE_NOT_FOUND",
                 "Province Id does not exist"));
 
-        throw new MatchException(HttpStatus.BAD_REQUEST, errors);
+        throw new MatchException(HttpStatus.NOT_FOUND, errors);
     }
 
     private List<LocalDateTime> validateDatesToSearch(String isoDateFrom, String isoDateTo) throws MatchException {
