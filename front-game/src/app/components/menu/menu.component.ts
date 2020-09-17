@@ -6,13 +6,15 @@ import { AuthService } from '../../services/auth.service';
 
 
 import { MatchCreateDialogComponent } from '../../components/match/match-create-dialog/match-create-dialog.component';
+import { MatchSearchComponent } from '../match/match-search/match-search.component'
+import { ProvincesService } from 'src/app/services/provinces.service';
 
 @Component({
   selector: 'app-menu',
   templateUrl: './menu.component.html',
   styleUrls: ['./menu.component.css'],
   providers:[
-    MatchService
+    MatchService,
   ]
 })
 export class MenuComponent implements OnInit {
@@ -47,6 +49,11 @@ export class MenuComponent implements OnInit {
   }
 
   openDialogSearchMatches(): void{
+
+    const dialogRef = this.dialog.open(MatchCreateDialogComponent, {
+      height: '400px',
+      width: '300px',
+    });
 
   }
 }
