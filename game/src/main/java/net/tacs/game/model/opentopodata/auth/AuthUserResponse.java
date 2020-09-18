@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AuthUser {
+public class AuthUserResponse {
 
     @JsonProperty("created_at")
     private String createdAt;

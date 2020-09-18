@@ -12,7 +12,7 @@ public class Identity {
     @JsonProperty("expires_in")
     private Double expiresIn;
 
-    @JsonProperty("user_is")
+    @JsonProperty("user_id")
     private String userId;
 
     private String connection;

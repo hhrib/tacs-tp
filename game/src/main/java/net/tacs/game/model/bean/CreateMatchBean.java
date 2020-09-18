@@ -7,7 +7,7 @@ public class CreateMatchBean {
 
     private Long provinceId;
     private Integer municipalitiesQty;
-    private List<Long> userIds;
+    private List<String> userIds;
 
     public Long getProvinceId() {
         return provinceId;
@@ -25,11 +25,11 @@ public class CreateMatchBean {
         this.municipalitiesQty = municipalitiesQty;
     }
 
-    public List<Long> getUserIds() {
+    public List<String> getUserIds() {
         return userIds;
     }
 
-    public void setUserIds(List<Long> userIds) {
+    public void setUserIds(List<String> userIds) {
         this.userIds = userIds;
     }
 

@@ -123,13 +123,13 @@ public class MatchServiceImpl implements MatchService {
         Match newMatch = new Match();
 
         List<User> usersInMatch = new ArrayList<>();
-        for(long aId : newMatchBean.getUserIds())
+        for(String aId : newMatchBean.getUserIds())
         {
             boolean bUserFound = false;
 
             for(User aUser : getUsers())
             {
-                if(aUser.getId() == aId)
+                if(aUser.getId().equals(aId))
                 {
                     bUserFound = true;
                     usersInMatch.add(aUser);

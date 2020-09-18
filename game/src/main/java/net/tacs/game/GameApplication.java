@@ -1,5 +1,6 @@
 package net.tacs.game;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import net.tacs.game.model.Match;
 import net.tacs.game.model.Municipality;
 import net.tacs.game.model.Province;
@@ -21,6 +22,11 @@ public class GameApplication {
 	@Bean
 	public RestTemplate restTemplate(RestTemplateBuilder restTemplateBuilder) {
 		return restTemplateBuilder.build();
+	}
+
+	@Bean
+	public ObjectMapper objectMapper() {
+		return new ObjectMapper();
 	}
 
 	private static List<Match> matches = new ArrayList<>();
@@ -51,6 +57,10 @@ public class GameApplication {
 		users.add(newUser);
 	}
 
+	public static void setUsers(List<User> newUsers) {
+		users = newUsers;
+	}
+
 	public static List<Match> getMatches()
 	{
 		return matches;
@@ -67,6 +77,7 @@ public class GameApplication {
 	public static List<User> getUsers() {
 		return users;
 	}
+
 
 	//Agregar los métodos para buscar/guardar en memoria que hagan falta (hasta que tengamos persistencia)
 }
