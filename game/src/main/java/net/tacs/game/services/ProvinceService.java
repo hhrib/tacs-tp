@@ -13,5 +13,5 @@ public interface ProvinceService {
 	 * @param qty
 	 * @return all provinces for a determined province
 	 */
-	public Municipality[] findMunicipios(int provinceId, Integer qty) ;
+	public List<Municipality> findMunicipios(int provinceId, Integer qty) ;
 }
