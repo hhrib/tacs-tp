@@ -22,7 +22,9 @@ import net.tacs.game.model.Province;
 import net.tacs.game.model.User;
 import net.tacs.game.model.bean.CreateMatchBean;
 import net.tacs.game.services.MatchService;
+import org.springframework.test.context.ActiveProfiles;
 
+@ActiveProfiles("test")
 @SpringBootTest
 public class MatchServiceTest {
 
@@ -45,7 +47,7 @@ public class MatchServiceTest {
         CreateMatchBean bean = new CreateMatchBean();
         bean.setMunicipalitiesQty(6);
         bean.setProvinceId(99999997L);
-        bean.setUserIds(Arrays.asList("99999998","99999999"));
+        bean.setUserIds(Arrays.asList("ABC1","ABC2"));
 
         addProvince(buenosAires);
         addMunicipality(lanus);

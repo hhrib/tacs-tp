@@ -11,12 +11,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 import java.util.List;
 
 import static net.tacs.game.GameApplication.addProvince;
 import static net.tacs.game.GameApplication.addUser;
 
+@Profile("!test")
 @Configuration
 public class InitConfig {
 
