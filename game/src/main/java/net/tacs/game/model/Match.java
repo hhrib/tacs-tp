@@ -20,6 +20,8 @@ public class Match {
 
     private LocalDateTime date;
 
+    public MatchConfiguration config;
+
     public Long getId() {
         return id;
     }
@@ -63,33 +65,6 @@ public class Match {
 
     public Match(){
     }
-    //User story 2.a
-//    TODO? agregar configuraciones al crear partida
-//    @Autowired
-//    public Match(String provinceName, Integer municipalitiesQty, long[] player_ids, UserService userService)
-//    {
-//        this.userService = userService;
-//        this.users = new ArrayList<User>();
-//        map = new Province(provinceName, municipalitiesQty);
-//
-//        search_users(player_ids);
-//
-//        state = MatchState.CREATED;
-//    }
-
-//    /**
-//     * @method search_users
-//     * @param player_ids
-//     * Busca en la aplicacion los usuarios que corresponden a la partida y los agrega a la lista
-//     */
-//    private void search_users(long[] player_ids)
-//    {
-//        for (long player_id : player_ids) {
-//            User user = userService.findById(player_id).orElseThrow(() -> new UserNotFoundException(player_id));
-//            users.add(user);
-//        }
-//    }
-
 
     @Override
     public String toString() {

@@ -12,8 +12,6 @@ public class Municipality {
 
     private String nombre;
 
-    private Province province;
-
     private Centroide centroide;
     
     private Double elevation;
@@ -47,14 +45,6 @@ public class Municipality {
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
 	}
-
-    public Province getProvince() {
-        return province;
-    }
-
-    public void setProvince(Province province) {
-        this.province = province;
-    }
 
     public Centroide getCentroide() {
         return centroide;
@@ -101,7 +91,6 @@ public class Municipality {
         return "Municipality{" +
                 "id=" + id +
                 ", nombre='" + nombre + '\'' +
-                ", province=" + province +
                 ", centroide=" + centroide +
                 ", elevation=" + elevation +
                 ", state=" + state +
@@ -120,5 +109,58 @@ public class Municipality {
     @Override
     public int hashCode() {
         return Objects.hash(nombre);
+    }
+
+    /**
+     * @method attack
+     * @param enemyMunicipality
+     * @param Config
+     * @return 1  --  attack successful
+     *         0  --  attack repelled
+     *        -1  --  attack incomplete?
+     */
+    public int attack(Municipality enemyMunicipality, MatchConfiguration Config, int GauchosAttacking) {
+	    double distanciaEntreMunicipios = centroide.getDistance(enemyMunicipality.getCentroide());
+
+        double multDist = 1 - (distanciaEntreMunicipios - Config.getMinDist()) / (2 *(Config.getMaxDist() - Config.getMinDist()));
+
+        double multAltura = (1 + (enemyMunicipality.getElevation() - Config.getMinHeight()) / (2 * (Config.getMaxHeight() - Config.getMinHeight())));
+
+        double multDefensa = 1;
+        if(enemyMunicipality.getState() == MunicipalityState.DEFENSE)
+        {
+            multDefensa = Config.getMultDefense();
+        }
+
+	    int GauchosAtacantesFinal = (int) Math.round(Math.floor(GauchosAttacking * multDist -
+                enemyMunicipality.getGauchosQty() * multAltura * multDefensa));
+
+	    int GauchosDefensaFinal = (int) Math.round(Math.ceil((enemyMunicipality.getGauchosQty() * multAltura * multDefensa -
+                GauchosAttacking * multDist) / (multAltura * multDefensa)));
+
+	    if(GauchosAtacantesFinal <= 0)
+        {
+            //TODO falló el ataque
+            enemyMunicipality.setGauchosQty(GauchosDefensaFinal);
+            setGauchosQty(getGauchosQty() - GauchosAttacking);
+            return 0;
+        }
+
+	    if(GauchosAtacantesFinal > 0 && GauchosDefensaFinal <= 0)
+        {
+            //TODO ataque victorioso
+            enemyMunicipality.setGauchosQty(GauchosAtacantesFinal);
+            enemyMunicipality.setOwner(getOwner());
+            setGauchosQty(getGauchosQty() - GauchosAttacking);
+            return 1;
+        }
+
+	    if(GauchosAtacantesFinal > 0 && GauchosDefensaFinal > 0)
+        {
+            //TODO preguntar que pasa
+            return -1;
+        }
+
+	    return -2; //No deberia llegar nunca aqui
     }
 }

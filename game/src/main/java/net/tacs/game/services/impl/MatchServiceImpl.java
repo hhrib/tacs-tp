@@ -7,8 +7,10 @@ import net.tacs.game.model.bean.CreateMatchBean;
 import net.tacs.game.model.enums.MatchState;
 import net.tacs.game.model.enums.MunicipalityState;
 import net.tacs.game.services.MatchService;
+import net.tacs.game.services.MunicipalityService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -38,6 +40,8 @@ public class MatchServiceImpl implements MatchService {
 //
 //    @Autowired
 //    private UserRepository userRepository;
+    @Autowired
+    private MunicipalityService municipalityService;
 
     @Override
     public List<Match> findAll() {
@@ -179,13 +183,12 @@ public class MatchServiceImpl implements MatchService {
                     muni.setNombre(tempMunicipalities.get(selectedMuniIndex).getNombre());
                     selectedIndexes.add(selectedMuniIndex);
 
-                    //TODO o buscar de la api o de la cache
-                    muni.setElevation(tempMunicipalities.get(selectedMuniIndex).getElevation());
+                    muni.setCentroide(tempMunicipalities.get(selectedMuniIndex).getCentroide());
+
+                    muni.setElevation(municipalityService.getElevation(muni.getCentroide()));
 
                     //TODO Gauchos son los mismos para todos?
                     muni.setGauchosQty(tempMunicipalities.get(selectedMuniIndex).getGauchosQty());
-
-                    //TODO muni.setProvince(province); <--- la municipalidad necesita saber la provincia a la que pertenece?
 
                     //TODO Por defecto se pone en defensa?
                     muni.setState(MunicipalityState.DEFENSE);

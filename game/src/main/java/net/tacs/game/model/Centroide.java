@@ -35,4 +35,15 @@ public class Centroide {
 		return getLat().concat(",").concat(getLon());
 	}
 
+	public double getDistance(Centroide otherCentroide)
+	{
+		double myLat = Double.parseDouble(lat);
+		double enemyLat = Double.parseDouble(otherCentroide.getLat());
+
+		double myLon = Double.parseDouble(lon);
+		double enemyLon = Double.parseDouble(otherCentroide.getLon());
+
+		return Math.sqrt(Math.pow((myLat - enemyLat), 2) + Math.pow((myLon - enemyLon), 2));
+	}
+
 }

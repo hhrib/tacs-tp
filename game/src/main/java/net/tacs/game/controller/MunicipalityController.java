@@ -29,12 +29,13 @@ public class MunicipalityController {
     @Autowired
 	private MunicipalityService municipalityService;
 
+    //TODO quizas solo se necesite de la parida en juego y no todas
     @GetMapping("/municipalities")
     public ResponseEntity<List<Municipality>> getAllMunicipalities() {
 
+        //TODO de prueba
         List<Municipality> municipalities = new ArrayList<>();
         Municipality municipalityDefense = new Municipality("Cordoba");
-        municipalityDefense.setProvince(new Province("Cordoba"));
 
         municipalityDefense.setOwner(new User("testUser"));
         municipalityDefense.setGauchosQty(5);
@@ -44,7 +45,6 @@ public class MunicipalityController {
         municipalities.add(municipalityDefense);
 
         Municipality municipalityProduction = new Municipality("Alta Gracia");
-        municipalityProduction.setProvince(new Province("Cordoba"));
         municipalityProduction.setOwner(new User("testUserRival"));
         municipalityProduction.setGauchosQty(5);
         municipalityProduction.setElevation(100D);

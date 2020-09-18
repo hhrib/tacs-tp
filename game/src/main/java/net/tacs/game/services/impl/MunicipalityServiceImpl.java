@@ -3,6 +3,8 @@ package net.tacs.game.services.impl;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.tacs.game.model.MatchConfiguration;
+import net.tacs.game.model.Municipality;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -31,5 +33,9 @@ public class MunicipalityServiceImpl implements MunicipalityService {
 		}
 
 		return elevation;
+	}
+
+	public int attackMunicipality(Municipality myMunicipality, Municipality enemyMunicipality, MatchConfiguration config, int gauchosAttacking) {
+		return myMunicipality.attack(enemyMunicipality, config, gauchosAttacking);
 	}
 }

@@ -1,7 +1,9 @@
 package net.tacs.game.model.bean;
 
+import net.tacs.game.model.Municipality;
 import net.tacs.game.model.Province;
 import net.tacs.game.model.User;
+import net.tacs.game.services.MunicipalityService;
 import net.tacs.game.services.ProvinceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
