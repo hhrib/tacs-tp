@@ -6,12 +6,20 @@ import net.tacs.game.model.Province;
 import net.tacs.game.model.User;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.context.annotation.Bean;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @SpringBootApplication
 public class GameApplication {
+
+	@Bean
+	public RestTemplate restTemplate(RestTemplateBuilder restTemplateBuilder) {
+		return restTemplateBuilder.build();
+	}
 
 	private static List<Match> matches = new ArrayList<>();
 	private static List<Province> provinces = new ArrayList<>();

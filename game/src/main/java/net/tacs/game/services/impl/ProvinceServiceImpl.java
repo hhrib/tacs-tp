@@ -19,7 +19,7 @@ public class ProvinceServiceImpl implements ProvinceService {
 	private static final String URL_ALL_PROVINCES = "https://apis.datos.gob.ar/georef/api/provincias";
 	private static final String URL_MUNICIPIOS = "https://apis.datos.gob.ar/georef/api/municipios?provincia=%s&campos=id,nombre,centroide.lat,centroide.lon";
 
-	private List<Province> provinces = new LinkedList<Province>();
+	private List<Province> provinces = new LinkedList<>();
 
 	/**
 	 * 
