@@ -43,8 +43,8 @@ public class MatchServiceTest {
 
         CreateMatchBean bean = new CreateMatchBean();
         bean.setMunicipalitiesQty(6);
-        bean.setProvinceId(1L);
-        bean.setUserIds(Arrays.asList(1L,2L));
+        bean.setProvinceId(99999997L);
+        bean.setUserIds(Arrays.asList(99999998L,99999999L));
 
         addProvince(buenosAires);
         addMunicipality(lanus);
@@ -64,11 +64,11 @@ public class MatchServiceTest {
         municipalityList.add(lomas);
         municipalityList.add(matanza);
 
-        buenosAires.setId(1);
+        buenosAires.setId(99999997L);
         buenosAires.setMunicipalities(municipalityList);
 
-        user1.setId(1L);
-        user2.setId(2L);
+        user1.setId(99999998L);
+        user2.setId(99999999L);
 
         lanus.setElevation(3D);
         avellaneda.setElevation(3D);
@@ -105,12 +105,12 @@ public class MatchServiceTest {
         {
             switch (aMuni.getOwner().getId().intValue())
             {
-                case 1:
+                case 99999998:
                 {
                     user1Munis++;
                     break;
                 }
-                case 2:
+                case 99999999:
                 {
                     user2Munis++;
                     break;

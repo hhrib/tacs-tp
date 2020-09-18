@@ -41,7 +41,7 @@ public class ProvinceServiceImpl implements ProvinceService {
 	 * @param qty
 	 * @return all provinces for a determined province
 	 */
-	public Municipality[] findMunicipios(int provinceId, Integer qty) {
+	public List<Municipality> findMunicipios(int provinceId, Integer qty) {
 		RestTemplate restTemplate = new RestTemplate();
 
 		String url = String.format(URL_MUNICIPIOS, provinceId, qty);
@@ -49,7 +49,7 @@ public class ProvinceServiceImpl implements ProvinceService {
 			url += "&max=" + qty;
 		ResponseEntity<GeoRefMunicipioAPIResponse> response = restTemplate.getForEntity(url,
 				GeoRefMunicipioAPIResponse.class);
-		return response.getBody().getMunicipios();
+		return Arrays.asList(response.getBody().getMunicipios());
 	}
 
 }

@@ -4,6 +4,8 @@ import net.tacs.game.model.Match;
 import net.tacs.game.model.Municipality;
 import net.tacs.game.model.Province;
 import net.tacs.game.model.User;
+import net.tacs.game.services.ProvinceService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -26,20 +28,11 @@ public class GameApplication {
 	private static List<Municipality> municipalities = new ArrayList<>();
 	private static List<User> users = new ArrayList<>();
 
+	@Autowired
+	private ProvinceService provinceService;
+
 	public static void main(String[] args) {
 		SpringApplication.run(GameApplication.class, args);
-
-		//TODO hacerlo en otro lado?
-		User user1 = new User("Juan");
-		User user2 = new User("Ale");
-		User user3 = new User("Emi");
-		User user4 = new User("Hernan");
-		User user5 = new User("Fer");
-		addUser(user1);
-		addUser(user2);
-		addUser(user3);
-		addUser(user4);
-		addUser(user5);
 	}
 
 	public static void addMatch(Match newMatch) {
