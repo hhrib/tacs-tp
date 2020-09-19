@@ -1,8 +1,7 @@
 package net.tacs.game.services;
 
-import net.tacs.game.model.Centroide;
-import net.tacs.game.model.MatchConfiguration;
-import net.tacs.game.model.Municipality;
+import net.tacs.game.model.*;
+import net.tacs.game.model.enums.MunicipalityState;
 import org.springframework.http.ResponseEntity;
 
 public interface MunicipalityService {
@@ -23,4 +22,8 @@ public interface MunicipalityService {
 	 * @description return the result of the attack between municipalities
 	 */
 	public int attackMunicipality(Municipality myMunicipality, Municipality enemyMunicipality, MatchConfiguration config, int gauchosAttacking);
+
+	public void changeState(Municipality myMunicipality, MunicipalityState newState);
+
+	public void produceGauchos(Match match, User user);
 }

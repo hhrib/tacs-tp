@@ -1,12 +1,16 @@
 package net.tacs.game.model;
 
 public class MatchConfiguration {
-    public double minDist;
-    public double maxDist;
-    public double minHeight;
-    public double maxHeight;
-    public double multDefense = 1.25D;
-    public int initialGauchos = 3000;
+    private double minDist;
+    private double maxDist;
+    private double minHeight;
+    private double maxHeight;
+    private double multDefense = 1.25D;
+    private double multGauchosProduction = 15;
+    private double multGauchosDefense = 10;
+    private double multHeight = 2;
+    private double multDistance = 2;
+    private int initialGauchos = 3000;
 
     public void setMinDist(double minDist) {
         this.minDist = minDist;
@@ -26,6 +30,22 @@ public class MatchConfiguration {
 
     public void setMultDefense(double multDefense) {
         this.multDefense = multDefense;
+    }
+
+    public void setMultGauchosProduction(double multGauchosProduction) {
+        this.multGauchosProduction = multGauchosProduction;
+    }
+
+    public void setMultGauchosDefense(double multGauchosDefense) {
+        this.multGauchosDefense = multGauchosDefense;
+    }
+
+    public void setMultHeight(double multHeight) {
+        this.multHeight = multHeight;
+    }
+
+    public void setMultDistance(double multDistance) {
+        this.multDistance = multDistance;
     }
 
     public void setInitialGauchos(int initialGauchos) {
@@ -50,6 +70,22 @@ public class MatchConfiguration {
 
     public double getMultDefense() {
         return multDefense;
+    }
+
+    public double getMultGauchosProduction() {
+        return multGauchosProduction;
+    }
+
+    public double getMultGauchosDefense() {
+        return multGauchosDefense;
+    }
+
+    public double getMultHeight() {
+        return multHeight;
+    }
+
+    public double getMultDistance() {
+        return multDistance;
     }
 
     public int getInitialGauchos() {

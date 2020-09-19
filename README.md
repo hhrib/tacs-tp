@@ -29,3 +29,4 @@ Segundo Cuatrimestre 2020 - UTN FRBA - El Mejor Grupo :)
 1. En el transcurso de la partida no puedan cambiar los datos obtenidos de las APIs con respecto a la altura de las municipalidades o el nombre de las provincias, por ejemplo.
 2. No hay equipos, cada jugador se enfrenta a los demas individualmente.
 3. Si un jugador abandona la partida, esta sigue en curso con el resto y los municipios que tenia se redistribuyen entre los demas jugadores.
+4. La configuracion de una partida no se puede modificar una vez que esta este en juego.

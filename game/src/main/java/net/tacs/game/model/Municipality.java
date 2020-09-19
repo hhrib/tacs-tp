@@ -112,6 +112,36 @@ public class Municipality {
     }
 
     /**
+     * @method produceGauchos
+     * @param Config
+     * @description se ejecuta una vez por turno del jugador, aumenta la cantidad de gauchos en el municipio
+     * en base al estado
+     */
+    public void produceGauchos(MatchConfiguration Config)
+    {
+        int newGauchos = 0;
+
+        if(state == MunicipalityState.PRODUCTION)
+        {
+            newGauchos = (int) Math.floor(Config.getMultGauchosProduction() *
+                                (1 - ((elevation - Config.getMinHeight()) /
+                                        (Config.getMultHeight() * (Config.getMaxHeight() - Config.getMinHeight())))));
+        }
+        else if(state == MunicipalityState.DEFENSE)
+        {
+            newGauchos = (int) Math.floor(Config.getMultGauchosDefense() *
+                                (1 - ((elevation - Config.getMinHeight()) /
+                                        (Config.getMultHeight() * (Config.getMaxHeight() - Config.getMinHeight())))));
+        }
+        else
+        {
+            //Estado erroneo
+        }
+
+        gauchosQty += newGauchos;
+    }
+
+    /**
      * @method attack
      * @param enemyMunicipality
      * @param Config
@@ -122,9 +152,11 @@ public class Municipality {
     public int attack(Municipality enemyMunicipality, MatchConfiguration Config, int GauchosAttacking) {
 	    double distanciaEntreMunicipios = centroide.getDistance(enemyMunicipality.getCentroide());
 
-        double multDist = 1 - (distanciaEntreMunicipios - Config.getMinDist()) / (2 *(Config.getMaxDist() - Config.getMinDist()));
+        double multDist = 1 - (distanciaEntreMunicipios - Config.getMinDist()) /
+                                (Config.getMultDistance() * (Config.getMaxDist() - Config.getMinDist()));
 
-        double multAltura = (1 + (enemyMunicipality.getElevation() - Config.getMinHeight()) / (2 * (Config.getMaxHeight() - Config.getMinHeight())));
+        double multAltura = (1 + (enemyMunicipality.getElevation() - Config.getMinHeight()) /
+                                (Config.getMultHeight() * (Config.getMaxHeight() - Config.getMinHeight())));
 
         double multDefensa = 1;
         if(enemyMunicipality.getState() == MunicipalityState.DEFENSE)
@@ -140,7 +172,7 @@ public class Municipality {
 
 	    if(GauchosAtacantesFinal <= 0)
         {
-            //TODO falló el ataque
+            //falló el ataque
             enemyMunicipality.setGauchosQty(GauchosDefensaFinal);
             setGauchosQty(getGauchosQty() - GauchosAttacking);
             return 0;
@@ -148,7 +180,7 @@ public class Municipality {
 
 	    if(GauchosAtacantesFinal > 0 && GauchosDefensaFinal <= 0)
         {
-            //TODO ataque victorioso
+            //ataque victorioso
             enemyMunicipality.setGauchosQty(GauchosAtacantesFinal);
             enemyMunicipality.setOwner(getOwner());
             setGauchosQty(getGauchosQty() - GauchosAttacking);

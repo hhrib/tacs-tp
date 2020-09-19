@@ -75,4 +75,42 @@ class MunicipalityServiceTest {
 
         assertEquals(0, municipalityService.attackMunicipality(Lanus, Avellaneda, Config, 100));
     }
+
+    @Test
+    void gauchosProducedOnProductionMunicipality()
+    {
+        Municipality Lanus = new Municipality("Lanus");
+        MatchConfiguration Config = new MatchConfiguration();
+        Config.setMaxHeight(2000D);
+        Config.setMinHeight(1000D);
+        Config.setMaxDist(20D);
+        Config.setMinDist(10D);
+
+        Lanus.setElevation(1500D);
+
+        Lanus.setGauchosQty(0);
+        Lanus.setState(MunicipalityState.PRODUCTION);
+        Lanus.produceGauchos(Config);
+
+        assertEquals(11, Lanus.getGauchosQty());
+    }
+
+    @Test
+    void gauchosProducedOnDefenseMunicipality()
+    {
+        Municipality Lanus = new Municipality("Lanus");
+        MatchConfiguration Config = new MatchConfiguration();
+        Config.setMaxHeight(2000D);
+        Config.setMinHeight(1000D);
+        Config.setMaxDist(20D);
+        Config.setMinDist(10D);
+
+        Lanus.setElevation(1500D);
+
+        Lanus.setGauchosQty(0);
+        Lanus.setState(MunicipalityState.DEFENSE);
+        Lanus.produceGauchos(Config);
+
+        assertEquals(7, Lanus.getGauchosQty());
+    }
 }

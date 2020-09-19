@@ -19,8 +19,7 @@ public class Match {
     private User winner;
 
     private LocalDateTime date;
-
-    public MatchConfiguration config;
+    private MatchConfiguration config;
 
     public Long getId() {
         return id;
@@ -61,6 +60,10 @@ public class Match {
 
     public void setMap(Province map) {
         this.map = map;
+    }
+
+    public MatchConfiguration getConfig() {
+        return config;
     }
 
     public Match(){

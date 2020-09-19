@@ -3,13 +3,12 @@ package net.tacs.game.services.impl;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.tacs.game.model.MatchConfiguration;
-import net.tacs.game.model.Municipality;
+import net.tacs.game.model.*;
+import net.tacs.game.model.enums.MunicipalityState;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import net.tacs.game.model.Centroide;
 import net.tacs.game.model.opentopodata.ElevationResponse;
 import net.tacs.game.services.MunicipalityService;
 
@@ -38,4 +37,19 @@ public class MunicipalityServiceImpl implements MunicipalityService {
 	public int attackMunicipality(Municipality myMunicipality, Municipality enemyMunicipality, MatchConfiguration config, int gauchosAttacking) {
 		return myMunicipality.attack(enemyMunicipality, config, gauchosAttacking);
 	}
+
+	public void changeState(Municipality myMunicipality, MunicipalityState newState) {
+		myMunicipality.setState(newState);
+	}
+
+	public void produceGauchos(Match match, User user) {
+		for (Municipality municipality : match.getMap().getMunicipalities()) {
+			if(municipality.getOwner().equals(user))
+			{
+				municipality.produceGauchos(match.getConfig());
+			}
+		}
+	}
+
+
 }
