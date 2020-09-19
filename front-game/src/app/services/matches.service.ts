@@ -43,21 +43,4 @@ export class MatchService {
     public deleteMatch(matchId: any): any {
         return this.http.delete<any>(`${MATCH_URL}/${matchId}`);
     }
-
-    findMatches(matchId:number, 
-                filter = '',
-                sortOrder = 'asc',
-                pageNumber = 0, pageSize = 3) :  Observable<MatchDTO[]> {
-
-        return this.http.get('/api/lessons', {
-            params: new HttpParams()
-                .set('matchId', matchId.toString())
-                .set('filter', filter)
-                .set('sortOrder', sortOrder)
-                .set('pageNumber', pageNumber.toString())
-                .set('pageSize', pageSize.toString())
-        }).pipe(
-            map(res =>  res["payload"])
-        );
-    }
 }

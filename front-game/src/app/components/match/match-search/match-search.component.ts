@@ -32,6 +32,7 @@ public creationDate: Date
 })
 export class MatchSearchComponent implements AfterViewInit {
   displayedColumns: string[] = ['idMatch', 'province', 'state', 'players', 'date'];
+  
   dataSource = new MatTableDataSource(ELEMENT_DATA);
   @ViewChild(MatSort) sort : MatSort;
   @ViewChild(MatPaginator) paginator : MatPaginator;
