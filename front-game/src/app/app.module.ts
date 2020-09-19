@@ -27,6 +27,8 @@ import {MatPaginatorModule} from '@angular/material/paginator'
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner'
 import {MatProgressBarModule} from '@angular/material/progress-bar';
 import {MatSortModule} from '@angular/material/sort'
+import { FindMatchDTO } from './models/findMatch.dto';
+import { MatchService } from './services/matches.service';
 
 
 
@@ -62,9 +64,10 @@ import {MatSortModule} from '@angular/material/sort'
     AppRoutes
   ],
   entryComponents: [
-    MatchCreateDialogComponent
+    MatchCreateDialogComponent,
+    MatchSearchComponent
   ],
-  providers: [MatchDTO],
+  providers: [MatchDTO, FindMatchDTO, MatchService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

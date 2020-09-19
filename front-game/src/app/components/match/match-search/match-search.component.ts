@@ -5,6 +5,7 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner'
 import {MatProgressBarModule} from '@angular/material/progress-bar';
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
+import { MatchService } from 'src/app/services/matches.service';
 
 const ELEMENT_DATA: FindMatchDTO[] = [
   {idMatch: 1, province:"Buenos Aires", state: "In progress", usersPlaying: ['Juan','Fer','Emi'], creationDate: "2020/09/17"},
@@ -31,20 +32,19 @@ public creationDate: Date
   styleUrls: ['./match-search.component.css']
 })
 export class MatchSearchComponent implements AfterViewInit {
-  displayedColumns: string[] = ['idMatch', 'province', 'state', 'players', 'date'];
-  
-  dataSource = new MatTableDataSource(ELEMENT_DATA);
+  displayedColumns: string[] = ['id', 'map', 'state', 'users', 'date'];
+  dataSource = new MatTableDataSource();
   @ViewChild(MatSort) sort : MatSort;
   @ViewChild(MatPaginator) paginator : MatPaginator;
   searchKey : string;
 
-/*   constructor() {
-    setTimeout(() => {
-      this.dataSource = ELEMENT_DATA;
-    }, 2000);
-   }
- */
+  constructor(public matchService : MatchService) {}
+
   ngAfterViewInit() {
+    this.matchService.getMatches().subscribe(
+      result => this.dataSource = result,
+      err => console.log(err));
+
     this.dataSource.sort = this.sort;
     this.dataSource.paginator = this.paginator;
   }
