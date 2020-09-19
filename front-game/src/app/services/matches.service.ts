@@ -1,7 +1,8 @@
 import { JsonPipe } from '@angular/common';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { MatchDTO } from '../models/match.dto';
 
@@ -30,7 +31,6 @@ export class MatchService {
     public createMatch(match: MatchDTO): Observable<any> {
         //return this.http.post<MatchResponse>(`${MATCH_URL}/`, match);
         let matchJSON = JSON.stringify(match);
-        console.log("PEGANDOLE A LA API REST... ");
         console.log(matchJSON);
         return this.http.post<any>(`${MATCH_URL}/`, matchJSON, httpOptions);
     }
@@ -42,5 +42,22 @@ export class MatchService {
 
     public deleteMatch(matchId: any): any {
         return this.http.delete<any>(`${MATCH_URL}/${matchId}`);
+    }
+
+    findMatches(matchId:number, 
+                filter = '',
+                sortOrder = 'asc',
+                pageNumber = 0, pageSize = 3) :  Observable<MatchDTO[]> {
+
+        return this.http.get('/api/lessons', {
+            params: new HttpParams()
+                .set('matchId', matchId.toString())
+                .set('filter', filter)
+                .set('sortOrder', sortOrder)
+                .set('pageNumber', pageNumber.toString())
+                .set('pageSize', pageSize.toString())
+        }).pipe(
+            map(res =>  res["payload"])
+        );
     }
 }

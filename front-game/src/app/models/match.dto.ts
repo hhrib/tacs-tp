@@ -5,4 +5,5 @@ export class MatchDTO {
     public municipalitiesQty: number;
     public provinceId: number;
     public userIds: Array<number>; //Cuando tengamos mongo, esto debería ser un array con id de usuarios, para referir a una colección aparte de usuarios.
+    public creationDate: Date;
 }
