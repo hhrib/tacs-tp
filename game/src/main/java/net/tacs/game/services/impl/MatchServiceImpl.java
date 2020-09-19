@@ -3,12 +3,16 @@ package net.tacs.game.services.impl;
 import net.tacs.game.GameApplication;
 import net.tacs.game.controller.MatchController;
 import net.tacs.game.exceptions.MatchException;
+import net.tacs.game.mapper.AuthUserToUserMapper;
 import net.tacs.game.model.bean.CreateMatchBean;
 import net.tacs.game.model.enums.MatchState;
 import net.tacs.game.model.enums.MunicipalityState;
+import net.tacs.game.model.opentopodata.auth.AuthUserResponse;
 import net.tacs.game.services.MatchService;
+import net.tacs.game.services.SecurityProviderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -38,6 +42,9 @@ public class MatchServiceImpl implements MatchService {
 //
 //    @Autowired
 //    private UserRepository userRepository;
+
+    @Autowired
+    private SecurityProviderService securityProviderService;
 
     @Override
     public List<Match> findAll() {
@@ -123,13 +130,14 @@ public class MatchServiceImpl implements MatchService {
         Match newMatch = new Match();
 
         List<User> usersInMatch = new ArrayList<>();
-        for(long aId : newMatchBean.getUserIds())
+
+        for(String aId : newMatchBean.getUserIds())
         {
             boolean bUserFound = false;
 
             for(User aUser : getUsers())
             {
-                if(aUser.getId() == aId)
+                if(aUser.getId().equals(aId))
                 {
                     bUserFound = true;
                     usersInMatch.add(aUser);
@@ -138,8 +146,24 @@ public class MatchServiceImpl implements MatchService {
 
             if(!bUserFound)
             {
-                errors.add(new ApiError("USER_NOT_FOUND", "Users not found"));
-                throw new MatchException(HttpStatus.NOT_FOUND, errors);
+                //Si no estaba en la bd lo buscamos en la api de Auth0
+                AuthUserResponse response = null;
+                try {
+                    response = securityProviderService.getUserById(GameApplication.getToken(), aId);
+                } catch (Exception e) {
+                    errors.add(new ApiError("ERROR_GETTING_UPDATED_USER", "Error when getting user from updated source"));
+                    throw new MatchException(HttpStatus.INTERNAL_SERVER_ERROR, errors);
+                }
+                if (response == null) {
+                    //No estaba tampoco en la api. Not Found.
+                    errors.add(new ApiError("USER_NOT_FOUND", "Users not found"));
+                    throw new MatchException(HttpStatus.NOT_FOUND, errors);
+                }
+                //Estaba en la api, actualizamos BD y seguimos flujo normal
+                User newUser = AuthUserToUserMapper.mapUser(response);
+                GameApplication.addUser(newUser);
+                bUserFound = true;
+                usersInMatch.add(newUser);
             }
         }
 
@@ -149,7 +173,7 @@ public class MatchServiceImpl implements MatchService {
 
         //TODO Buscar en base de datos
         for (Province aProvince: getProvinces()) {
-            if(aProvince.getId().equals(newMatchBean.getProvinceId()))
+            if(aProvince.getId() == (newMatchBean.getProvinceId()))
             {
                 //Copia de Provincia
                 newProvince.setNombre(aProvince.getNombre());

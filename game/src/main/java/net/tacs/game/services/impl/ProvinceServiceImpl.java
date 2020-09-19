@@ -19,7 +19,7 @@ public class ProvinceServiceImpl implements ProvinceService {
 	private static final String URL_ALL_PROVINCES = "https://apis.datos.gob.ar/georef/api/provincias";
 	private static final String URL_MUNICIPIOS = "https://apis.datos.gob.ar/georef/api/municipios?provincia=%s&campos=id,nombre,centroide.lat,centroide.lon";
 
-	private List<Province> provinces = new LinkedList<Province>();
+	private List<Province> provinces = new LinkedList<>();
 
 	/**
 	 * 
@@ -41,7 +41,7 @@ public class ProvinceServiceImpl implements ProvinceService {
 	 * @param qty
 	 * @return all provinces for a determined province
 	 */
-	public Municipality[] findMunicipios(int provinceId, Integer qty) {
+	public List<Municipality> findMunicipios(int provinceId, Integer qty) {
 		RestTemplate restTemplate = new RestTemplate();
 
 		String url = String.format(URL_MUNICIPIOS, provinceId, qty);
@@ -49,7 +49,7 @@ public class ProvinceServiceImpl implements ProvinceService {
 			url += "&max=" + qty;
 		ResponseEntity<GeoRefMunicipioAPIResponse> response = restTemplate.getForEntity(url,
 				GeoRefMunicipioAPIResponse.class);
-		return response.getBody().getMunicipios();
+		return Arrays.asList(response.getBody().getMunicipios());
 	}
 
 }

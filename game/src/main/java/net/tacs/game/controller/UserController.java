@@ -1,9 +1,13 @@
 package net.tacs.game.controller;
 
+import net.tacs.game.exceptions.MatchException;
 import net.tacs.game.mapper.ProvinceToBeanMapper;
 import net.tacs.game.mapper.UserToBeanMapper;
+import net.tacs.game.model.Match;
 import net.tacs.game.model.Province;
 import net.tacs.game.model.User;
+import net.tacs.game.model.bean.Auth0NewUserBean;
+import net.tacs.game.model.bean.CreateMatchBean;
 import net.tacs.game.model.bean.ProvinceBeanResponse;
 import net.tacs.game.model.bean.UserBeanResponse;
 import net.tacs.game.services.UserService;
@@ -33,7 +37,7 @@ public class UserController {
 
     //TODO Mock devolviendo lista con un usuario. Versión preliminar.
     @GetMapping("/users")
-    public ResponseEntity<List<UserBeanResponse>> getAllUsers() {
+    public ResponseEntity<List<UserBeanResponse>> getAllUsers() throws Exception {
         List<User> users = userService.findAll();
         LOGGER.info("users qty: {}", users.size());
         return new ResponseEntity<>(UserToBeanMapper.mapUsers(users), HttpStatus.OK);
@@ -46,9 +50,15 @@ public class UserController {
     }
 
     @GetMapping("/users/{userName}")
-    public ResponseEntity<User> getUserById(@PathVariable("userName") String userName) {
+    public ResponseEntity<User> getUserByUsername(@PathVariable("userName") String userName) {
         User user =  this.userService.getUserByUserName(userName);
         return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+
+    @PostMapping("/users/auth0")
+    public ResponseEntity<User> addUserByHook(@RequestBody Auth0NewUserBean userBean) throws MatchException {
+        LOGGER.info("Nuevo usuario desde Auth0: " + userBean);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
 

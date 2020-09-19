@@ -15,6 +15,8 @@ import net.tacs.game.model.Municipality;
 import net.tacs.game.model.Province;
 import net.tacs.game.services.ProvinceService;
 
+import static net.tacs.game.GameApplication.getProvinces;
+
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
 public class ProvinceController {
@@ -26,13 +28,15 @@ public class ProvinceController {
 
 	@GetMapping("/provinces")
 	public ResponseEntity<List<ProvinceBeanResponse>> getAllProvinces() {
-		List<Province> provinces = provinceService.findAll();
+
+		//List<Province> provinces = provinceService.findAll(); <-- se carga al iniciar la aplicacion
+		List<Province> provinces = getProvinces();
 		LOGGER.info("provinces qty: {}", provinces.size());
 		return new ResponseEntity<>(ProvinceToBeanMapper.mapProvinces(provinces), HttpStatus.OK);
 	}
 
 	@GetMapping("/provinces/{PROVINCE_ID}/municipalities")
-	public ResponseEntity<Municipality[]> getMunicipios(@PathVariable("PROVINCE_ID") int provinceId,
+	public ResponseEntity<List<Municipality>> getMunicipios(@PathVariable("PROVINCE_ID") int provinceId,
 			@RequestParam(value = "qty", required = false) Integer qty) {
 		return new ResponseEntity<>(provinceService.findMunicipios(provinceId, qty), HttpStatus.OK);
 	}

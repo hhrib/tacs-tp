@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface UserService {
 
-    public List<User> findAll();
+    public List<User> findAll() throws Exception;
 
     public User getUserById(Long id);
 
