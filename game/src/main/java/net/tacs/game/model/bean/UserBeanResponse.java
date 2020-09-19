@@ -2,7 +2,7 @@ package net.tacs.game.model.bean;
 
 public class UserBeanResponse {
 
-    Long id;
+    String id;
 
     String name;
 
@@ -10,11 +10,11 @@ public class UserBeanResponse {
 
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
