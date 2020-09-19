@@ -10,4 +10,6 @@ public interface SecurityProviderService {
 
     public List<AuthUserResponse> getUsers(String authToken) throws Exception;
 
+    public AuthUserResponse getUserById(String authToken, String id) throws Exception;
+
 }

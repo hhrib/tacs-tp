@@ -70,11 +70,7 @@ public class SecurityProviderServiceImpl implements SecurityProviderService {
 
     @Override
     public List<AuthUserResponse> getUsers(String authToken) throws Exception {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBearerAuth(authToken);
-
-        HttpEntity request = new HttpEntity(headers);
+        HttpEntity request = generateRequestEntity(authToken);
 
         ResponseEntity<String> response = restTemplate.exchange(
                 audience.concat(endpointUsers),
@@ -91,6 +87,30 @@ public class SecurityProviderServiceImpl implements SecurityProviderService {
         return objectMapper.readValue(response.getBody(), type);
     }
 
+    @Override
+    public AuthUserResponse getUserById(String authToken, String id) throws Exception {
+        HttpEntity request = generateRequestEntity(authToken);
+
+        ResponseEntity<String> response = restTemplate.exchange(
+                new StringBuilder(audience).append(endpointUsers).append("/").append(id).toString(),
+                HttpMethod.GET,
+                request,
+                String.class);
+
+        if (!response.getStatusCode().equals(HttpStatus.OK)) {
+            handleErrorResponse(response);
+        }
+
+        return objectMapper.readValue(response.getBody(), AuthUserResponse.class);
+    }
+
+    private HttpEntity generateRequestEntity(String authToken) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(authToken);
+
+        return new HttpEntity(headers);
+    }
 
     //TODO Completar método handler errores
     private void handleErrorResponse(ResponseEntity<String> response) throws Exception {

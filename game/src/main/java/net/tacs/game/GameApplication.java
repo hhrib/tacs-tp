@@ -33,6 +33,7 @@ public class GameApplication {
 	private static List<Province> provinces = new ArrayList<>();
 	private static List<Municipality> municipalities = new ArrayList<>();
 	private static List<User> users = new ArrayList<>();
+	private static String auth0Token;
 
 	@Autowired
 	private ProvinceService provinceService;
@@ -61,6 +62,10 @@ public class GameApplication {
 		users = newUsers;
 	}
 
+	public static void setToken(String token) {
+		auth0Token = token;
+	}
+
 	public static List<Match> getMatches()
 	{
 		return matches;
@@ -76,6 +81,10 @@ public class GameApplication {
 
 	public static List<User> getUsers() {
 		return users;
+	}
+
+	public static String getToken() {
+		return auth0Token;
 	}
 
 
