@@ -10,7 +10,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import net.tacs.game.services.MunicipalityService;
+import net.tacs.game.services.impl.MatchServiceImpl;
+import net.tacs.game.services.impl.MunicipalityServiceImpl;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -25,8 +31,10 @@ import net.tacs.game.services.MatchService;
 @SpringBootTest
 public class MatchServiceTest {
 
-    @Autowired
-    private MatchService matchService;
+    @InjectMocks
+    private MatchService matchService = new MatchServiceImpl();
+    @Mock
+    private MunicipalityService municipalityService;
 
     private final User user1 = new User("Pepe");
     private final User user2 = new User("Paula");
@@ -83,6 +91,13 @@ public class MatchServiceTest {
         tigre.setGauchosQty(300);
         lomas.setGauchosQty(300);
         matanza.setGauchosQty(300);
+
+        Mockito.when(municipalityService.getElevation(lanus.getCentroide())).thenReturn(3000D);
+        Mockito.when(municipalityService.getElevation(avellaneda.getCentroide())).thenReturn(3000D);
+        Mockito.when(municipalityService.getElevation(quilmes.getCentroide())).thenReturn(3000D);
+        Mockito.when(municipalityService.getElevation(tigre.getCentroide())).thenReturn(3000D);
+        Mockito.when(municipalityService.getElevation(lomas.getCentroide())).thenReturn(3000D);
+        Mockito.when(municipalityService.getElevation(matanza.getCentroide())).thenReturn(3000D);
 
         Match match = matchService.createMatch(bean);
 
