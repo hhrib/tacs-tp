@@ -23,12 +23,12 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
           #repository: hhrib/tacs-client
-          repository: hhrib/tacs-client
+          repository: hhrib/tacs_client
           #tags: latest
           #tags: front-${{ steps.vars.outputs.sha_short }}
-          tags: front_${{ github.ref }}
+          tags: front
           dockerfile: front-game/Dockerfile
-          image_name:  hhrib/tacs-client
+          image_name:  hhrib/tacs_client
           #buildoptions: ""
   push_server_to_registry:
     name: Push Server
