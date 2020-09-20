@@ -30,7 +30,7 @@ jobs:
           push: true
           tags: tacs-utn/client:latest
           username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          password: 400f2c50-6042-46b3-964f-cf1138d0ec12
           repository: hhrib/tacs-utn
           dockerfile: Dockerfile-front
           image_name: tacs-utn/client
