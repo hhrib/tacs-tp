@@ -2,12 +2,10 @@ version: '3'
 
 services:
    front:
-    build: front-game/
-    #image: hhrib/tacs-utn:front-e74ef7a
+    image: hhrib/tacs_client:branch_docker-compose
     ports:
       - "4200:4200"
    back:
-    build: game/
-    #image: hhrib/tacs-utn:server-e74ef7a
+    image: hhrib/tacs_server:branch_docker-compose
     ports:
       - "8080:8080"
