@@ -25,6 +25,7 @@ jobs:
          with:
           path: front-game
       -
+      
         name: Build and push
         id: docker_build
         uses: docker/build-push-action@v2
