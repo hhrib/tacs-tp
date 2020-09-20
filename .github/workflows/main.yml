@@ -22,8 +22,6 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: Check out the Client repo
         uses: actions/checkout@v2
-        with:
-          path: front-game
       -
         name: Build and push
         id: docker_build
