@@ -27,8 +27,8 @@ jobs:
         with:
           push: true
           tags: tacs-utn/client:latest
-          path: front-game
-          file: front-game/Dockerfile
+          context: front-game
+          file: Dockerfile
       -
         name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
