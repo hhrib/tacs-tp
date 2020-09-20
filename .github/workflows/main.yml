@@ -24,11 +24,11 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           repository: hhrib/tacs-utn
           #tags: front-${{ steps.vars.outputs.sha_short }}
-          #tags: front-${{ github.ref }}
+          tags: tacs-utn/front-${{ github.ref }}
           tag_with_ref: true
           dockerfile: front-game/Dockerfile
           image_name: tacs-utn/client
-          buildoptions: "-f front-game/Dockerfile"
+          buildoptions: ""
   push_server_to_registry:
     name: Push Server
     runs-on: ubuntu-latest
@@ -47,7 +47,7 @@ jobs:
           repository: hhrib/tacs-utn
           dockerfile: game/Dockerfile
           #tags: server-${{ github.ref }}
-          #tags: server-${{ steps.vars.outputs.sha_short }}
+          tags: tacs-utn/server-${{ steps.vars.outputs.sha_short }}
           image_name: tacs-utn/server
           tag_with_ref: true
           buildoptions: "-f game/Dockerfile"
