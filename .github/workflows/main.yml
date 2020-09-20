@@ -39,7 +39,7 @@ jobs:
       #  id: vars
       #  run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
       - name: Push Server to Docker Hub
-        uses: docker/build-push-action@v1
+        uses: docker/build-push-action@v4
         with:
           path: game
           username: ${{ secrets.DOCKER_USERNAME }}
