@@ -58,6 +58,6 @@ jobs:
           repository: hhrib/tacs_server
           #tags: latest
           #tags: front-${{ steps.vars.outputs.sha_short }}
-          tags: ${{ steps.extract_branch.outputs.branch }}
+          tags: server_${{ steps.extract_branch.outputs.branch }}
           dockerfile: game/Dockerfile
           image_name:  hhrib/tacs_server
