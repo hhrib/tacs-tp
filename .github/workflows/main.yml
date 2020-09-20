@@ -47,7 +47,8 @@ jobs:
           #repository: hhrib/tacs-utn
           dockerfile: game/Dockerfile
           #tags: server-${{ github.ref }}
-          tags: tacs-utn/server
+          tags: | 
+              tacs-utn/server:latest
           context: .
           #image_name: tacs-utn/server
           #tag_with_ref: true
