@@ -22,7 +22,7 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
           repository: hhrib/tacs-utn
-          tags: ${{ steps.vars.outputs.sha_short }}
+          tags: front:${{ steps.vars.outputs.sha_short }}
           tag_with_ref: true
           buildoptions: "-f front-game/Dockerfile"
   push_server_to_registry:
@@ -40,6 +40,6 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
           repository: hhrib/tacs-utn
-          tags: ${{ steps.vars.outputs.sha_short }}
+          tags: server:${{ steps.vars.outputs.sha_short }}
           tag_with_ref: true
           buildoptions: "-f game/Dockerfile"
