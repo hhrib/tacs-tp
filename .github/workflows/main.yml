@@ -19,6 +19,7 @@ jobs:
       - name: Push Client to Docker Hub
         uses: docker/build-push-action@v1
         with:
+          path: front-game
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
           repository: hhrib/tacs-utn
