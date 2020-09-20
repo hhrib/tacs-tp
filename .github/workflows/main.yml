@@ -22,7 +22,8 @@ jobs:
           path: front-game
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-          repository: hhrib/tacs-client
+          #repository: hhrib/tacs-client
+          repository: hhrib/tacs-utc/client
           #tags: front-${{ steps.vars.outputs.sha_short }}
           #tags: front_${{ github.ref }}
           dockerfile: front-game/Dockerfile
