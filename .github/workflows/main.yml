@@ -41,6 +41,7 @@ jobs:
       - name: Push Server to Docker Hub
         uses: docker/build-push-action@v1
         with:
+          path: game
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
           repository: hhrib/tacs-utn
