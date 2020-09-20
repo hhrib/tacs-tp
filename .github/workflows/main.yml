@@ -34,7 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the Server repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v2.3.2
       #- name: Set outputs
       #  id: vars
       #  run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
@@ -50,7 +50,7 @@ jobs:
           #tags: | 
           #    tacs-utn/server:latest
           tag_ref: ${{ github.ref }}
-          image_name: flownative/docker-base/base
+          image: tacs-utn/front
           context: .
           #image_name: tacs-utn/server
           #tag_with_ref: true
