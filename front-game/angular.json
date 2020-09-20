@@ -123,5 +123,8 @@
       }
     }
   },
-  "defaultProject": "front-game"
+  "defaultProject": "front-game",
+  "cli": {
+    "analytics": false
+  }
 }
