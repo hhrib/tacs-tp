@@ -32,9 +32,9 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
           repository: hhrib/tacs-utn
-          dockerfile: front-game/Dockerfile
+          dockerfile: Dockerfile-front
           image_name: tacs-utn/client
-          file: front-game/Dockerfile
+          file: Dockerfile-front
       -
         name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
