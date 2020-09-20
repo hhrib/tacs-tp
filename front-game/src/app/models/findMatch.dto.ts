@@ -1,7 +1,7 @@
 export class FindMatchDTO {
-    public idMatch : number;
-    public province : string;
+    public id : number;
+    public map : string;
     public state : string;
-    public usersPlaying: string[]
-    public creationDate: string;
+    public users: string[]
+    public date: string;
 }
