@@ -7,7 +7,7 @@ on:
     branches: [ master , develop , docker-compose ]
 
 jobs:
-  push_to_registry:
+  push_client_to_registry:
     name: Push Client
     runs-on: ubuntu-latest
     steps:
@@ -22,7 +22,7 @@ jobs:
           tags: ${{ github.sha }}
           tag_with_ref: true
           buildoptions: "-f front-game/Dockerfile"
-  push_to_registry:
+  push_server_to_registry:
     name: Push Server
     runs-on: ubuntu-latest
     steps:
