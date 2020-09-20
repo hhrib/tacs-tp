@@ -25,6 +25,7 @@ jobs:
           #tags: front-${{ steps.vars.outputs.sha_short }}
           #tags: front-${{ github.ref }}
           tag_with_ref: true
+          dockerfile: front-game/Dockerfile
           image: client
           buildoptions: "-f front-game/Dockerfile"
   push_server_to_registry:
@@ -42,6 +43,7 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
           repository: hhrib/tacs-utn
+          dockerfile: game/Dockerfile
           #tags: server-${{ github.ref }}
           #tags: server-${{ steps.vars.outputs.sha_short }}
           image: server
