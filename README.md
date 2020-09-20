@@ -32,7 +32,7 @@ Para ejecuacion
 3. Si un jugador abandona la partida, esta sigue en curso con el resto y los municipios que tenia se redistribuyen entre los demas jugadores.
 
 
-# CI:
+# CI/CD:
 Imagenes creadas con actions de github y publicas en :
-Back: https://hub.docker.com/repository/docker/hhrib/tacs_server
-Front: https://hub.docker.com/repository/docker/hhrib/tacs_client
+* Back: https://hub.docker.com/repository/docker/hhrib/tacs_server
+* Front: https://hub.docker.com/repository/docker/hhrib/tacs_client
