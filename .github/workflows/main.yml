@@ -31,8 +31,11 @@ jobs:
         with:
           push: true
           tags: tacs-utn/client:latest
-          path: front-game
-          file: front-game/Dockerfile
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          repository: hhrib/tacs-utn
+          dockerfile: front-game/Dockerfile
+          image_name: tacs-utn/client
       -
         name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
