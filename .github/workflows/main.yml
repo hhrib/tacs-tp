@@ -14,9 +14,8 @@ jobs:
       - name: Check out the Client repo
         uses: actions/checkout@v2
       - name: Extract branch name
-        if: github.event_name != 'pull_request'
         shell: bash
-        run: echo "::set-env name=BRANCH_NAME::$(echo ${GITHUB_REF#refs/heads/})"
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
         id: extract_branch
       #- name: Set outputs
       # id: vars
@@ -27,14 +26,10 @@ jobs:
           path: front-game
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-          #repository: hhrib/tacs-client
           repository: hhrib/tacs_client
-          #tags: latest
-          #tags: front-${{ steps.vars.outputs.sha_short }}
-          tags: server , ${{ steps.extract_branch.outputs.branch }}
+          tags: branch_${{ steps.extract_branch.outputs.branch }}
           dockerfile: front-game/Dockerfile
           image_name:  hhrib/tacs_client
-          #buildoptions: ""
   push_server_to_registry:
     name: Push Server
     runs-on: ubuntu-latest
@@ -54,10 +49,9 @@ jobs:
           path: game
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-          #repository: hhrib/tacs-client
           repository: hhrib/tacs_server
           #tags: latest
           #tags: front-${{ steps.vars.outputs.sha_short }}
-          tags: server_${{ steps.extract_branch.outputs.branch }}
+          tags: branch_${{ steps.extract_branch.outputs.branch }}
           dockerfile: game/Dockerfile
           image_name:  hhrib/tacs_server
