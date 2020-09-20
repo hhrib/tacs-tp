@@ -1,7 +1,9 @@
 package net.tacs.game.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import net.tacs.game.model.enums.MatchState;
+import net.tacs.game.serializer.CustomLocalDateTimeSerializer;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -18,6 +20,7 @@ public class Match {
     private Province map;
     private User winner;
 
+    @JsonSerialize(using = CustomLocalDateTimeSerializer.class)
     private LocalDateTime date;
 
     public Long getId() {
