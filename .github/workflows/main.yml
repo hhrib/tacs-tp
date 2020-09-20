@@ -30,7 +30,7 @@ jobs:
           repository: hhrib/tacs_client
           #tags: latest
           #tags: front-${{ steps.vars.outputs.sha_short }}
-          tags: front ,  eng:${{ steps.extract_branch.outputs.branch }}
+          tags: ${{ steps.extract_branch.outputs.branch }}
           dockerfile: front-game/Dockerfile
           image_name:  hhrib/tacs_client
           #buildoptions: ""
@@ -57,6 +57,6 @@ jobs:
           repository: hhrib/tacs_server
           #tags: latest
           #tags: front-${{ steps.vars.outputs.sha_short }}
-          tags: front ,  eng:${{ steps.extract_branch.outputs.branch }}
+          tags: server , ${{ steps.extract_branch.outputs.branch }}
           dockerfile: game/Dockerfile
           image_name:  hhrib/tacs_server
