@@ -48,7 +48,6 @@ jobs:
         shell: bash
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
         id: extract_branch
-      - uses: nelonoel/branch-name@v1
       - name: Push Server to Docker Hub
         uses: docker/build-push-action@v1
         with:
@@ -59,6 +58,6 @@ jobs:
           repository: hhrib/tacs_server
           #tags: latest
           #tags: front-${{ steps.vars.outputs.sha_short }}
-          tags: server , ${{ BRANCH_NAME }}
+          tags: server , eng:${{ steps.extract_branch.outputs.branch }}
           dockerfile: game/Dockerfile
           image_name:  hhrib/tacs_server
