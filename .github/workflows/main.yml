@@ -48,6 +48,7 @@ jobs:
           dockerfile: game/Dockerfile
           #tags: server-${{ github.ref }}
           tags: tacs-utn/server
-          image_name: tacs-utn/server
+          context: .
+          #image_name: tacs-utn/server
           #tag_with_ref: true
-          buildoptions: "-f game/Dockerfile"
+          #buildoptions: "-f game/Dockerfile"
