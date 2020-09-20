@@ -2,7 +2,7 @@ name: ci
 
 on:
   push:
-    branches: master
+    branches: mastdocker-compose
 
 jobs:
   push_client_to_registry:
