@@ -26,8 +26,8 @@ jobs:
           #tags: front-${{ steps.vars.outputs.sha_short }}
           #tags: front_${{ github.ref }}
           dockerfile: front-game/Dockerfile
-          image_name:  hhrib/tacs-client
-          buildoptions: ""
+          #image_name:  hhrib/tacs-client
+          #buildoptions: ""
   push_server_to_registry:
     name: Push Server
     runs-on: ubuntu-latest
