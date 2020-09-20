@@ -47,8 +47,10 @@ jobs:
           #repository: hhrib/tacs-utn
           dockerfile: game/Dockerfile
           #tags: server-${{ github.ref }}
-          tags: | 
-              tacs-utn/server:latest
+          #tags: | 
+          #    tacs-utn/server:latest
+          tag_ref: ${{ github.ref }}
+          image_name: flownative/docker-base/base
           context: .
           #image_name: tacs-utn/server
           #tag_with_ref: true
