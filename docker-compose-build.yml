@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+   front:
+    build: front-game/
+    #image: hhrib/tacs-utn:front-e74ef7a
+    ports:
+      - "4200:4200"
+   back:
+    build: game/
+    #image: hhrib/tacs-utn:server-e74ef7a
+    ports:
+      - "8080:8080"
