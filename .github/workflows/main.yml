@@ -33,6 +33,4 @@ jobs:
           dockerfile: Dockerfile-front
           image_name: tacs-utn/client
           file: Dockerfile-front
-      -
-        name: Image digest
-        run: echo ${{ steps.docker_build.outputs.digest }}
+ 
