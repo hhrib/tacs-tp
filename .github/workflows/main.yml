@@ -27,7 +27,7 @@ jobs:
           #tags: front-${{ github.ref }}
           tag_with_ref: true
           dockerfile: front-game/Dockerfile
-          image: client
+          image_name: tacs-utn/client
           buildoptions: "-f front-game/Dockerfile"
   push_server_to_registry:
     name: Push Server
@@ -48,6 +48,6 @@ jobs:
           dockerfile: game/Dockerfile
           #tags: server-${{ github.ref }}
           #tags: server-${{ steps.vars.outputs.sha_short }}
-          image: server
+          image_name: tacs-utn/server
           tag_with_ref: true
           buildoptions: "-f game/Dockerfile"
