@@ -35,6 +35,7 @@ jobs:
           repository: hhrib/tacs-utn
           dockerfile: front-game/Dockerfile
           image_name: tacs-utn/client
+          file: front-game/Dockerfile
       -
         name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
