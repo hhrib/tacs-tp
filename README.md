@@ -31,7 +31,7 @@ Para ejecuacion
 2. No hay equipos, cada jugador se enfrenta a los demas individualmente.
 3. Si un jugador abandona la partida, esta sigue en curso con el resto y los municipios que tenia se redistribuyen entre los demas jugadores.
 
-
+-----
 # CI/CD:
 Imagenes creadas con actions de github y publicas en :
 * Back: https://hub.docker.com/repository/docker/hhrib/tacs_server
