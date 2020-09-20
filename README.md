@@ -6,11 +6,12 @@ Segundo Cuatrimestre 2020 - UTN FRBA - El Mejor Grupo :)
 
 # Docker:
 
-1. Colocarse a la altura del directorio src
-2. mvn clean package-> Genera .jar en directorio /target
-3. docker build -t nombreContainer . -> Buildea contenedor
-4. docker run -p 8080:8080 nombreContainer -> Ejecuta el contenedor
-5. Desde otra terminal, entrar al directorio front-game y ejecutar -> ng serve --open
+Para build:
+1. Ejecutar docker-compose -f docker-compose-build.yml start
+2. Entrar en el browser a localhost:4200
+Para ejecuacion
+1. Ejecutar docker-compose up
+2. Entrar en el browser a localhost:4200
 
 # Swagger UI - Ver especificación de la API Rest:
 * Se puede verificar ingresando por navegador al endpoint /swagger-ui.html <br />
