@@ -34,8 +34,6 @@ public class InitConfig {
             List<Province> provincesTemp = provinceService.findAll();
 
             for (Province aProvince : provincesTemp) {
-                aProvince.setMunicipalities(provinceService.findMunicipios((int)aProvince.getId(), null));
-
                 addProvince(aProvince);
             }
 

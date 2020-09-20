@@ -47,13 +47,4 @@ export class MenuComponent implements OnInit {
       );
     });
   }
-
-  openDialogSearchMatches(): void{
-
-    const dialogRef = this.dialog.open(MatchCreateDialogComponent, {
-      height: '400px',
-      width: '300px',
-    });
-
-  }
 }

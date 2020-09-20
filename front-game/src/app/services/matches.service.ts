@@ -1,7 +1,8 @@
 import { JsonPipe } from '@angular/common';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { MatchDTO } from '../models/match.dto';
 
@@ -30,7 +31,6 @@ export class MatchService {
     public createMatch(match: MatchDTO): Observable<any> {
         //return this.http.post<MatchResponse>(`${MATCH_URL}/`, match);
         let matchJSON = JSON.stringify(match);
-        console.log("PEGANDOLE A LA API REST... ");
         console.log(matchJSON);
         return this.http.post<any>(`${MATCH_URL}/`, matchJSON, httpOptions);
     }

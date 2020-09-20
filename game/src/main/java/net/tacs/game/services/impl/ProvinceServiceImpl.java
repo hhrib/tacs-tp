@@ -44,9 +44,12 @@ public class ProvinceServiceImpl implements ProvinceService {
 	public List<Municipality> findMunicipios(int provinceId, Integer qty) {
 		RestTemplate restTemplate = new RestTemplate();
 
+		//la api trae por defecto solo 10 municipios
 		String url = String.format(URL_MUNICIPIOS, provinceId, qty);
 		if (qty != null)
 			url += "&max=" + qty;
+		else
+			url += "&max=200";
 		ResponseEntity<GeoRefMunicipioAPIResponse> response = restTemplate.getForEntity(url,
 				GeoRefMunicipioAPIResponse.class);
 		return Arrays.asList(response.getBody().getMunicipios());
