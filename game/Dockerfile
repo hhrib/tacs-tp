@@ -8,7 +8,7 @@ RUN mvn clean install -Dmaven.repo.local=${MVN_LOCAL_REPO}
 
 #stage 2
 FROM openjdk:11
-COPY --from=build /build/game/target/game*.jar app.jar
+COPY --from=build /build/target/game*.jar app.jar
 
 #Puertos
 EXPOSE 8080

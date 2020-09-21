@@ -8,6 +8,9 @@
       </button>
       <span>Menu</span>
       <span class="example-spacer" style="flex: auto;"></span>
+      <p style="margin-bottom: 0px;" routerLink="/home" routerLinkActive="active"><button mat-icon-button>
+        <mat-icon>home</mat-icon>
+      </button></p>
       <button mat-icon-button class="example-icon favorite-icon" aria-label="Example icon-button with heart icon">
         <mat-icon>favorite</mat-icon>
       </button>
@@ -19,7 +22,8 @@
   
   <mat-menu #menuOptions="matMenu"> 
     <button mat-menu-item (click)="openDialogCreateMatch()">New game</button>
-    <button mat-menu-item (click)="openDialogSearchMatches()">Search matches</button>
+    <p routerLink="/searchMatches" routerLinkActive="active">
+    <button mat-menu-item styles="text-decoration: none">Search matches</button></p>
     <button mat-menu-item (click)="auth.logout()" *ngIf="auth.loggedIn">Log Out</button>
   </mat-menu>
 </p>

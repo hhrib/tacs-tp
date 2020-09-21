@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+   front:
+    image: hhrib/tacs_client:branch_master
+    ports:
+      - "4200:4200"
+   back:
+    image: hhrib/tacs_server:branch_master
+    ports:
+      - "8080:8080"

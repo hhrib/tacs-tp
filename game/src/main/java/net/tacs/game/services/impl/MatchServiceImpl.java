@@ -3,16 +3,19 @@ package net.tacs.game.services.impl;
 import net.tacs.game.GameApplication;
 import net.tacs.game.controller.MatchController;
 import net.tacs.game.exceptions.MatchException;
+import net.tacs.game.mapper.AuthUserToUserMapper;
 import net.tacs.game.model.bean.CreateMatchBean;
 import net.tacs.game.model.enums.MatchState;
 import net.tacs.game.model.enums.MunicipalityState;
+import net.tacs.game.model.opentopodata.auth.AuthUserResponse;
 import net.tacs.game.services.MatchService;
+import net.tacs.game.services.ProvinceService;
+import net.tacs.game.services.SecurityProviderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import static net.tacs.game.GameApplication.getProvinces;
-import static net.tacs.game.GameApplication.getUsers;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -27,6 +30,8 @@ import net.tacs.game.model.Municipality;
 import net.tacs.game.model.Province;
 import net.tacs.game.model.User;
 
+import static net.tacs.game.GameApplication.*;
+
 @Service("matchService")
 //@Transactional
 public class MatchServiceImpl implements MatchService {
@@ -38,6 +43,12 @@ public class MatchServiceImpl implements MatchService {
 //
 //    @Autowired
 //    private UserRepository userRepository;
+
+    @Autowired
+    private SecurityProviderService securityProviderService;
+
+    @Autowired
+    private ProvinceService provinceService;
 
     @Override
     public List<Match> findAll() {
@@ -90,7 +101,9 @@ public class MatchServiceImpl implements MatchService {
         newMatch.setDate(LocalDateTime.now());
         newMatch.setState(MatchState.CREATED);
         LOGGER.info(newMatchBean.toString());
-        //TODO Salvar partida en el mapa que persiste en memoria para primeras entregas.
+
+        //TODO guardar en base de datos.
+        addMatch(newMatch);
         //Quizás no recibamos un Match entero, quizás recibamos el Bean de creación (dependiendo lo que elijamos)
         //en ese caso va a haber que hacer la lógica de buscar usuarios y provincia y luego crear el objeto match para
         //persistir
@@ -121,13 +134,14 @@ public class MatchServiceImpl implements MatchService {
         Match newMatch = new Match();
 
         List<User> usersInMatch = new ArrayList<>();
-        for(long aId : newMatchBean.getUserIds())
+
+        for(String aId : newMatchBean.getUserIds())
         {
             boolean bUserFound = false;
 
             for(User aUser : getUsers())
             {
-                if(aUser.getId() == aId)
+                if(aUser.getId().equals(aId))
                 {
                     bUserFound = true;
                     usersInMatch.add(aUser);
@@ -136,8 +150,24 @@ public class MatchServiceImpl implements MatchService {
 
             if(!bUserFound)
             {
-                errors.add(new ApiError("USER_NOT_FOUND", "Users not found"));
-                return newMatch;
+                //Si no estaba en la bd lo buscamos en la api de Auth0
+                AuthUserResponse response = null;
+                try {
+                    response = securityProviderService.getUserById(GameApplication.getToken(), aId);
+                } catch (Exception e) {
+                    errors.add(new ApiError("ERROR_GETTING_UPDATED_USER", "Error when getting user from updated source"));
+                    throw new MatchException(HttpStatus.INTERNAL_SERVER_ERROR, errors);
+                }
+                if (response == null) {
+                    //No estaba tampoco en la api. Not Found.
+                    errors.add(new ApiError("USER_NOT_FOUND", "Users not found"));
+                    throw new MatchException(HttpStatus.NOT_FOUND, errors);
+                }
+                //Estaba en la api, actualizamos BD y seguimos flujo normal
+                User newUser = AuthUserToUserMapper.mapUser(response);
+                GameApplication.addUser(newUser);
+                bUserFound = true;
+                usersInMatch.add(newUser);
             }
         }
 
@@ -147,20 +177,33 @@ public class MatchServiceImpl implements MatchService {
 
         //TODO Buscar en base de datos
         for (Province aProvince: getProvinces()) {
-            if(aProvince.getId().equals(newMatchBean.getProvinceId()))
+            if(aProvince.getId() == (newMatchBean.getProvinceId()))
             {
                 //Copia de Provincia
                 newProvince.setNombre(aProvince.getNombre());
 
-                if (newMatchBean.getMunicipalitiesQty() < aProvince.getMunicipalities().size()) {
+                Random random = new Random();
+
+                List<Municipality> tempMunicipalities;
+
+                if(aProvince.getMunicipalities().isEmpty())
+                {
+                    tempMunicipalities = provinceService.findMunicipios((int)aProvince.getId(), null);
+
+                    //Se guarda en la cache
+                    aProvince.setMunicipalities(tempMunicipalities);
+                }
+                else {
+                    tempMunicipalities = aProvince.getMunicipalities();
+                }
+
+                if (newMatchBean.getMunicipalitiesQty() > aProvince.getMunicipalities().size()) {
                     errors.add(new ApiError("EXCEEDED_MUNICIPALITIES_LIMIT",
                             "Amount of municipalities selected exceeds amount of province's amount of municipalities"));
 
-                    return newMatch;
+                    throw new MatchException(HttpStatus.BAD_REQUEST, errors);
                 }
 
-                Random random = new Random();
-                List<Municipality> tempMunicipalities = aProvince.getMunicipalities();
                 List<Integer> selectedIndexes = new ArrayList<>();
 
                 //Crear Municipalidades
@@ -195,15 +238,15 @@ public class MatchServiceImpl implements MatchService {
 
                 //asignar municipalidades a usuarios
                 assignMunicipalities(newMatch.getMap().getMunicipalities(), newMatch.getUsers());
-            }
 
-            return newMatch;
+                return newMatch;
+            }
         }
 
         errors.add(new ApiError("PROVINCE_NOT_FOUND",
                 "Province Id does not exist"));
 
-        return newMatch;
+        throw new MatchException(HttpStatus.NOT_FOUND, errors);
     }
 
     private List<LocalDateTime> validateDatesToSearch(String isoDateFrom, String isoDateTo) throws MatchException {
