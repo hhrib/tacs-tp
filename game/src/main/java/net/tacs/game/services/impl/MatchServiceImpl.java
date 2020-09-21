@@ -3,10 +3,14 @@ package net.tacs.game.services.impl;
 import net.tacs.game.GameApplication;
 import net.tacs.game.controller.MatchController;
 import net.tacs.game.exceptions.MatchException;
+import net.tacs.game.mapper.AuthUserToUserMapper;
 import net.tacs.game.model.bean.CreateMatchBean;
 import net.tacs.game.model.enums.MatchState;
 import net.tacs.game.model.enums.MunicipalityState;
+import net.tacs.game.model.opentopodata.auth.AuthUserResponse;
 import net.tacs.game.services.MatchService;
+import net.tacs.game.services.ProvinceService;
+import net.tacs.game.services.SecurityProviderService;
 import net.tacs.game.services.MunicipalityService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +46,12 @@ public class MatchServiceImpl implements MatchService {
 //    private UserRepository userRepository;
     @Autowired
     private MunicipalityService municipalityService;
+
+    @Autowired
+    private SecurityProviderService securityProviderService;
+
+    @Autowired
+    private ProvinceService provinceService;
 
     @Override
     public List<Match> findAll() {
@@ -127,13 +137,14 @@ public class MatchServiceImpl implements MatchService {
         Match newMatch = new Match();
 
         List<User> usersInMatch = new ArrayList<>();
-        for(long aId : newMatchBean.getUserIds())
+
+        for(String aId : newMatchBean.getUserIds())
         {
             boolean bUserFound = false;
 
             for(User aUser : getUsers())
             {
-                if(aUser.getId() == aId)
+                if(aUser.getId().equals(aId))
                 {
                     bUserFound = true;
                     usersInMatch.add(aUser);
@@ -142,8 +153,24 @@ public class MatchServiceImpl implements MatchService {
 
             if(!bUserFound)
             {
-                errors.add(new ApiError("USER_NOT_FOUND", "Users not found"));
-                throw new MatchException(HttpStatus.NOT_FOUND, errors);
+                //Si no estaba en la bd lo buscamos en la api de Auth0
+                AuthUserResponse response = null;
+                try {
+                    response = securityProviderService.getUserById(GameApplication.getToken(), aId);
+                } catch (Exception e) {
+                    errors.add(new ApiError("ERROR_GETTING_UPDATED_USER", "Error when getting user from updated source"));
+                    throw new MatchException(HttpStatus.INTERNAL_SERVER_ERROR, errors);
+                }
+                if (response == null) {
+                    //No estaba tampoco en la api. Not Found.
+                    errors.add(new ApiError("USER_NOT_FOUND", "Users not found"));
+                    throw new MatchException(HttpStatus.NOT_FOUND, errors);
+                }
+                //Estaba en la api, actualizamos BD y seguimos flujo normal
+                User newUser = AuthUserToUserMapper.mapUser(response);
+                GameApplication.addUser(newUser);
+                bUserFound = true;
+                usersInMatch.add(newUser);
             }
         }
 
@@ -158,15 +185,28 @@ public class MatchServiceImpl implements MatchService {
                 //Copia de Provincia
                 newProvince.setNombre(aProvince.getNombre());
 
-                if (newMatchBean.getMunicipalitiesQty() < aProvince.getMunicipalities().size()) {
+                Random random = new Random();
+
+                List<Municipality> tempMunicipalities;
+
+                if(aProvince.getMunicipalities().isEmpty())
+                {
+                    tempMunicipalities = provinceService.findMunicipios((int)aProvince.getId(), null);
+
+                    //Se guarda en la cache
+                    aProvince.setMunicipalities(tempMunicipalities);
+                }
+                else {
+                    tempMunicipalities = aProvince.getMunicipalities();
+                }
+
+                if (newMatchBean.getMunicipalitiesQty() > aProvince.getMunicipalities().size()) {
                     errors.add(new ApiError("EXCEEDED_MUNICIPALITIES_LIMIT",
                             "Amount of municipalities selected exceeds amount of province's amount of municipalities"));
 
                     throw new MatchException(HttpStatus.BAD_REQUEST, errors);
                 }
 
-                Random random = new Random();
-                List<Municipality> tempMunicipalities = aProvince.getMunicipalities();
                 List<Integer> selectedIndexes = new ArrayList<>();
 
                 //Crear Municipalidades

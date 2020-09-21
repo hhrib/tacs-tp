@@ -13,10 +13,6 @@ jobs:
     steps:
       - name: Check out the Client repo
         uses: actions/checkout@v2
-      - name: Extract branch name
-        shell: bash
-        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-        id: extract_branch
       #- name: Set outputs
       # id: vars
       # run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
@@ -26,10 +22,13 @@ jobs:
           path: front-game
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-          repository: hhrib/tacs_client
-          tags: branch_${{ steps.extract_branch.outputs.branch }}
+          repository: hhrib/tacs-utn
+          #tags: front-${{ steps.vars.outputs.sha_short }}
+          tags: tacs-utn/front
+          tag_with_ref: true
           dockerfile: front-game/Dockerfile
-          image_name:  hhrib/tacs_client
+          image_name: tacs-utn/client
+          buildoptions: ""
   push_server_to_registry:
     name: Push Server
     runs-on: ubuntu-latest
@@ -39,19 +38,20 @@ jobs:
       #- name: Set outputs
       #  id: vars
       #  run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
-      - name: Extract branch name
-        shell: bash
-        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-        id: extract_branch
       - name: Push Server to Docker Hub
         uses: docker/build-push-action@v1
         with:
           path: game
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-          repository: hhrib/tacs_server
-          #tags: latest
-          #tags: front-${{ steps.vars.outputs.sha_short }}
-          tags: branch_${{ steps.extract_branch.outputs.branch }}
+          #repository: hhrib/tacs-utn
           dockerfile: game/Dockerfile
-          image_name:  hhrib/tacs_server
+          #tags: server-${{ github.ref }}
+          #tags: | 
+          #    tacs-utn/server:latest
+          tag_ref: ${{ github.ref }}
+          tags: tacs-utn/front
+          context: .
+          #image_name: tacs-utn/server
+          #tag_with_ref: true
+          #buildoptions: "-f game/Dockerfile"

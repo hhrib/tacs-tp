@@ -6,11 +6,12 @@ Segundo Cuatrimestre 2020 - UTN FRBA - El Mejor Grupo :)
 
 # Docker:
 
-1. Colocarse a la altura del directorio src
-2. mvn clean package-> Genera .jar en directorio /target
-3. docker build -t nombreContainer . -> Buildea contenedor
-4. docker run -p 8080:8080 nombreContainer -> Ejecuta el contenedor
-5. Desde otra terminal, entrar al directorio front-game y ejecutar -> ng serve --open
+Para build:
+1. Ejecutar docker-compose -f docker-compose-build.yml start
+2. Entrar en el browser a localhost:4200
+Para ejecuacion
+1. Ejecutar docker-compose up
+2. Entrar en el browser a localhost:4200
 
 # Swagger UI - Ver especificación de la API Rest:
 * Se puede verificar ingresando por navegador al endpoint /swagger-ui.html <br />
@@ -29,4 +30,9 @@ Segundo Cuatrimestre 2020 - UTN FRBA - El Mejor Grupo :)
 1. En el transcurso de la partida no puedan cambiar los datos obtenidos de las APIs con respecto a la altura de las municipalidades o el nombre de las provincias, por ejemplo.
 2. No hay equipos, cada jugador se enfrenta a los demas individualmente.
 3. Si un jugador abandona la partida, esta sigue en curso con el resto y los municipios que tenia se redistribuyen entre los demas jugadores.
-4. La configuracion de una partida no se puede modificar una vez que esta este en juego.
+
+-----
+# CI/CD:
+Imagenes creadas con actions de github y publicas en :
+* Back: https://hub.docker.com/repository/docker/hhrib/tacs_server
+* Front: https://hub.docker.com/repository/docker/hhrib/tacs_client

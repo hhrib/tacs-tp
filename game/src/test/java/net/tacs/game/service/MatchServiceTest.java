@@ -13,6 +13,7 @@ import java.util.List;
 import net.tacs.game.services.MunicipalityService;
 import net.tacs.game.services.impl.MatchServiceImpl;
 import net.tacs.game.services.impl.MunicipalityServiceImpl;
+import net.tacs.game.GameApplication;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -27,7 +28,9 @@ import net.tacs.game.model.Province;
 import net.tacs.game.model.User;
 import net.tacs.game.model.bean.CreateMatchBean;
 import net.tacs.game.services.MatchService;
+import org.springframework.test.context.ActiveProfiles;
 
+@ActiveProfiles("test")
 @SpringBootTest
 public class MatchServiceTest {
 
@@ -52,7 +55,7 @@ public class MatchServiceTest {
         CreateMatchBean bean = new CreateMatchBean();
         bean.setMunicipalitiesQty(6);
         bean.setProvinceId(99999997L);
-        bean.setUserIds(Arrays.asList(99999998L,99999999L));
+        bean.setUserIds(Arrays.asList("ABC1","ABC2"));
 
         addProvince(buenosAires);
         addMunicipality(lanus);
@@ -61,8 +64,7 @@ public class MatchServiceTest {
         addMunicipality(tigre);
         addMunicipality(lomas);
         addMunicipality(matanza);
-        addUser(user1);
-        addUser(user2);
+        GameApplication.setUsers(Arrays.asList(user1,user2));
 
         List<Municipality> municipalityList = new ArrayList<>();
         municipalityList.add(lanus);
@@ -75,8 +77,8 @@ public class MatchServiceTest {
         buenosAires.setId(99999997L);
         buenosAires.setMunicipalities(municipalityList);
 
-        user1.setId(99999998L);
-        user2.setId(99999999L);
+        user1.setId("ABC1");
+        user2.setId("ABC2");
 
         lanus.setElevation(3D);
         avellaneda.setElevation(3D);
@@ -118,14 +120,14 @@ public class MatchServiceTest {
 
         for(Municipality aMuni : match.getMap().getMunicipalities())
         {
-            switch (aMuni.getOwner().getId().intValue())
+            switch (aMuni.getOwner().getId())
             {
-                case 99999998:
+                case "ABC1":
                 {
                     user1Munis++;
                     break;
                 }
-                case 99999999:
+                case "ABC2":
                 {
                     user2Munis++;
                     break;
