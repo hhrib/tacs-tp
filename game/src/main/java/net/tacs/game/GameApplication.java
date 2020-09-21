@@ -38,9 +38,6 @@ public class GameApplication {
 	@Autowired
 	private ProvinceService provinceService;
 
-	@Autowired
-	private ProvinceService provinceService;
-
 	public static void main(String[] args) {
 		SpringApplication.run(GameApplication.class, args);
 	}
