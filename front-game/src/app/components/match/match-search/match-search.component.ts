@@ -8,15 +8,15 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatchService } from 'src/app/services/matches.service';
 
 const ELEMENT_DATA: FindMatchDTO[] = [
-  {idMatch: 1, province:"Buenos Aires", state: "In progress", usersPlaying: ['Juan','Fer','Emi'], creationDate: "2020/09/17"},
-  {idMatch: 2, province:"Tierra del Fuego", state: "Finished", usersPlaying: ['Ale','Fer','Emi'], creationDate: "2020/09/16"},
-  {idMatch: 3, province:"Santa Cruz", state: "Finished", usersPlaying: ['Juan','Ale','Hernan'], creationDate: "2020/09/17"},
-  {idMatch: 4, province:"Córdoba", state: "In progress", usersPlaying: ['Juan','Fer','Emi'], creationDate: "2020/09/18"},
-  {idMatch: 5, province:"San Luis", state: "Finished", usersPlaying: ['Hernán','Fer','Emi'], creationDate: "2020/09/19"},
-  {idMatch: 6, province:"Misiones", state: "In progress", usersPlaying: ['Juan','Fer','Emi'], creationDate: "2020/09/19"},
-  {idMatch: 7, province:"Corrientes", state: "Finished", usersPlaying: ['Juan','Hernán','Emi'], creationDate: "2020/09/19"},
-  {idMatch: 8, province:"Misiones", state: "In progress", usersPlaying: ['Ale','Fer','Hernán'], creationDate: "2020/09/19"},
-  {idMatch: 9, province:"Buenos Aires", state: "In progress", usersPlaying: ['Ale','Fer','Emi'], creationDate: "2020/09/19"},
+  {id: null, map:"Buenos Aires", state: "In progress", users: ['Juan','Fer','Emi'], date: "2020/09/17"},
+  {id: null, map:"Tierra del Fuego", state: "Finished", users: ['Ale','Fer','Emi'], date: "2020/09/16"},
+  {id: null, map:"Santa Cruz", state: "Finished", users: ['Juan','Ale','Hernan'], date: "2020/09/17"},
+  {id: null, map:"Córdoba", state: "In progress", users: ['Juan','Fer','Emi'], date: "2020/09/18"},
+  {id:null, map:"San Luis", state: "Finished", users: ['Hernán','Fer','Emi'], date: "2020/09/19"},
+  {id: null, map:"Misiones", state: "In progress", users: ['Juan','Fer','Emi'], date: "2020/09/19"},
+  {id: null, map:"Corrientes", state: "Finished", users: ['Juan','Hernán','Emi'], date: "2020/09/19"},
+  {id: null, map:"Misiones", state: "In progress", users: ['Ale','Fer','Hernán'], date: "2020/09/19"},
+  {id: null, map:"Buenos Aires", state: "In progress", users: ['Ale','Fer','Emi'], date: "2020/09/19"},
 ]
 
 /*
@@ -41,8 +41,8 @@ export class MatchSearchComponent implements AfterViewInit {
   constructor(public matchService : MatchService) {}
 
   ngAfterViewInit() {
-    this.matchService.getMatches().subscribe(
-      result => this.dataSource = result,
+      this.matchService.getMatches().subscribe(
+      result => this.dataSource.data = result,
       err => console.log(err));
 
     this.dataSource.sort = this.sort;
