@@ -72,6 +72,10 @@ public class Match {
         return config;
     }
 
+    public void setConfig(MatchConfiguration config) {
+        this.config = config;
+    }
+
     public Match(){
     }
 

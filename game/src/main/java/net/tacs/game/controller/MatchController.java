@@ -85,7 +85,7 @@ public class MatchController {
 
     //User story 2.a
     @PostMapping(value = "/matches")
-    public ResponseEntity<Match> createMatch(@RequestBody CreateMatchBean matchBean) throws MatchException {
+    public ResponseEntity<Match> createMatch(@RequestBody CreateMatchBean matchBean) throws MatchException, InterruptedException {
         Match newMatch = this.matchService.createMatch(matchBean);
         return new ResponseEntity<>(newMatch, HttpStatus.CREATED);
     }

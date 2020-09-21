@@ -1,10 +1,10 @@
 package net.tacs.game.model;
 
 public class MatchConfiguration {
-    private double minDist;
-    private double maxDist;
-    private double minHeight;
-    private double maxHeight;
+    private double minDist; //<-- Se calculan
+    private double maxDist; //<-- Se calculan
+    private double minHeight; //<-- Se calculan
+    private double maxHeight; //<-- Se calculan
     private double multDefense = 1.25D;
     private double multGauchosProduction = 15;
     private double multGauchosDefense = 10;
