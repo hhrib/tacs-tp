@@ -30,7 +30,7 @@ public class Province {
 	}
 
 
-	public Long getId() {
+	public long getId() {
 		return id;
 	}
 

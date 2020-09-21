@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import net.tacs.game.GameApplication;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,7 +22,9 @@ import net.tacs.game.model.Province;
 import net.tacs.game.model.User;
 import net.tacs.game.model.bean.CreateMatchBean;
 import net.tacs.game.services.MatchService;
+import org.springframework.test.context.ActiveProfiles;
 
+@ActiveProfiles("test")
 @SpringBootTest
 public class MatchServiceTest {
 
@@ -43,8 +46,8 @@ public class MatchServiceTest {
 
         CreateMatchBean bean = new CreateMatchBean();
         bean.setMunicipalitiesQty(6);
-        bean.setProvinceId(1L);
-        bean.setUserIds(Arrays.asList(1L,2L));
+        bean.setProvinceId(99999997L);
+        bean.setUserIds(Arrays.asList("ABC1","ABC2"));
 
         addProvince(buenosAires);
         addMunicipality(lanus);
@@ -53,8 +56,7 @@ public class MatchServiceTest {
         addMunicipality(tigre);
         addMunicipality(lomas);
         addMunicipality(matanza);
-        addUser(user1);
-        addUser(user2);
+        GameApplication.setUsers(Arrays.asList(user1,user2));
 
         List<Municipality> municipalityList = new ArrayList<>();
         municipalityList.add(lanus);
@@ -64,11 +66,11 @@ public class MatchServiceTest {
         municipalityList.add(lomas);
         municipalityList.add(matanza);
 
-        buenosAires.setId(1);
+        buenosAires.setId(99999997L);
         buenosAires.setMunicipalities(municipalityList);
 
-        user1.setId(1L);
-        user2.setId(2L);
+        user1.setId("ABC1");
+        user2.setId("ABC2");
 
         lanus.setElevation(3D);
         avellaneda.setElevation(3D);
@@ -103,14 +105,14 @@ public class MatchServiceTest {
 
         for(Municipality aMuni : match.getMap().getMunicipalities())
         {
-            switch (aMuni.getOwner().getId().intValue())
+            switch (aMuni.getOwner().getId())
             {
-                case 1:
+                case "ABC1":
                 {
                     user1Munis++;
                     break;
                 }
-                case 2:
+                case "ABC2":
                 {
                     user2Munis++;
                     break;

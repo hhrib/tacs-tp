@@ -6,13 +6,15 @@ import { AuthService } from '../../services/auth.service';
 
 
 import { MatchCreateDialogComponent } from '../../components/match/match-create-dialog/match-create-dialog.component';
+import { MatchSearchComponent } from '../match/match-search/match-search.component'
+import { ProvincesService } from 'src/app/services/provinces.service';
 
 @Component({
   selector: 'app-menu',
   templateUrl: './menu.component.html',
   styleUrls: ['./menu.component.css'],
   providers:[
-    MatchService
+    MatchService,
   ]
 })
 export class MenuComponent implements OnInit {
@@ -45,27 +47,4 @@ export class MenuComponent implements OnInit {
       );
     });
   }
-
-  openDialogSearchMatches(){
-
-  }
-  /*
-    openCreateModal() {
-      const modalRef = this.modalService.open(DeviceModalComponent, { size: 'lg' });
-      const modal: DeviceModalComponent = modalRef.componentInstance;
-      modal.disabled = false;
-      modalRef.result
-          .then(device => {
-              if (device) {
-                  const createSubscription = this.deviceService.createDevice(device).subscribe(
-                      response => {
-                          createSubscription.unsubscribe();
-                          this.deviceService.getDevices();
-                      }
-                  );
-              }
-          })
-          .catch(_=>{});
-  }
-  */
 }
