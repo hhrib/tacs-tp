@@ -51,5 +51,50 @@ public class MunicipalityServiceImpl implements MunicipalityService {
 		}
 	}
 
+    public void moveGauchos(Match match, long IdOrigin, long IdDestiny, int Qty)
+    {
+        if(IdOrigin == IdDestiny)
+        {
+            //TODO mover gauchos entre el mismo municipio no se permite
+            return;
+        }
 
+        Municipality muniOrigin = null;
+        Municipality muniDestiny = null;
+
+        boolean bOriginFound = false;
+        boolean bDestinyFound = false;
+
+        for(Municipality aMuni : match.getMap().getMunicipalities())
+        {
+            if(aMuni.getId() == IdOrigin)
+            {
+                muniOrigin = aMuni;
+                bOriginFound = true;
+            }
+            if(aMuni.getId() == IdDestiny)
+            {
+                muniDestiny = aMuni;
+                bDestinyFound = true;
+            }
+        }
+
+        if(bOriginFound && bDestinyFound)
+        {
+            if(muniOrigin.getGauchosQty() < Qty)
+            {
+                //TODO municipalidad no tiene tantos gauchos
+                return;
+            }
+
+            muniOrigin.addGauchos(-Qty);
+            muniDestiny.addGauchos(Qty);
+        }
+        else
+        {
+            //TODO no se encontraron los municipios
+            return;
+        }
+
+    }
 }

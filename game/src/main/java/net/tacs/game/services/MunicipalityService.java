@@ -26,4 +26,6 @@ public interface MunicipalityService {
 	public void changeState(Municipality myMunicipality, MunicipalityState newState);
 
 	public void produceGauchos(Match match, User user);
+
+	public void moveGauchos(Match match, long IdOrigin, long IdDestiny, int Qty);
 }

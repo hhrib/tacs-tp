@@ -4,6 +4,7 @@ import net.tacs.game.GameApplication;
 import net.tacs.game.controller.MatchController;
 import net.tacs.game.exceptions.MatchException;
 import net.tacs.game.mapper.AuthUserToUserMapper;
+import net.tacs.game.model.*;
 import net.tacs.game.model.bean.CreateMatchBean;
 import net.tacs.game.model.enums.MatchState;
 import net.tacs.game.model.enums.MunicipalityState;
@@ -26,12 +27,6 @@ import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-
-import net.tacs.game.model.ApiError;
-import net.tacs.game.model.Match;
-import net.tacs.game.model.Municipality;
-import net.tacs.game.model.Province;
-import net.tacs.game.model.User;
 
 import static net.tacs.game.GameApplication.*;
 
@@ -248,12 +243,14 @@ public class MatchServiceImpl implements MatchService {
 
         MatchConfiguration newConfig = new MatchConfiguration();
 
-        newConfig.setMultDefense(newMatchBean.getConfigs().get(0));
-        newConfig.setMultGauchosProduction(newMatchBean.getConfigs().get(1));
-        newConfig.setMultGauchosDefense(newMatchBean.getConfigs().get(2));
-        newConfig.setMultHeight(newMatchBean.getConfigs().get(3));
-        newConfig.setMultDistance(newMatchBean.getConfigs().get(4));
-        newConfig.setInitialGauchos(newMatchBean.getConfigs().get(5).intValue());
+        if(newMatchBean.getConfigs() != null) {
+            newConfig.setMultDefense(newMatchBean.getConfigs().get(0));
+            newConfig.setMultGauchosProduction(newMatchBean.getConfigs().get(1));
+            newConfig.setMultGauchosDefense(newMatchBean.getConfigs().get(2));
+            newConfig.setMultHeight(newMatchBean.getConfigs().get(3));
+            newConfig.setMultDistance(newMatchBean.getConfigs().get(4));
+            newConfig.setInitialGauchos(newMatchBean.getConfigs().get(5).intValue());
+        }
 
         return newConfig;
     }

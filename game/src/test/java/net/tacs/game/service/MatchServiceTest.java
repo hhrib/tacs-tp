@@ -20,7 +20,6 @@ import net.tacs.game.services.impl.MunicipalityServiceImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.tacs.game.GameApplication;
-import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -61,6 +60,7 @@ public class MatchServiceTest {
     private Municipality tigre;
     private Municipality lomas;
     private Municipality matanza;
+    private MatchConfiguration configuration;
 
     @Before
     public void setUp() {
@@ -78,6 +78,7 @@ public class MatchServiceTest {
         tigre = new Municipality("Tigre");
         lomas = new Municipality("Lomas de Zamora");
         matanza = new Municipality("La Matanza");
+        configuration = new MatchConfiguration();
     }
 
     @Test
@@ -112,13 +113,6 @@ public class MatchServiceTest {
         user1.setId("ABC1");
         user2.setId("ABC2");
 
-        lanus.setElevation(3D);
-        avellaneda.setElevation(3D);
-        quilmes.setElevation(3D);
-        tigre.setElevation(3D);
-        lomas.setElevation(3D);
-        matanza.setElevation(3D);
-
         lanus.setGauchosQty(300);
         avellaneda.setGauchosQty(300);
         quilmes.setGauchosQty(300);
@@ -134,11 +128,6 @@ public class MatchServiceTest {
         matanza.setCentroide(new Centroide("5", "5"));
 
         Mockito.when(municipalityService.getElevation(lanus.getCentroide())).thenReturn(3000D);
-        Mockito.when(municipalityService.getElevation(avellaneda.getCentroide())).thenReturn(3000D);
-        Mockito.when(municipalityService.getElevation(quilmes.getCentroide())).thenReturn(3000D);
-        Mockito.when(municipalityService.getElevation(tigre.getCentroide())).thenReturn(3000D);
-        Mockito.when(municipalityService.getElevation(lomas.getCentroide())).thenReturn(3000D);
-        Mockito.when(municipalityService.getElevation(matanza.getCentroide())).thenReturn(3000D);
 
         Match match = matchService.createMatch(bean);
 
@@ -180,12 +169,11 @@ public class MatchServiceTest {
     }
 
     @Test
-    void CalculateMatchConfig(){
+    public void CalculateMatchConfig(){
         Match match = new Match();
-        MatchConfiguration matchConfiguration = new MatchConfiguration();
         match.setMap(buenosAires);
         match.getMap().setMunicipalities(Arrays.asList(lanus, avellaneda, quilmes, tigre, lomas, matanza));
-        match.setConfig(matchConfiguration);
+        match.setConfig(configuration);
 
         lanus.setElevation(3000D);
         avellaneda.setElevation(2900D);
@@ -207,14 +195,14 @@ public class MatchServiceTest {
 
         matchService.CalculateConfigVariables(match);
 
-        assertEquals(3000, match.getConfig().getMaxHeight());
-        assertEquals(2500, match.getConfig().getMinHeight());
-        assertEquals(140.0071426749364D, match.getConfig().getMaxDist());
-        assertEquals(1.4142135623730951D, match.getConfig().getMinDist());
+        assertEquals(3000, match.getConfig().getMaxHeight(), 0.1D);
+        assertEquals(2500, match.getConfig().getMinHeight(), 0.1D);
+        assertEquals(140.00714D, match.getConfig().getMaxDist(), 0.0001D);
+        assertEquals(1.41421D, match.getConfig().getMinDist(), 0.0001D);
     }
 
     @Test(expected = MatchException.class)
-    public void createMatchUsersNotFoundTest() throws MatchException {
+    public void createMatchUsersNotFoundTest() throws MatchException, InterruptedException {
         CreateMatchBean bean = new CreateMatchBean();
         bean.setMunicipalitiesQty(6);
         bean.setProvinceId(99999997L);
@@ -231,42 +219,39 @@ public class MatchServiceTest {
         GameApplication.setUsers(Arrays.asList(user1,user2));
 
         Match match = matchService.createMatch(bean);
-
     }
 
     @Test(expected = MatchException.class)
-    public void createMatchWithNoUsersFailTest() throws MatchException {
+    public void createMatchWithNoUsersFailTest() throws MatchException, InterruptedException {
         CreateMatchBean bean = new CreateMatchBean();
         bean.setUserIds(new ArrayList<>());
 
         matchService.createMatch(bean);
-
     }
 
     @Test(expected = MatchException.class)
-    public void createMatchWithOneUserFailTest() throws MatchException {
+    public void createMatchWithOneUserFailTest() throws MatchException, InterruptedException {
         CreateMatchBean bean = new CreateMatchBean();
         bean.setUserIds(Arrays.asList("userTestId"));
 
         matchService.createMatch(bean);
-
     }
 
     @Test(expected = MatchException.class)
-    public void createMatchWithNoMapFailTest() throws MatchException {
+    public void createMatchWithNoMapFailTest() throws MatchException, InterruptedException {
         CreateMatchBean bean = new CreateMatchBean();
         bean.setUserIds(Arrays.asList("userTestId1", "userTestId2"));
 
         matchService.createMatch(bean);
-
     }
 
     @Test(expected = MatchException.class)
-    public void createMatchWithNotEnoughMunicipalitiesFailTest() throws MatchException {
+    public void createMatchWithNotEnoughMunicipalitiesFailTest() throws MatchException, InterruptedException {
         CreateMatchBean bean = new CreateMatchBean();
         bean.setMunicipalitiesQty(6);
         bean.setProvinceId(99999997L);
         bean.setUserIds(Arrays.asList("ABC1", "ABC2"));
+        bean.setConfigs(Arrays.asList(1.25D, 15D, 10D, 2D, 2D, 3000D));
 
         addProvince(buenosAires);
         addMunicipality(lanus);
@@ -283,7 +268,6 @@ public class MatchServiceTest {
         GameApplication.setUsers(Arrays.asList(user1, user2));
 
         matchService.createMatch(bean);
-
     }
 
     @Test
@@ -298,7 +282,6 @@ public class MatchServiceTest {
         List<Match> matches = matchService.findMatchesByDate(dateFrom.format(DateTimeFormatter.ISO_LOCAL_DATE), dateTo.format(DateTimeFormatter.ISO_LOCAL_DATE));
 
         assertTrue(!matches.isEmpty() && matches.get(0).getId().equals(match.getId()));
-
     }
 
     @Test(expected = MatchException.class)
@@ -321,7 +304,6 @@ public class MatchServiceTest {
         LocalDate dateFrom = LocalDate.of(2020, 9, 20);
 
         matchService.findMatchesByDate(dateFrom.format(DateTimeFormatter.ISO_LOCAL_DATE), dateTo.format(DateTimeFormatter.ISO_LOCAL_DATE));
-
     }
 
     @Test(expected = MatchException.class)

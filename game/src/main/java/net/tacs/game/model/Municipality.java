@@ -86,6 +86,10 @@ public class Municipality {
         this.gauchosQty = gauchosQty;
     }
 
+    public void addGauchos(int Quantity){
+	    this.gauchosQty += Quantity;
+    }
+
     @Override
     public String toString() {
         return "Municipality{" +
