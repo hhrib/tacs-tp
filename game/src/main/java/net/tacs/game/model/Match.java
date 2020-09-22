@@ -14,11 +14,12 @@ public class Match {
 
     private Long id;
 
-    // @OneToMany(cascade = {CascadeType.ALL})
     private List<User> users;
+
     private MatchState state;
-   // @OneToOne
+
     private Province map;
+
     private User winner;
 
     private MatchConfiguration config;

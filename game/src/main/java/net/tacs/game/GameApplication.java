@@ -66,6 +66,12 @@ public class GameApplication {
 		auth0Token = token;
 	}
 
+	public static void setMunicipalities(List<Municipality> newMunicipalities) { municipalities = newMunicipalities; }
+
+	public static void setProvinces(List<Province> newProvinces) { provinces = newProvinces; }
+
+	public static void setMatches(List<Match> newMatches) { matches = newMatches; }
+
 	public static List<Match> getMatches()
 	{
 		return matches;

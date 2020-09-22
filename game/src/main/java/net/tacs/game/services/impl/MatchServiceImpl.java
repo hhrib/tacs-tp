@@ -4,7 +4,6 @@ import net.tacs.game.GameApplication;
 import net.tacs.game.controller.MatchController;
 import net.tacs.game.exceptions.MatchException;
 import net.tacs.game.mapper.AuthUserToUserMapper;
-import net.tacs.game.model.*;
 import net.tacs.game.model.bean.CreateMatchBean;
 import net.tacs.game.model.enums.MatchState;
 import net.tacs.game.model.enums.MunicipalityState;
@@ -28,10 +27,15 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import net.tacs.game.model.ApiError;
+import net.tacs.game.model.Match;
+import net.tacs.game.model.Municipality;
+import net.tacs.game.model.Province;
+import net.tacs.game.model.User;
+
 import static net.tacs.game.GameApplication.*;
 
 @Service("matchService")
-//@Transactional
 public class MatchServiceImpl implements MatchService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MatchController.class);
@@ -145,23 +149,8 @@ public class MatchServiceImpl implements MatchService {
 
             if(!bUserFound)
             {
-                //Si no estaba en la bd lo buscamos en la api de Auth0
-                AuthUserResponse response = null;
-                try {
-                    response = securityProviderService.getUserById(GameApplication.getToken(), aId);
-                } catch (Exception e) {
-                    errors.add(new ApiError("ERROR_GETTING_UPDATED_USER", "Error when getting user from updated source"));
-                    throw new MatchException(HttpStatus.INTERNAL_SERVER_ERROR, errors);
-                }
-                if (response == null) {
-                    //No estaba tampoco en la api. Not Found.
-                    errors.add(new ApiError("USER_NOT_FOUND", "Users not found"));
-                    throw new MatchException(HttpStatus.NOT_FOUND, errors);
-                }
-                //Estaba en la api, actualizamos BD y seguimos flujo normal
-                User newUser = AuthUserToUserMapper.mapUser(response);
-                GameApplication.addUser(newUser);
-                usersInMatch.add(newUser);
+                errors.add(new ApiError("USER_NOT_FOUND", "Users not found"));
+                throw new MatchException(HttpStatus.NOT_FOUND, errors);
             }
         }
 
@@ -197,7 +186,7 @@ public class MatchServiceImpl implements MatchService {
 
                 if (newMatchBean.getMunicipalitiesQty() > aProvince.getMunicipalities().size()) {
                     errors.add(new ApiError("EXCEEDED_MUNICIPALITIES_LIMIT",
-                            "Amount of municipalities selected exceeds amount of province's amount of municipalities"));
+                            "Quantity of municipalities selected exceeds province availability"));
 
                     throw new MatchException(HttpStatus.BAD_REQUEST, errors);
                 }
