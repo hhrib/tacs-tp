@@ -4,6 +4,7 @@ import net.tacs.game.GameApplication;
 import net.tacs.game.controller.MatchController;
 import net.tacs.game.exceptions.MatchException;
 import net.tacs.game.mapper.AuthUserToUserMapper;
+import net.tacs.game.model.*;
 import net.tacs.game.model.bean.CreateMatchBean;
 import net.tacs.game.model.enums.MatchState;
 import net.tacs.game.model.enums.MunicipalityState;
@@ -11,6 +12,8 @@ import net.tacs.game.model.opentopodata.auth.AuthUserResponse;
 import net.tacs.game.services.MatchService;
 import net.tacs.game.services.ProvinceService;
 import net.tacs.game.services.SecurityProviderService;
+import net.tacs.game.services.MunicipalityService;
+import org.junit.rules.Timeout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,13 +25,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-
-import net.tacs.game.model.ApiError;
-import net.tacs.game.model.Match;
-import net.tacs.game.model.Municipality;
-import net.tacs.game.model.Province;
-import net.tacs.game.model.User;
 
 import static net.tacs.game.GameApplication.*;
 
@@ -37,11 +35,8 @@ public class MatchServiceImpl implements MatchService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MatchController.class);
 
-//    @Autowired
-//    private MatchRepository matchRepository;
-//
-//    @Autowired
-//    private UserRepository userRepository;
+    @Autowired
+    private MunicipalityService municipalityService;
 
     @Autowired
     private SecurityProviderService securityProviderService;
@@ -93,8 +88,7 @@ public class MatchServiceImpl implements MatchService {
     }
 
     @Override
-    public Match createMatch(CreateMatchBean newMatchBean) throws MatchException {
-
+    public Match createMatch(CreateMatchBean newMatchBean) throws MatchException, InterruptedException {
         Match newMatch = validateAndGenerateMatch(newMatchBean);
 
         newMatch.setDate(LocalDateTime.now());
@@ -110,7 +104,7 @@ public class MatchServiceImpl implements MatchService {
         return newMatch;
     }
 
-    private Match validateAndGenerateMatch(CreateMatchBean newMatchBean) throws MatchException {
+    private Match validateAndGenerateMatch(CreateMatchBean newMatchBean) throws MatchException, InterruptedException {
         List<ApiError> errors = new ArrayList<>();
         //TODO Algunas de estas validaciones se pueden hacer con annotations en los models. Revisar.
         if (newMatchBean.getUserIds() == null || newMatchBean.getUserIds().isEmpty()) {
@@ -122,6 +116,7 @@ public class MatchServiceImpl implements MatchService {
         if (newMatchBean.getProvinceId() == null) {
             errors.add(new ApiError("MATCH_EMPTY_MAP", "Match Map not specified"));
         }
+        //TODO error al no recibir configs
 
         if (!errors.isEmpty()) {
             throw new MatchException(HttpStatus.BAD_REQUEST, errors);
@@ -155,6 +150,10 @@ public class MatchServiceImpl implements MatchService {
         }
 
         newMatch.setUsers(usersInMatch);
+
+        //crear configuracion
+        MatchConfiguration newConfig = CreateConfig(newMatchBean);
+        newMatch.setConfig(newConfig);
 
         Province newProvince = new Province();
 
@@ -203,15 +202,16 @@ public class MatchServiceImpl implements MatchService {
                     muni.setNombre(tempMunicipalities.get(selectedMuniIndex).getNombre());
                     selectedIndexes.add(selectedMuniIndex);
 
-                    //TODO o buscar de la api o de la cache
-                    muni.setElevation(tempMunicipalities.get(selectedMuniIndex).getElevation());
+                    muni.setCentroide(tempMunicipalities.get(selectedMuniIndex).getCentroide());
 
-                    //TODO Gauchos son los mismos para todos?
-                    muni.setGauchosQty(tempMunicipalities.get(selectedMuniIndex).getGauchosQty());
+                    muni.setElevation(municipalityService.getElevation(muni.getCentroide()));
 
-                    //TODO muni.setProvince(province); <--- la municipalidad necesita saber la provincia a la que pertenece?
+                    //TODO: LA API SOLO ME DEJA HACER 1 REQUEST POR SEGUNDO
+                    TimeUnit.SECONDS.sleep(1);
 
-                    //TODO Por defecto se pone en defensa?
+                    muni.setGauchosQty(newMatch.getConfig().getInitialGauchos());
+
+                    //Por defecto se pone en defensa
                     muni.setState(MunicipalityState.DEFENSE);
 
                     newProvince.addMunicipality(muni);
@@ -222,6 +222,8 @@ public class MatchServiceImpl implements MatchService {
                 //asignar municipalidades a usuarios
                 assignMunicipalities(newMatch.getMap().getMunicipalities(), newMatch.getUsers());
 
+                CalculateConfigVariables(newMatch);
+
                 return newMatch;
             }
         }
@@ -230,6 +232,79 @@ public class MatchServiceImpl implements MatchService {
                 "Province Id does not exist"));
 
         throw new MatchException(HttpStatus.NOT_FOUND, errors);
+    }
+
+    /**
+     * @method CreateConfig
+     * @param newMatchBean
+     * @return the config class of the created match
+     */
+    private MatchConfiguration CreateConfig(CreateMatchBean newMatchBean) {
+
+        MatchConfiguration newConfig = new MatchConfiguration();
+
+        if(newMatchBean.getConfigs() != null) {
+            newConfig.setMultDefense(newMatchBean.getConfigs().get(0));
+            newConfig.setMultGauchosProduction(newMatchBean.getConfigs().get(1));
+            newConfig.setMultGauchosDefense(newMatchBean.getConfigs().get(2));
+            newConfig.setMultHeight(newMatchBean.getConfigs().get(3));
+            newConfig.setMultDistance(newMatchBean.getConfigs().get(4));
+            newConfig.setInitialGauchos(newMatchBean.getConfigs().get(5).intValue());
+        }
+
+        return newConfig;
+    }
+
+    /**
+     * @method CalculateConfigMultipliers
+     * @param match
+     * @description calcula las variables de maxima altura y distancia
+     */
+    @Override
+    public void CalculateConfigVariables(Match match)
+    {
+        double MaxHeight = 0;
+        double MinHeight = 100000;
+        double MaxDistance = 0;
+        double MinDistance = 100000;
+
+        for (Municipality aMuni : match.getMap().getMunicipalities())
+        {
+            //calculate max and min heights
+            if(aMuni.getElevation() > MaxHeight)
+            {
+                MaxHeight = aMuni.getElevation();
+            }
+            if(aMuni.getElevation() < MinHeight)
+            {
+                MinHeight = aMuni.getElevation();
+            }
+
+            //calculate distances
+            List<Municipality> municipalityList = match.getMap().getMunicipalities();
+
+            for (Municipality otherMuni: municipalityList)
+            {
+                if(aMuni != otherMuni)
+                {
+                    double distance = aMuni.getCentroide().getDistance(otherMuni.getCentroide());
+
+                    if(distance > MaxDistance)
+                    {
+                        MaxDistance = distance;
+                    }
+                    if(distance < MinDistance)
+                    {
+                        MinDistance = distance;
+                    }
+                }
+            }
+        }
+
+        match.getConfig().setMaxHeight(MaxHeight);
+        match.getConfig().setMinHeight(MinHeight);
+        match.getConfig().setMaxDist(MaxDistance);
+        match.getConfig().setMinDist(MinDistance);
     }
 
     private List<LocalDateTime> validateDatesToSearch(String isoDateFrom, String isoDateTo) throws MatchException {

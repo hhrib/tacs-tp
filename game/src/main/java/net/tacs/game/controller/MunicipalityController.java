@@ -34,8 +34,6 @@ public class MunicipalityController {
 
         List<Municipality> municipalities = new ArrayList<>();
         Municipality municipalityDefense = new Municipality("Cordoba");
-        municipalityDefense.setProvince(new Province("Cordoba"));
-
         municipalityDefense.setOwner(new User("testUser"));
         municipalityDefense.setGauchosQty(5);
         municipalityDefense.setElevation(100D);
@@ -44,7 +42,6 @@ public class MunicipalityController {
         municipalities.add(municipalityDefense);
 
         Municipality municipalityProduction = new Municipality("Alta Gracia");
-        municipalityProduction.setProvince(new Province("Cordoba"));
         municipalityProduction.setOwner(new User("testUserRival"));
         municipalityProduction.setGauchosQty(5);
         municipalityProduction.setElevation(100D);

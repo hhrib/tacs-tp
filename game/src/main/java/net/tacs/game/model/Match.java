@@ -22,6 +22,7 @@ public class Match {
 
     private User winner;
 
+    private MatchConfiguration config;
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonProperty("date")
@@ -66,6 +67,14 @@ public class Match {
 
     public void setMap(Province map) {
         this.map = map;
+    }
+
+    public MatchConfiguration getConfig() {
+        return config;
+    }
+
+    public void setConfig(MatchConfiguration config) {
+        this.config = config;
     }
 
     public Match(){

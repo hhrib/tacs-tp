@@ -8,6 +8,7 @@ public class CreateMatchBean {
     private Long provinceId;
     private Integer municipalitiesQty;
     private List<String> userIds;
+    private List<Double> configs;
 
     public Long getProvinceId() {
         return provinceId;
@@ -31,6 +32,14 @@ public class CreateMatchBean {
 
     public void setUserIds(List<String> userIds) {
         this.userIds = userIds;
+    }
+
+    public List<Double> getConfigs() {
+        return configs;
+    }
+
+    public void setConfigs(List<Double> configs) {
+        this.configs = configs;
     }
 
     @Override
