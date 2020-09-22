@@ -1,6 +1,9 @@
 package net.tacs.game.model.bean;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import net.tacs.game.model.User;
 import net.tacs.game.model.enums.MatchState;
 
@@ -14,6 +17,9 @@ public class MatchBeanResponse {
 
     List<User> users;
 
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonProperty("date")
     LocalDateTime date;
 
     MatchState state;

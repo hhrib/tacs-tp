@@ -8,6 +8,7 @@ import { AppComponent } from './app.component';
 import { MenuComponent } from './components/menu/menu.component';
 import { HomeComponent } from './components/home/home.component';
 import { MatchCreateDialogComponent } from './components/match/match-create-dialog/match-create-dialog.component'
+import { MatchSearchComponent } from '../app/components/match/match-search/match-search.component'
 
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {MatMenuModule} from '@angular/material/menu';
@@ -18,8 +19,20 @@ import {MatDialogModule} from '@angular/material/dialog';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatSelectModule} from '@angular/material/select';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import { MatchDTO } from './models/match.dto';
-import { MatchSearchComponent } from './components/match/match-search/match-search.component';
+import {MatchDTO} from './models/match.dto';
+
+import {MatTableModule} from '@angular/material/table';
+import {MatInputModule} from '@angular/material/input';
+import {MatPaginatorModule} from '@angular/material/paginator'
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner'
+import {MatProgressBarModule} from '@angular/material/progress-bar';
+import {MatSortModule} from '@angular/material/sort'
+import { FindMatchDTO } from './models/findMatch.dto';
+import { MatchService } from './services/matches.service';
+
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { InterceptorService } from './services/interceptor.service';
+
 
 @NgModule({
   declarations: [
@@ -27,7 +40,7 @@ import { MatchSearchComponent } from './components/match/match-search/match-sear
     MenuComponent,
     HomeComponent,
     MatchCreateDialogComponent,
-    MatchSearchComponent,
+    MatchSearchComponent
    
   ],
   imports: [
@@ -43,12 +56,20 @@ import { MatchSearchComponent } from './components/match/match-search/match-sear
     ReactiveFormsModule,
     FormsModule,
     HttpClientModule,
-    AppRoutes
+    MatTableModule,
+    MatInputModule,
+    MatPaginatorModule,
+    MatProgressSpinnerModule,
+    MatSortModule,
+    MatProgressBarModule,
+    AppRoutes,
+    HttpClientModule
   ],
   entryComponents: [
-    MatchCreateDialogComponent
+    MatchCreateDialogComponent,
+    MatchSearchComponent
   ],
-  providers: [MatchDTO],
+  providers: [MatchDTO, FindMatchDTO, MatchService, { provide: HTTP_INTERCEPTORS, useClass: InterceptorService, multi: true }], 
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -1,10 +1,12 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { HomeComponent } from './components/home/home.component';
+import { MatchSearchComponent } from './components/match/match-search/match-search.component';
 
 const appRoutes: Routes = [
     //Ejemplo: { path: 'home', component: HomeComponent}
     { path: 'home', component: HomeComponent },
+    { path:'searchMatches', component: MatchSearchComponent},
     { path: '**', redirectTo: 'home' },
 ];
 

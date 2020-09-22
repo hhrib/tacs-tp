@@ -1,24 +1,65 @@
-<!--
-<form (submit)="filterMatches()">
-    <div class="row">
-        <div class="col-md-2 form-group">
-			<b>State</b>
-			<input type="text" class="form-control" name="stateFilter" [(ngModel)]="matchService.matchFilter.state">
-		</div>
-		<div class="col-md-3 form-group">
-			<b>Initial Date</b>
-			<input type="text" class="form-control" name="initialDateFilter" [(ngModel)]="matchService.matchFilter.initialDate">
-        </div>
-        <div class="col-md-3 form-group">
-			<b>Final Date</b>
-			<input type="text" class="form-control" name="finalDateFilter" [(ngModel)]="matchService.matchFilter.finalDate">
-		</div>
-	</div>
-    <div class="row">
-        <div class="col-md-12 form-group">
-            <button type="submit" class="btn btn-primary">Buscar</button>
-        </div>
-    </div>
-</form>
+<div class="search-div">
+	<mat-form-field class="search-form-field" floatLabel="never">
+	  <input matInput [(ngModel)]="searchKey" placeholder="Enter what you are looking for!" autocomplete="off" (keyup)="applyFilter()">
+	  <button mat-button matSuffix mat-icon-button aria-label="Clear"*ngIf="searchKey"  (click)="onSearchClear()">
+		<mat-icon>close</mat-icon>
+	  </button>
+	</mat-form-field>
+  </div>
+<div style="padding: 5px;">
+<table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
+	<!-- Match ID Column -->
+	<ng-container matColumnDef="id">
+	  <th mat-header-cell *matHeaderCellDef mat-sort-header> Match ID. </th>
+	  <td mat-cell *matCellDef="let element"> {{element.id}} </td>
+	</ng-container>
+  
+	<!-- Province Column -->
+	<ng-container matColumnDef="map">
+	  <th mat-header-cell *matHeaderCellDef mat-sort-header> Province </th>
+	  <td mat-cell *matCellDef="let element of "> {{element.map}} </td>
+	</ng-container>
+  
+	<!-- State Column -->
+	<ng-container matColumnDef="state">
+	  <th mat-header-cell *matHeaderCellDef mat-sort-header> State </th>
+	  <td mat-cell *matCellDef="let element"> {{element.state}} </td>
+	</ng-container>
+  
+	<!-- Players Column -->
+	<ng-container matColumnDef="users">
+	  <th mat-header-cell *matHeaderCellDef mat-sort-header> Players </th>
+	  <td mat-cell *matCellDef="let element">
+		<span *ngFor="let user of element.users">{{user.username}} </span>
+	  </td>
+	</ng-container>
 
--->
+	<!-- Starting date Column -->
+	<ng-container matColumnDef="date">
+		<th mat-header-cell *matHeaderCellDef mat-sort-header> Started at </th>
+		<td mat-cell *matCellDef="let element"> {{element.date}} </td>
+	</ng-container>
+	
+	<ng-container matColumnDef="loading">
+		<mat-footer-cell *matFooterCellDef colspan="5">
+		  Loading data...
+		</mat-footer-cell>
+	  </ng-container>
+	  <ng-container matColumnDef="noData">
+		<mat-footer-cell *matFooterCellDef colspan="5">
+		  No data.
+		</mat-footer-cell>
+	  </ng-container>
+
+	<tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+	<tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+	<mat-footer-row *matFooterRowDef="['loading']" [ngClass]="{'hide':dataSource!=null}"></mat-footer-row>
+    <mat-footer-row *matFooterRowDef="['noData']" [ngClass]="{'hide':!(dataSource!=null && dataSource.length==0)}"></mat-footer-row>
+  </table>
+  <mat-paginator [pageSizeOptions]="[5, 10, 25, 50]" [pageSize]="5" showFirstLastButtons></mat-paginator>
+  
+</div>
+  
+  <!-- Copyright 2020 Google LLC. All Rights Reserved.
+	  Use of this source code is governed by an MIT-style license that
+	  can be found in the LICENSE file at http://angular.io/license -->

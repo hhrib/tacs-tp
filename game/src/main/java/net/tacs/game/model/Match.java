@@ -1,9 +1,10 @@
 package net.tacs.game.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import net.tacs.game.model.enums.MatchState;
-import net.tacs.game.serializer.CustomLocalDateTimeSerializer;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -13,15 +14,18 @@ public class Match {
 
     private Long id;
 
-    // @OneToMany(cascade = {CascadeType.ALL})
     private List<User> users;
+
     private MatchState state;
-   // @OneToOne
+
     private Province map;
+
     private User winner;
 
-    @JsonSerialize(using = CustomLocalDateTimeSerializer.class)
-    private LocalDateTime date;
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonProperty("date")
+    public LocalDateTime date;
 
     public Long getId() {
         return id;
@@ -66,33 +70,6 @@ public class Match {
 
     public Match(){
     }
-    //User story 2.a
-//    TODO? agregar configuraciones al crear partida
-//    @Autowired
-//    public Match(String provinceName, Integer municipalitiesQty, long[] player_ids, UserService userService)
-//    {
-//        this.userService = userService;
-//        this.users = new ArrayList<User>();
-//        map = new Province(provinceName, municipalitiesQty);
-//
-//        search_users(player_ids);
-//
-//        state = MatchState.CREATED;
-//    }
-
-//    /**
-//     * @method search_users
-//     * @param player_ids
-//     * Busca en la aplicacion los usuarios que corresponden a la partida y los agrega a la lista
-//     */
-//    private void search_users(long[] player_ids)
-//    {
-//        for (long player_id : player_ids) {
-//            User user = userService.findById(player_id).orElseThrow(() -> new UserNotFoundException(player_id));
-//            users.add(user);
-//        }
-//    }
-
 
     @Override
     public String toString() {

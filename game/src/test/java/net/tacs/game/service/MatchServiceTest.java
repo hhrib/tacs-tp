@@ -294,19 +294,4 @@ public class MatchServiceTest {
         Match matchRetrieved = matchService.getMatchById("wrongNumberFormat");
     }
 
-    @Test
-    public void whenSerializingJava8DateWithCustomSerializer_thenCorrect()
-            throws JsonProcessingException {
-
-        LocalDateTime date = LocalDateTime.of(2014, 12, 20, 2, 30);
-        Match match = new Match();
-        match.setDate(LocalDateTime.now());
-
-        ObjectMapper mapper = new ObjectMapper();
-        String result = mapper.writeValueAsString(match);
-        assertThat(result, containsString("2014-12-20T02:30:00" ));
-    }
-
-
-
 }
