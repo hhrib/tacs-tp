@@ -22,9 +22,9 @@
   
   <mat-menu #menuOptions="matMenu"> 
     <button mat-menu-item (click)="openDialogCreateMatch()">New game</button>
-    <p routerLink="/searchMatches" routerLinkActive="active">
-    <button mat-menu-item styles="text-decoration: none">Search matches</button></p>
-    <button mat-menu-item (click)="auth.logout()" *ngIf="auth.loggedIn">Log Out</button>
+    <button routerLink="/searchMatches" routerLinkActive="active" mat-menu-item styles="text-decoration: none">Search matches</button>
+    <!-- <button routerLink="/mapMatch" routerLinkActive="active" mat-menu-item styles="text-decoration: none">Map</button> -->
+    <button mat-menu-item (click)="auth.logout()" *ngIf="auth.loggedIn" style="margin-top: 5px;">Log Out</button>
   </mat-menu>
 </p>
 

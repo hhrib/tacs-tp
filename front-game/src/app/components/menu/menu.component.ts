@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router} from '@angular/router';
+
 import { MatchService } from '../../services/matches.service';
 import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {MatSelectModule} from '@angular/material/select';
@@ -8,6 +10,9 @@ import { AuthService } from '../../services/auth.service';
 import { MatchCreateDialogComponent } from '../../components/match/match-create-dialog/match-create-dialog.component';
 import { MatchSearchComponent } from '../match/match-search/match-search.component'
 import { ProvincesService } from 'src/app/services/provinces.service';
+import { windowWhen } from 'rxjs/operators';
+import { MatchDTO } from 'src/app/models/match.dto';
+
 
 @Component({
   selector: 'app-menu',
@@ -23,6 +28,9 @@ export class MenuComponent implements OnInit {
     public matchService: MatchService,
     public dialog: MatDialog,
     public auth: AuthService,
+    public match: MatchDTO,
+    public route: ActivatedRoute,
+    public router: Router,
     ) { }
 
   ngOnInit(): void {
@@ -40,11 +48,6 @@ export class MenuComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       console.log('The dialog was closed');
       console.log(result);
-      
-      this.matchService.createMatch(result).subscribe(
-        response => console.log(response),
-        err => console.log(err)
-      );
     });
   }
 }

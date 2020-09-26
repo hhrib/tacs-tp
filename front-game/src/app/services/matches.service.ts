@@ -35,6 +35,12 @@ export class MatchService {
         return this.http.post<any>(`${MATCH_URL}/`, matchJSON, httpOptions);
     }
 
+    public async createNewMatch(match: MatchDTO) {
+        let matchJSON = JSON.stringify(match);
+        console.log(matchJSON);
+        return await this.http.post<any>(`${MATCH_URL}/`, matchJSON, httpOptions).toPromise();
+    }
+
     /*public editMatch(match: MatchDTO, matchId: any = match.id): any {
        //return this.http.put<MatchResponse>(`${MATCH_URL}/${matchId}`, match);
         return this.http.put<any>(`${MATCH_URL}/${matchId}`, match);

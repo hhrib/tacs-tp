@@ -33,6 +33,9 @@ import { MatchService } from './services/matches.service';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { InterceptorService } from './services/interceptor.service';
 
+import { MatchMapComponent } from './components/match/match-map/match-map.component';
+import { MatchComponent } from './components/match/match/match.component';
+
 
 @NgModule({
   declarations: [
@@ -40,7 +43,9 @@ import { InterceptorService } from './services/interceptor.service';
     MenuComponent,
     HomeComponent,
     MatchCreateDialogComponent,
-    MatchSearchComponent
+    MatchSearchComponent,
+    MatchMapComponent,
+    MatchComponent
    
   ],
   imports: [

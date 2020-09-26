@@ -2,12 +2,17 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { HomeComponent } from './components/home/home.component';
 import { MatchSearchComponent } from './components/match/match-search/match-search.component';
+import { MatchComponent } from './components/match/match/match.component';
+import { AuthGuard } from './services/auth.guard';
+
 
 const appRoutes: Routes = [
     //Ejemplo: { path: 'home', component: HomeComponent}
     { path: 'home', component: HomeComponent },
-    { path:'searchMatches', component: MatchSearchComponent},
+    { path:'searchMatches', component: MatchSearchComponent, canActivate: [AuthGuard]},
+    { path:'mapMatch', component: MatchComponent, canActivate: [AuthGuard]},
     { path: '**', redirectTo: 'home' },
+
 ];
 
 export const AppRoutes = RouterModule.forRoot(appRoutes);

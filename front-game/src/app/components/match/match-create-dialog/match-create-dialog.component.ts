@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import {MatDialogModule, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatSelectModule} from '@angular/material/select';
@@ -8,6 +8,8 @@ import {UserDTO} from '../../../models/user.dto';
 import {ProvinceDTO} from '../../../models/province.dto';
 import { ProvincesService } from 'src/app/services/provinces.service';
 import { UsersService } from 'src/app/services/users.service';
+import { MatchService } from 'src/app/services/matches.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-match-create-dialog',
@@ -62,11 +64,16 @@ export class MatchCreateDialogComponent implements OnInit {
   ngOnInit(): void {
   }
   
+  clicked = false;
+
   constructor(
     public provinceService: ProvincesService,
     public userService: UsersService,
     public dialogRef: MatDialogRef<MatchCreateDialogComponent>,
-    public matchInput: MatchDTO)
+    public matchInput: MatchDTO,
+    public matchService: MatchService,
+    public route: ActivatedRoute,
+    public router: Router)
     {
       this.provinceService.getProvincesForCreation().subscribe(
         response => this.provinceList = response,
@@ -82,11 +89,18 @@ export class MatchCreateDialogComponent implements OnInit {
   }
 
   onSubmit(form: NgForm){
+    this.clicked = true;
+    this.dialogRef.disableClose = true;
     this.matchInput.municipalitiesQty = form.value.quantity;
     this.matchInput.provinceId = form.value.province;
     this.matchInput.userIds = form.value.players;
+    this.dialogRef.disableClose;
+    this.matchService.createMatch(this.matchInput).subscribe(
+      response => {console.log(response);
+        this.router.navigate(['/mapMatch']);
+        this.dialogRef.close(this.matchInput);},
+      err => {console.log(err)}
+    );
     
-    this.dialogRef.close(this.matchInput)
   }
-  
 }
