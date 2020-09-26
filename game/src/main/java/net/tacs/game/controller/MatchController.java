@@ -10,6 +10,8 @@ import net.tacs.game.model.Match;
 import net.tacs.game.model.dto.CreateMatchDTO;
 import net.tacs.game.model.dto.MatchDTOResponse;
 import net.tacs.game.model.dto.MuniStatisticsDTOResponse;
+import net.tacs.game.model.dto.UpdateMunicipalityStateDTO;
+import net.tacs.game.model.enums.MunicipalityState;
 import net.tacs.game.services.MatchService;
 import net.tacs.game.services.UserService;
 import org.slf4j.Logger;
@@ -88,6 +90,12 @@ public class MatchController {
     public ResponseEntity<List<MuniStatisticsDTOResponse>> getAllStatistics(@PathVariable("id") String id) throws MatchException {
         List<MuniStatisticsDTOResponse> stats = this.matchService.getAllStatisticsForMatch(id);
         return new ResponseEntity<>(stats, HttpStatus.OK);
+    }
+
+    @PatchMapping("/matches/{matchId}/municipalities/{muniId}/")
+    public ResponseEntity updateMunicipalityState(@PathVariable("matchId") String matchId, @PathVariable("muniId") String muniId, @RequestBody UpdateMunicipalityStateDTO dto) throws MatchException {
+        this.matchService.updateMunicipalityState(matchId, muniId, dto);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
     /**

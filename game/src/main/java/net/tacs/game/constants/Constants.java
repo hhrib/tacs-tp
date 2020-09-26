@@ -15,4 +15,7 @@ public class Constants {
     public static final String MATCH_NOT_FOUND_CODE = "MATCH_NOT_FOUND";
     public static final String MATCH_NOT_FOUND_DETAIL = "Match not found for provided id";
 
+    public static final String MUNICIPALITY_NOT_FOUND_CODE = "MUNICIPALITY_NOT_FOUND";
+    public static final String MUNICIPALITY_NOT_FOUND_DETAIL = "Municipality not found for provided id";
+
 }

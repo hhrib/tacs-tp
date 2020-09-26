@@ -7,6 +7,7 @@ import net.tacs.game.mapper.MuniToStatsDTOMapper;
 import net.tacs.game.model.*;
 import net.tacs.game.model.dto.CreateMatchDTO;
 import net.tacs.game.model.dto.MuniStatisticsDTOResponse;
+import net.tacs.game.model.dto.UpdateMunicipalityStateDTO;
 import net.tacs.game.model.enums.MatchState;
 import net.tacs.game.model.enums.MunicipalityState;
 import net.tacs.game.repositories.MatchRepository;
@@ -28,8 +29,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static net.tacs.game.GameApplication.*;
-import static net.tacs.game.constants.Constants.MATCH_NOT_FOUND_CODE;
-import static net.tacs.game.constants.Constants.MATCH_NOT_FOUND_DETAIL;
+import static net.tacs.game.constants.Constants.*;
+import static net.tacs.game.constants.Constants.MUNICIPALITY_NOT_FOUND_DETAIL;
 
 @Service("matchService")
 public class MatchServiceImpl implements MatchService {
@@ -53,14 +54,14 @@ public class MatchServiceImpl implements MatchService {
 
     @Override
     public Match getMatchById(String id) throws MatchException {
-        Long idLong = validateAndGetIdLong(id);
+        Long idLong = validateAndGetIdLong(id, "MATCH");
         Optional<Match> matchToRetrieve = matchRepository.findById(idLong);
         return matchToRetrieve.orElseThrow(() -> new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(MATCH_NOT_FOUND_CODE, MATCH_NOT_FOUND_DETAIL))));
     }
 
     @Override
     public List<MuniStatisticsDTOResponse> getAllStatisticsForMatch(String id) throws MatchException {
-        Long idLong = validateAndGetIdLong(id);
+        Long idLong = validateAndGetIdLong(id, "MATCH");
         Optional<Match> matchOptional = matchRepository.findById(idLong);
         Match match = matchOptional.orElseThrow(() -> new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(MATCH_NOT_FOUND_CODE, MATCH_NOT_FOUND_DETAIL))));
         List<Municipality> munis = match.getMap().getMunicipalities();
@@ -307,6 +308,21 @@ public class MatchServiceImpl implements MatchService {
         match.getConfig().setMinDist(MinDistance);
     }
 
+    @Override
+    public void updateMunicipalityState(String matchIdString, String muniIdString, UpdateMunicipalityStateDTO dto) throws MatchException {
+        Long matchId = validateAndGetIdLong(matchIdString, "MATCH");
+        Integer muniId = validateAndGetIdLong(muniIdString, "MUNICIPALITY").intValue();
+        Optional<Match> matchOptional = matchRepository.findById(matchId);
+        Match match = matchOptional.orElseThrow(() -> new MatchException(HttpStatus.NOT_FOUND, Arrays.asList(new ApiError(MATCH_NOT_FOUND_CODE, MATCH_NOT_FOUND_DETAIL))));
+
+        Optional<Municipality> muniOptional = match.getMap().getMunicipalities().stream().filter(muni -> muni.getId().equals(muniId)).findFirst();
+        Municipality muni = muniOptional.orElseThrow(() -> new MatchException(HttpStatus.NOT_FOUND, Arrays.asList(new ApiError(MUNICIPALITY_NOT_FOUND_CODE, MUNICIPALITY_NOT_FOUND_DETAIL))));
+
+        muni.setState(dto.getNewState());
+
+        matchRepository.update(match);
+    }
+
     private List<LocalDateTime> validateDatesToSearch(String isoDateFrom, String isoDateTo) throws MatchException {
         List<LocalDateTime> dates = new ArrayList<>();
         try {
@@ -346,16 +362,16 @@ public class MatchServiceImpl implements MatchService {
         }
     }
 
-    private Long validateAndGetIdLong(String idString) throws MatchException {
+    private Long validateAndGetIdLong(String idString, String entity) throws MatchException {
         Long idLong;
         if (idString == null || idString.isEmpty()) {
-            throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError("MATCH_ID_EMPTY", "Must provide an id")));
+            throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(entity.concat("_ID_EMPTY"), "Must provide an id")));
         }
         try {
             idLong = Long.valueOf(idString);
         } catch (NumberFormatException e) {
-            LOGGER.error("Invalid match number id", e);
-            throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError("MATCH_ID_INVALID", "Must provide a valid id")));
+            LOGGER.error("Invalid " + entity + " number id", e);
+            throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(entity.concat("_ID_INVALID"), "Must provide a valid id")));
         }
         return idLong;
     }

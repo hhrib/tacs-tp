@@ -5,6 +5,7 @@ import java.util.List;
 
 import net.tacs.game.exceptions.MatchException;
 import net.tacs.game.model.dto.MoveGauchosDTO;
+import net.tacs.game.model.dto.UpdateMunicipalityStateDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,9 +57,10 @@ public class MunicipalityController {
 	}
 
 	@PostMapping("/municipalities/gauchos")
-    public ResponseEntity<List<Municipality>> moveGauchos(@RequestBody MoveGauchosDTO gauchosBean) throws MatchException {
-        List<Municipality> municipalities = municipalityService.moveGauchos(gauchosBean);
+    public ResponseEntity<List<Municipality>> moveGauchos(@RequestBody MoveGauchosDTO dto) throws MatchException {
+        List<Municipality> municipalities = municipalityService.moveGauchos(dto);
         return new ResponseEntity<>(municipalities, HttpStatus.OK);
     }
+
 
 }

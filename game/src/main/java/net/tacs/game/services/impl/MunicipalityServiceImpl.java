@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 import net.tacs.game.exceptions.MatchException;
 import net.tacs.game.model.*;
 import net.tacs.game.model.dto.MoveGauchosDTO;
-import net.tacs.game.model.enums.MunicipalityState;
+import net.tacs.game.model.dto.UpdateMunicipalityStateDTO;
 import net.tacs.game.repositories.MatchRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -45,14 +45,12 @@ public class MunicipalityServiceImpl implements MunicipalityService {
 		return elevation;
 	}
 
+	@Override
 	public int attackMunicipality(Municipality myMunicipality, Municipality enemyMunicipality, MatchConfiguration config, int gauchosAttacking) {
 		return myMunicipality.attack(enemyMunicipality, config, gauchosAttacking);
 	}
 
-	public void changeState(Municipality myMunicipality, MunicipalityState newState) {
-		myMunicipality.setState(newState);
-	}
-
+	@Override
 	public void produceGauchos(Match match, User user) {
 		for (Municipality municipality : match.getMap().getMunicipalities()) {
 			if(municipality.getOwner().equals(user))
@@ -64,15 +62,12 @@ public class MunicipalityServiceImpl implements MunicipalityService {
 
     public List<Municipality> moveGauchos(MoveGauchosDTO requestBean) throws MatchException {
 
-        List<Long> idsError = new ArrayList<>();
-
         Optional<Match> matchOptional = matchRepository.findById(requestBean.getMatchId());
 
-        Match match = matchOptional.orElseThrow(() -> new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError("MATCH_NOT_FOUND", "Match not found for provided id"))));
+        Match match = matchOptional.orElseThrow(() -> new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(MATCH_NOT_FOUND_CODE, MATCH_NOT_FOUND_DETAIL))));
 
-        if(requestBean.getIdOriginMuni() == requestBean.getIdDestinyMuni())
+        if(requestBean.getIdOriginMuni().equals(requestBean.getIdDestinyMuni()))
         {
-            //TODO mover gauchos entre el mismo municipio no se permite
             throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(SAME_ORIGIN_DESTINY_CODE, SAME_ORIGIN_DESTINY_DETAIL)));
         }
 
@@ -101,7 +96,6 @@ public class MunicipalityServiceImpl implements MunicipalityService {
         {
             if(muniOrigin.getGauchosQty() < requestBean.getQty())
             {
-                //TODO municipalidad no tiene tantos gauchos
                 throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(NOT_ENOUGH_GAUCHOS_CODE, NOT_ENOUGH_GAUCHOS_DETAIL)));
             }
 
@@ -118,4 +112,5 @@ public class MunicipalityServiceImpl implements MunicipalityService {
         return Arrays.asList(muniOrigin, muniDestiny);
 
     }
+
 }

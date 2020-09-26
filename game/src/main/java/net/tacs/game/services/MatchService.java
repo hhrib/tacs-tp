@@ -4,6 +4,7 @@ import net.tacs.game.exceptions.MatchException;
 import net.tacs.game.model.Match;
 import net.tacs.game.model.dto.CreateMatchDTO;
 import net.tacs.game.model.dto.MuniStatisticsDTOResponse;
+import net.tacs.game.model.dto.UpdateMunicipalityStateDTO;
 
 import java.util.List;
 
@@ -20,4 +21,6 @@ public interface MatchService {
     public List<MuniStatisticsDTOResponse> getAllStatisticsForMatch(String id) throws MatchException;
 
     public void calculateConfigVariables(Match match);
+
+    public void updateMunicipalityState(String matchId, String muniId, UpdateMunicipalityStateDTO dto) throws MatchException;
 }

@@ -3,7 +3,7 @@ package net.tacs.game.services;
 import net.tacs.game.exceptions.MatchException;
 import net.tacs.game.model.*;
 import net.tacs.game.model.dto.MoveGauchosDTO;
-import net.tacs.game.model.enums.MunicipalityState;
+import net.tacs.game.model.dto.UpdateMunicipalityStateDTO;
 
 import java.util.List;
 
@@ -26,9 +26,8 @@ public interface MunicipalityService {
 	 */
 	public int attackMunicipality(Municipality myMunicipality, Municipality enemyMunicipality, MatchConfiguration config, int gauchosAttacking);
 
-	public void changeState(Municipality myMunicipality, MunicipalityState newState);
-
 	public void produceGauchos(Match match, User user);
 
 	public List<Municipality> moveGauchos(MoveGauchosDTO requestBean) throws MatchException;
+
 }
