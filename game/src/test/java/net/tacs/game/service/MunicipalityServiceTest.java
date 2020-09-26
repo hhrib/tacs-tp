@@ -1,7 +1,9 @@
 package net.tacs.game.service;
 
 import net.tacs.game.GameApplication;
+import net.tacs.game.exceptions.MatchException;
 import net.tacs.game.model.*;
+import net.tacs.game.model.dto.MoveGauchosDTO;
 import net.tacs.game.model.enums.MunicipalityState;
 import net.tacs.game.services.MunicipalityService;
 import org.junit.Before;
@@ -141,8 +143,9 @@ public class MunicipalityServiceTest {
     }
 
     @Test
-    public void municipalityMovesGauchos() {
+    public void municipalityMoveGauchosOK() throws MatchException {
         Match match = new Match();
+        match.setId(1235L);
         match.setMap(buenosAires);
         match.setConfig(configuration);
         buenosAires.setMunicipalities(Arrays.asList(Lanus, Avellaneda, Quilmes));
@@ -155,7 +158,15 @@ public class MunicipalityServiceTest {
         Avellaneda.setGauchosQty(2500);
         Quilmes.setGauchosQty(1500);
 
-        municipalityService.moveGauchos(match, 99999, 88888, 500);
+        GameApplication.addMatch(match);
+
+        MoveGauchosDTO dto = new MoveGauchosDTO();
+        dto.setMatchId(match.getId());
+        dto.setIdOriginMuni(99999);
+        dto.setIdDestinyMuni(88888);
+        dto.setQty(500);
+
+        municipalityService.moveGauchos(dto);
 
         assertEquals(3000, Lanus.getGauchosQty());
         assertEquals(2000, Avellaneda.getGauchosQty());

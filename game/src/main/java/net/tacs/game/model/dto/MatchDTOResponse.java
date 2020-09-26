@@ -1,4 +1,4 @@
-package net.tacs.game.model.bean;
+package net.tacs.game.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
-public class MatchBeanResponse {
+public class MatchDTOResponse {
 
     Long id;
 
@@ -70,7 +70,7 @@ public class MatchBeanResponse {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        MatchBeanResponse that = (MatchBeanResponse) o;
+        MatchDTOResponse that = (MatchDTOResponse) o;
         return id.equals(that.id) &&
                 Objects.equals(users, that.users) &&
                 date.equals(that.date) &&

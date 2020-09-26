@@ -1,9 +1,9 @@
-package net.tacs.game.model.bean;
+package net.tacs.game.model.dto;
 
 import java.util.List;
 import java.util.Objects;
 
-public class CreateMatchBean {
+public class CreateMatchDTO {
 
     private Long provinceId;
     private Integer municipalitiesQty;
@@ -55,7 +55,7 @@ public class CreateMatchBean {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        CreateMatchBean that = (CreateMatchBean) o;
+        CreateMatchDTO that = (CreateMatchDTO) o;
         return provinceId.equals(that.provinceId) &&
                 municipalitiesQty.equals(that.municipalitiesQty) &&
                 userIds.equals(that.userIds);

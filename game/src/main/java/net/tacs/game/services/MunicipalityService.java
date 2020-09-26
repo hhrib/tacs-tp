@@ -1,8 +1,11 @@
 package net.tacs.game.services;
 
+import net.tacs.game.exceptions.MatchException;
 import net.tacs.game.model.*;
+import net.tacs.game.model.dto.MoveGauchosDTO;
 import net.tacs.game.model.enums.MunicipalityState;
-import org.springframework.http.ResponseEntity;
+
+import java.util.List;
 
 public interface MunicipalityService {
 	/**
@@ -27,5 +30,5 @@ public interface MunicipalityService {
 
 	public void produceGauchos(Match match, User user);
 
-	public void moveGauchos(Match match, long IdOrigin, long IdDestiny, int Qty);
+	public List<Municipality> moveGauchos(MoveGauchosDTO requestBean) throws MatchException;
 }

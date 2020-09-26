@@ -2,7 +2,6 @@ package net.tacs.game.service;
 
 import static net.tacs.game.GameApplication.addMunicipality;
 import static net.tacs.game.GameApplication.addProvince;
-import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.*;
 
 
@@ -15,26 +14,19 @@ import java.util.List;
 
 import net.tacs.game.model.*;
 import net.tacs.game.services.MunicipalityService;
-import net.tacs.game.services.impl.MatchServiceImpl;
-import net.tacs.game.services.impl.MunicipalityServiceImpl;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import net.tacs.game.GameApplication;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import net.tacs.game.services.SecurityProviderService;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import net.tacs.game.exceptions.MatchException;
-import net.tacs.game.model.bean.CreateMatchBean;
+import net.tacs.game.model.dto.CreateMatchDTO;
 import net.tacs.game.services.MatchService;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -43,12 +35,13 @@ import org.springframework.test.context.junit4.SpringRunner;
 @SpringBootTest
 public class MatchServiceTest {
 
-    @InjectMocks
-    private MatchService matchService = new MatchServiceImpl();
-    @Mock
+    @Autowired
+    private MatchService matchService;
+
+    @MockBean
     private MunicipalityService municipalityService;
 
-    @Mock
+    @MockBean
     private SecurityProviderService securityProviderService;
 
     private User user1;
@@ -84,11 +77,11 @@ public class MatchServiceTest {
     @Test
     public void createMatchOKTest() throws MatchException, InterruptedException {
 
-        CreateMatchBean bean = new CreateMatchBean();
-        bean.setMunicipalitiesQty(6);
-        bean.setProvinceId(99999997L);
-        bean.setUserIds(Arrays.asList("ABC1","ABC2"));
-        bean.setConfigs(Arrays.asList(1.25D, 15D, 10D, 2D, 2D, 3000D));
+        CreateMatchDTO dto = new CreateMatchDTO();
+        dto.setMunicipalitiesQty(6);
+        dto.setProvinceId(99999997L);
+        dto.setUserIds(Arrays.asList("ABC1","ABC2"));
+        dto.setConfigs(Arrays.asList(1.25D, 15D, 10D, 2D, 2D, 3000D));
 
         addProvince(buenosAires);
         addMunicipality(lanus);
@@ -127,9 +120,21 @@ public class MatchServiceTest {
         lomas.setCentroide(new Centroide("4", "4"));
         matanza.setCentroide(new Centroide("5", "5"));
 
-        Mockito.when(municipalityService.getElevation(lanus.getCentroide())).thenReturn(3000D);
+        lanus.setElevation(1D);
+        avellaneda.setElevation(2D);
+        quilmes.setElevation(3D);
+        tigre.setElevation(4D);
+        lomas.setElevation(5D);
+        matanza.setElevation(6D);
 
-        Match match = matchService.createMatch(bean);
+        Mockito.when(municipalityService.getElevation(lanus.getCentroide())).thenReturn(3000D);
+        Mockito.when(municipalityService.getElevation(avellaneda.getCentroide())).thenReturn(3100D);
+        Mockito.when(municipalityService.getElevation(quilmes.getCentroide())).thenReturn(3200D);
+        Mockito.when(municipalityService.getElevation(tigre.getCentroide())).thenReturn(3300D);
+        Mockito.when(municipalityService.getElevation(lomas.getCentroide())).thenReturn(3400D);
+        Mockito.when(municipalityService.getElevation(matanza.getCentroide())).thenReturn(3500D);
+
+        Match match = matchService.createMatch(dto);
 
         //chequea que se hayan agregado correctamente los usuarios, la provincia y los municipios
         assertEquals("Pepe" , match.getUsers().get(0).getUsername());
@@ -193,7 +198,7 @@ public class MatchServiceTest {
         lomas.setCentroide(new Centroide("50", "80"));
         matanza.setCentroide(new Centroide("80", "50"));
 
-        matchService.CalculateConfigVariables(match);
+        matchService.calculateConfigVariables(match);
 
         assertEquals(3000, match.getConfig().getMaxHeight(), 0.1D);
         assertEquals(2500, match.getConfig().getMinHeight(), 0.1D);
@@ -203,10 +208,10 @@ public class MatchServiceTest {
 
     @Test(expected = MatchException.class)
     public void createMatchUsersNotFoundTest() throws MatchException, InterruptedException {
-        CreateMatchBean bean = new CreateMatchBean();
-        bean.setMunicipalitiesQty(6);
-        bean.setProvinceId(99999997L);
-        bean.setUserIds(Arrays.asList("ABC1","ABC2"));
+        CreateMatchDTO dto = new CreateMatchDTO();
+        dto.setMunicipalitiesQty(6);
+        dto.setProvinceId(99999997L);
+        dto.setUserIds(Arrays.asList("ABC1","ABC2"));
 
         addProvince(buenosAires);
         addMunicipality(lanus);
@@ -218,40 +223,40 @@ public class MatchServiceTest {
         user2.setId("user2");
         GameApplication.setUsers(Arrays.asList(user1,user2));
 
-        Match match = matchService.createMatch(bean);
+        Match match = matchService.createMatch(dto);
     }
 
     @Test(expected = MatchException.class)
     public void createMatchWithNoUsersFailTest() throws MatchException, InterruptedException {
-        CreateMatchBean bean = new CreateMatchBean();
-        bean.setUserIds(new ArrayList<>());
+        CreateMatchDTO dto = new CreateMatchDTO();
+        dto.setUserIds(new ArrayList<>());
 
-        matchService.createMatch(bean);
+        matchService.createMatch(dto);
     }
 
     @Test(expected = MatchException.class)
     public void createMatchWithOneUserFailTest() throws MatchException, InterruptedException {
-        CreateMatchBean bean = new CreateMatchBean();
-        bean.setUserIds(Arrays.asList("userTestId"));
+        CreateMatchDTO dto = new CreateMatchDTO();
+        dto.setUserIds(Arrays.asList("userTestId"));
 
-        matchService.createMatch(bean);
+        matchService.createMatch(dto);
     }
 
     @Test(expected = MatchException.class)
     public void createMatchWithNoMapFailTest() throws MatchException, InterruptedException {
-        CreateMatchBean bean = new CreateMatchBean();
-        bean.setUserIds(Arrays.asList("userTestId1", "userTestId2"));
+        CreateMatchDTO dto = new CreateMatchDTO();
+        dto.setUserIds(Arrays.asList("userTestId1", "userTestId2"));
 
-        matchService.createMatch(bean);
+        matchService.createMatch(dto);
     }
 
     @Test(expected = MatchException.class)
     public void createMatchWithNotEnoughMunicipalitiesFailTest() throws MatchException, InterruptedException {
-        CreateMatchBean bean = new CreateMatchBean();
-        bean.setMunicipalitiesQty(6);
-        bean.setProvinceId(99999997L);
-        bean.setUserIds(Arrays.asList("ABC1", "ABC2"));
-        bean.setConfigs(Arrays.asList(1.25D, 15D, 10D, 2D, 2D, 3000D));
+        CreateMatchDTO dto = new CreateMatchDTO();
+        dto.setMunicipalitiesQty(6);
+        dto.setProvinceId(99999997L);
+        dto.setUserIds(Arrays.asList("ABC1", "ABC2"));
+        dto.setConfigs(Arrays.asList(1.25D, 15D, 10D, 2D, 2D, 3000D));
 
         addProvince(buenosAires);
         addMunicipality(lanus);
@@ -267,7 +272,7 @@ public class MatchServiceTest {
         lanus.setGauchosQty(300);
         GameApplication.setUsers(Arrays.asList(user1, user2));
 
-        matchService.createMatch(bean);
+        matchService.createMatch(dto);
     }
 
     @Test

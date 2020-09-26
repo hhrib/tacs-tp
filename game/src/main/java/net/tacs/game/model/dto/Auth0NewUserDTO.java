@@ -1,6 +1,6 @@
-package net.tacs.game.model.bean;
+package net.tacs.game.model.dto;
 
-public class Auth0NewUserBean {
+public class Auth0NewUserDTO {
 
     private String userId;
 
