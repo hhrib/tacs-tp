@@ -9,6 +9,7 @@ import { MenuComponent } from './components/menu/menu.component';
 import { HomeComponent } from './components/home/home.component';
 import { MatchCreateDialogComponent } from './components/match/match-create-dialog/match-create-dialog.component'
 import { MatchSearchComponent } from '../app/components/match/match-search/match-search.component'
+import { SocketComponent } from './components/socket/socket.component';
 
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {MatMenuModule} from '@angular/material/menu';
@@ -40,8 +41,9 @@ import { InterceptorService } from './services/interceptor.service';
     MenuComponent,
     HomeComponent,
     MatchCreateDialogComponent,
-    MatchSearchComponent
-   
+    MatchSearchComponent,
+    SocketComponent
+
   ],
   imports: [
     BrowserModule,
@@ -69,7 +71,7 @@ import { InterceptorService } from './services/interceptor.service';
     MatchCreateDialogComponent,
     MatchSearchComponent
   ],
-  providers: [MatchDTO, FindMatchDTO, MatchService, { provide: HTTP_INTERCEPTORS, useClass: InterceptorService, multi: true }], 
+  providers: [MatchDTO, FindMatchDTO, MatchService, { provide: HTTP_INTERCEPTORS, useClass: InterceptorService, multi: true }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
