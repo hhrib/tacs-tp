@@ -173,6 +173,33 @@ public class MunicipalityServiceTest {
         assertEquals(2000, Quilmes.getGauchosQty());
     }
 
+    @Test (expected = MatchException.class)
+    public void municipalityMoveGauchosBlocked() throws MatchException {
+        Match match = new Match();
+        match.setId(1235L);
+        match.setMap(buenosAires);
+        match.setConfig(configuration);
+        buenosAires.setMunicipalities(Arrays.asList(Avellaneda, Quilmes));
+
+        Avellaneda.setId(99999);
+        Quilmes.setId(88888);
+
+        Avellaneda.setGauchosQty(2500);
+        Quilmes.setGauchosQty(1500);
+
+        Quilmes.setBlocked(true);
+
+        GameApplication.addMatch(match);
+
+        MoveGauchosDTO dto = new MoveGauchosDTO();
+        dto.setMatchId(match.getId());
+        dto.setIdOriginMuni(99999);
+        dto.setIdDestinyMuni(88888);
+        dto.setQty(500);
+
+        municipalityService.moveGauchos(dto);
+    }
+
     @Test
     public void allMunicipalitiesProduceGauchos()
     {
