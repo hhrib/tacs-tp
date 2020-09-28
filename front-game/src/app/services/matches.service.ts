@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { MatchDTO } from '../models/match.dto';
+import { MatchResponse } from '../models/Response/match.response';
 
 const MATCH_URL = environment.BASE_URL + 'matches';
 
@@ -28,7 +29,7 @@ export class MatchService {
         return this.http.get<any>(`${MATCH_URL}/${matchId}`);
     }
 
-    public createMatch(match: MatchDTO): Observable<any> {
+    public createMatch(match: MatchDTO): Observable<MatchResponse> {
         //return this.http.post<MatchResponse>(`${MATCH_URL}/`, match);
         let matchJSON = JSON.stringify(match);
         console.log(matchJSON);

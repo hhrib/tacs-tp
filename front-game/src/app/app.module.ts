@@ -36,8 +36,10 @@ import { InterceptorService } from './services/interceptor.service';
 import { MatchMapComponent } from './components/match/match-map/match-map.component';
 import { MatchComponent } from './components/match/match/match.component';
 import { MarkerService } from './services/marker.service';
+import { PopUpService } from './services/pop-up.service';
 
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
+import { MatchResponse } from './models/Response/match.response';
 
 @NgModule({
   declarations: [
@@ -77,7 +79,7 @@ import { LeafletModule } from '@asymmetrik/ngx-leaflet';
     MatchCreateDialogComponent,
     MatchSearchComponent
   ],
-  providers: [MatchDTO, FindMatchDTO, MatchService, MarkerService, 
+  providers: [MatchDTO, MatchResponse, FindMatchDTO, MatchService, MarkerService, PopUpService,
     { provide: HTTP_INTERCEPTORS, useClass: InterceptorService, multi: true }],
     
   bootstrap: [AppComponent]

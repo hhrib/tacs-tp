@@ -1,6 +1,7 @@
-import { AfterViewInit, Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import * as L from 'leaflet';
-import { icon, Marker } from 'leaflet';
+import { MatchDTO } from 'src/app/models/match.dto';
+import { MatchResponse } from 'src/app/models/Response/match.response';
 import { MarkerService } from 'src/app/services/marker.service';
 
 const iconRetinaUrl = 'assets/marker-icon-2x.png';
@@ -23,16 +24,19 @@ L.Marker.prototype.options.icon = iconDefault;
   templateUrl: './match-map.component.html',
   styleUrls: ['./match-map.component.css']
 })
-export class MatchMapComponent implements AfterViewInit {
+export class MatchMapComponent implements OnInit {
 
   private map;
 
-  constructor(private markerService: MarkerService) {
+  constructor(private match: MatchResponse, private markerService: MarkerService) {
   }
 
-  ngAfterViewInit(): void {
+  ngOnInit(): void {
+    console.log("MatchResponse: ");
+    console.log(this.match);
+    //this.initMap(this.match.map.centroide.lat, this.match.map.centroide.lon);
     this.initMap();
-    this.markerService.makeCapitalMarkers(this.map);
+    this.markerService.makeMunicipalitiesMarkers(this.map);
   }
 
   private initMap(): void {
