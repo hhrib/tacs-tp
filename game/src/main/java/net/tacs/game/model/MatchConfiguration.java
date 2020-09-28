@@ -5,11 +5,11 @@ public class MatchConfiguration {
     private double maxDist; //<-- Se calculan
     private double minHeight; //<-- Se calculan
     private double maxHeight; //<-- Se calculan
-    private double multDefense = 1.25D;
     private double multGauchosProduction = 15;
     private double multGauchosDefense = 10;
-    private double multHeight = 2;
     private double multDistance = 2;
+    private double multHeight = 2;
+    private double multDefense = 1.25D;
     private int initialGauchos = 3000;
 
     public void setMinDist(double minDist) {
