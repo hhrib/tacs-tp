@@ -35,7 +35,9 @@ import { InterceptorService } from './services/interceptor.service';
 
 import { MatchMapComponent } from './components/match/match-map/match-map.component';
 import { MatchComponent } from './components/match/match/match.component';
+import { MarkerService } from './services/marker.service';
 
+import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 
 @NgModule({
   declarations: [
@@ -68,13 +70,16 @@ import { MatchComponent } from './components/match/match/match.component';
     MatSortModule,
     MatProgressBarModule,
     AppRoutes,
-    HttpClientModule
+    HttpClientModule,
+    LeafletModule
   ],
   entryComponents: [
     MatchCreateDialogComponent,
     MatchSearchComponent
   ],
-  providers: [MatchDTO, FindMatchDTO, MatchService, { provide: HTTP_INTERCEPTORS, useClass: InterceptorService, multi: true }], 
+  providers: [MatchDTO, FindMatchDTO, MatchService, MarkerService, 
+    { provide: HTTP_INTERCEPTORS, useClass: InterceptorService, multi: true }],
+    
   bootstrap: [AppComponent]
 })
 export class AppModule { }
