@@ -245,11 +245,11 @@ public class MatchServiceImpl implements MatchService {
         MatchConfiguration newConfig = new MatchConfiguration();
 
         if(newMatchBean.getConfigs() != null) {
-            newConfig.setMultDefense(newMatchBean.getConfigs().get(0));
-            newConfig.setMultGauchosProduction(newMatchBean.getConfigs().get(1));
-            newConfig.setMultGauchosDefense(newMatchBean.getConfigs().get(2));
+            newConfig.setMultGauchosProduction(newMatchBean.getConfigs().get(0));
+            newConfig.setMultGauchosDefense(newMatchBean.getConfigs().get(1));
+            newConfig.setMultDistance(newMatchBean.getConfigs().get(2));
             newConfig.setMultHeight(newMatchBean.getConfigs().get(3));
-            newConfig.setMultDistance(newMatchBean.getConfigs().get(4));
+            newConfig.setMultDefense(newMatchBean.getConfigs().get(4));
             newConfig.setInitialGauchos(newMatchBean.getConfigs().get(5).intValue());
         }
 
