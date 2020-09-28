@@ -2,8 +2,12 @@ package net.tacs.game.config;
 
 import net.tacs.game.GameApplication;
 import net.tacs.game.mapper.AuthUserToUserMapper;
+import net.tacs.game.model.Match;
+import net.tacs.game.model.Municipality;
 import net.tacs.game.model.Province;
 import net.tacs.game.model.User;
+import net.tacs.game.model.enums.MatchState;
+import net.tacs.game.model.enums.MunicipalityState;
 import net.tacs.game.model.opentopodata.auth.AuthUserResponse;
 import net.tacs.game.services.ProvinceService;
 import net.tacs.game.services.SecurityProviderService;
@@ -13,6 +17,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static net.tacs.game.GameApplication.addProvince;

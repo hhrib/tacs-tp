@@ -1,16 +1,23 @@
 package net.tacs.game.services.impl;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
+import net.tacs.game.exceptions.MatchException;
 import net.tacs.game.model.*;
-import net.tacs.game.model.enums.MunicipalityState;
+import net.tacs.game.model.dto.MoveGauchosDTO;
+import net.tacs.game.model.dto.UpdateMunicipalityStateDTO;
+import net.tacs.game.repositories.MatchRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import net.tacs.game.model.opentopodata.ElevationResponse;
 import net.tacs.game.services.MunicipalityService;
+
+import static net.tacs.game.constants.Constants.*;
 
 @Service("municipalityService")
 public class MunicipalityServiceImpl implements MunicipalityService {
@@ -21,6 +28,10 @@ public class MunicipalityServiceImpl implements MunicipalityService {
 	 * @return Elevation for determined latitude and longitude
 	 */
 	private Map<Centroide, Double> elevations = new HashMap<>();
+
+	@Autowired
+    private MatchRepository matchRepository;
+
 	
 	public synchronized Double getElevation(Centroide location) {
 		Double elevation = elevations.get(location);
@@ -34,14 +45,12 @@ public class MunicipalityServiceImpl implements MunicipalityService {
 		return elevation;
 	}
 
+	@Override
 	public int attackMunicipality(Municipality myMunicipality, Municipality enemyMunicipality, MatchConfiguration config, int gauchosAttacking) {
 		return myMunicipality.attack(enemyMunicipality, config, gauchosAttacking);
 	}
 
-	public void changeState(Municipality myMunicipality, MunicipalityState newState) {
-		myMunicipality.setState(newState);
-	}
-
+	@Override
 	public void produceGauchos(Match match, User user) {
 		for (Municipality municipality : match.getMap().getMunicipalities()) {
 			if(municipality.getOwner().equals(user))
@@ -51,50 +60,57 @@ public class MunicipalityServiceImpl implements MunicipalityService {
 		}
 	}
 
-    public void moveGauchos(Match match, long IdOrigin, long IdDestiny, int Qty)
-    {
-        if(IdOrigin == IdDestiny)
+    public List<Municipality> moveGauchos(MoveGauchosDTO requestBean) throws MatchException {
+
+        Optional<Match> matchOptional = matchRepository.findById(requestBean.getMatchId());
+
+        Match match = matchOptional.orElseThrow(() -> new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(MATCH_NOT_FOUND_CODE, MATCH_NOT_FOUND_DETAIL))));
+
+        if(requestBean.getIdOriginMuni().equals(requestBean.getIdDestinyMuni()))
         {
-            //TODO mover gauchos entre el mismo municipio no se permite
-            return;
+            throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(SAME_ORIGIN_DESTINY_CODE, SAME_ORIGIN_DESTINY_DETAIL)));
         }
 
         Municipality muniOrigin = null;
         Municipality muniDestiny = null;
 
-        boolean bOriginFound = false;
-        boolean bDestinyFound = false;
+        List<Integer> idsNotFound = new ArrayList<>();
+        idsNotFound.add(0, requestBean.getIdOriginMuni());
+        idsNotFound.add(1, requestBean.getIdDestinyMuni());
 
-        for(Municipality aMuni : match.getMap().getMunicipalities())
+        for (Municipality aMuni : match.getMap().getMunicipalities())
         {
-            if(aMuni.getId() == IdOrigin)
+            if (aMuni.getId().equals(requestBean.getIdOriginMuni()))
             {
                 muniOrigin = aMuni;
-                bOriginFound = true;
+                idsNotFound.removeIf(id -> id.equals(aMuni.getId()));
             }
-            if(aMuni.getId() == IdDestiny)
+            if (aMuni.getId().equals(requestBean.getIdDestinyMuni()))
             {
                 muniDestiny = aMuni;
-                bDestinyFound = true;
+                idsNotFound.removeIf(id -> id.equals(aMuni.getId()));
             }
         }
 
-        if(bOriginFound && bDestinyFound)
+        if(idsNotFound.isEmpty())
         {
-            if(muniOrigin.getGauchosQty() < Qty)
+            if(muniOrigin.getGauchosQty() < requestBean.getQty())
             {
-                //TODO municipalidad no tiene tantos gauchos
-                return;
+                throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(NOT_ENOUGH_GAUCHOS_CODE, NOT_ENOUGH_GAUCHOS_DETAIL)));
             }
 
-            muniOrigin.addGauchos(-Qty);
-            muniDestiny.addGauchos(Qty);
+            muniOrigin.addGauchos(-requestBean.getQty());
+            muniDestiny.addGauchos(requestBean.getQty());
         }
         else
         {
-            //TODO no se encontraron los municipios
-            return;
+            //No se encontró por lo menos alguno de los ids
+            String idsNotFoundCommaSeparated = idsNotFound.stream().map(id -> id.toString()).collect(Collectors.joining(","));
+            throw new MatchException(HttpStatus.NOT_FOUND, Arrays.asList(new ApiError(MUNI_NOT_FOUND_CODE, String.format(MUNI_NOT_FOUND_DETAIL, idsNotFoundCommaSeparated))));
         }
 
+        return Arrays.asList(muniOrigin, muniDestiny);
+
     }
+
 }

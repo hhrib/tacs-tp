@@ -3,15 +3,15 @@ package net.tacs.game.controller;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import net.tacs.game.GameApplication;
 import net.tacs.game.exceptions.MatchException;
-import net.tacs.game.mapper.MatchToBeanMapper;
+import net.tacs.game.mapper.MatchToDTOMapper;
 import net.tacs.game.model.ApiError;
 import net.tacs.game.model.Match;
-import net.tacs.game.model.Province;
-import net.tacs.game.model.bean.CreateMatchBean;
-import net.tacs.game.model.bean.MatchBeanResponse;
-import net.tacs.game.model.enums.MatchState;
+import net.tacs.game.model.dto.CreateMatchDTO;
+import net.tacs.game.model.dto.MatchDTOResponse;
+import net.tacs.game.model.dto.MuniStatisticsDTOResponse;
+import net.tacs.game.model.dto.UpdateMunicipalityStateDTO;
+import net.tacs.game.model.enums.MunicipalityState;
 import net.tacs.game.services.MatchService;
 import net.tacs.game.services.UserService;
 import org.slf4j.Logger;
@@ -19,14 +19,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
-import javax.websocket.server.PathParam;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 @RestController
@@ -52,7 +48,7 @@ public class MatchController {
             @ApiResponse(code = 500, message = "Internal Server Error")
     })
     @GetMapping("/matches")
-    public ResponseEntity<List<MatchBeanResponse>> getMatches(@RequestParam(name = "dateFrom", required = false) String dateFrom, @RequestParam(name = "dateTo", required = false) String dateTo) throws MatchException {
+    public ResponseEntity<List<MatchDTOResponse>> getMatches(@RequestParam(name = "dateFrom", required = false) String dateFrom, @RequestParam(name = "dateTo", required = false) String dateTo) throws MatchException {
         List<Match> matches = new ArrayList<>();
         if (dateFrom == null && dateTo == null) {
             matches = matchService.findAll();
@@ -60,7 +56,7 @@ public class MatchController {
             matches = matchService.findMatchesByDate(dateFrom, dateTo);
         }
 
-        return new ResponseEntity<>(MatchToBeanMapper.mapMatches(matches), HttpStatus.OK);
+        return new ResponseEntity<>(MatchToDTOMapper.mapMatches(matches), HttpStatus.OK);
     }
 
     @ApiOperation(value = "Buscar partida por ID", produces = "application/json")
@@ -73,9 +69,9 @@ public class MatchController {
             @ApiResponse(code = 500, message = "Internal Server Error")
     })
     @GetMapping("/matches/{id}")
-    public ResponseEntity<MatchBeanResponse> getMatchById(@PathVariable("id") String id) throws MatchException {
+    public ResponseEntity<MatchDTOResponse> getMatchById(@PathVariable("id") String id) throws MatchException {
         Match match = this.matchService.getMatchById(id);
-        return new ResponseEntity<>(MatchToBeanMapper.mapMatch(match), HttpStatus.OK);
+        return new ResponseEntity<>(MatchToDTOMapper.mapMatch(match), HttpStatus.OK);
     }
 
 
@@ -85,9 +81,21 @@ public class MatchController {
 
     //User story 2.a
     @PostMapping(value = "/matches")
-    public ResponseEntity<Match> createMatch(@RequestBody CreateMatchBean matchBean) throws MatchException, InterruptedException {
+    public ResponseEntity<Match> createMatch(@RequestBody CreateMatchDTO matchBean) throws MatchException, InterruptedException {
         Match newMatch = this.matchService.createMatch(matchBean);
         return new ResponseEntity<>(newMatch, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/matches/{id}/municipalities/statistics")
+    public ResponseEntity<List<MuniStatisticsDTOResponse>> getAllStatistics(@PathVariable("id") String id) throws MatchException {
+        List<MuniStatisticsDTOResponse> stats = this.matchService.getAllStatisticsForMatch(id);
+        return new ResponseEntity<>(stats, HttpStatus.OK);
+    }
+
+    @PatchMapping("/matches/{matchId}/municipalities/{muniId}/")
+    public ResponseEntity updateMunicipalityState(@PathVariable("matchId") String matchId, @PathVariable("muniId") String muniId, @RequestBody UpdateMunicipalityStateDTO dto) throws MatchException {
+        this.matchService.updateMunicipalityState(matchId, muniId, dto);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
     /**
@@ -100,8 +108,10 @@ public class MatchController {
     public ResponseEntity<List<ApiError>> handleException(MatchException ex) {
         //Agregar lógica si fuese necesario
         LOGGER.error("Error con ale", ex);
-        LOGGER.error("Errors: " + ex.getApiErrors().get(0));
+        LOGGER.error("Errors: " );
         return new ResponseEntity<>(ex.getApiErrors(), ex.getHttpStatus());
     }
+    
+    
 
 }

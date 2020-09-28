@@ -3,17 +3,17 @@ package net.tacs.game.services.impl;
 import net.tacs.game.GameApplication;
 import net.tacs.game.controller.MatchController;
 import net.tacs.game.exceptions.MatchException;
-import net.tacs.game.mapper.AuthUserToUserMapper;
+import net.tacs.game.mapper.MuniToStatsDTOMapper;
 import net.tacs.game.model.*;
-import net.tacs.game.model.bean.CreateMatchBean;
+import net.tacs.game.model.dto.CreateMatchDTO;
+import net.tacs.game.model.dto.MuniStatisticsDTOResponse;
+import net.tacs.game.model.dto.UpdateMunicipalityStateDTO;
 import net.tacs.game.model.enums.MatchState;
 import net.tacs.game.model.enums.MunicipalityState;
-import net.tacs.game.model.opentopodata.auth.AuthUserResponse;
+import net.tacs.game.repositories.MatchRepository;
 import net.tacs.game.services.MatchService;
 import net.tacs.game.services.ProvinceService;
-import net.tacs.game.services.SecurityProviderService;
 import net.tacs.game.services.MunicipalityService;
-import org.junit.rules.Timeout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +29,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static net.tacs.game.GameApplication.*;
+import static net.tacs.game.constants.Constants.*;
+import static net.tacs.game.constants.Constants.MUNICIPALITY_NOT_FOUND_DETAIL;
 
 @Service("matchService")
 public class MatchServiceImpl implements MatchService {
@@ -39,7 +41,7 @@ public class MatchServiceImpl implements MatchService {
     private MunicipalityService municipalityService;
 
     @Autowired
-    private SecurityProviderService securityProviderService;
+    private MatchRepository matchRepository;
 
     @Autowired
     private ProvinceService provinceService;
@@ -52,18 +54,20 @@ public class MatchServiceImpl implements MatchService {
 
     @Override
     public Match getMatchById(String id) throws MatchException {
-        Long idLong;
-        if (id == null || id.isEmpty()) {
-            throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError("MATCH_ID_EMPTY", "Must provide an id")));
-        }
-        try {
-            idLong = Long.valueOf(id);
-        } catch (NumberFormatException e) {
-            LOGGER.error("Invalid match number id", e);
-            throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError("MATCH_ID_INVALID", "Must provide a valid id")));
-        }
-        Optional<Match> matchToRetrieve = GameApplication.getMatches().stream().filter(match -> match.getId().equals(idLong)).findFirst();
-        return matchToRetrieve.orElseThrow(() -> new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError("MATCH_NOT_FOUND", "Match not found for provided id"))));
+        Long idLong = validateAndGetIdLong(id, "MATCH");
+        Optional<Match> matchToRetrieve = matchRepository.findById(idLong);
+        return matchToRetrieve.orElseThrow(() -> new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(MATCH_NOT_FOUND_CODE, MATCH_NOT_FOUND_DETAIL))));
+    }
+
+    @Override
+    public List<MuniStatisticsDTOResponse> getAllStatisticsForMatch(String id) throws MatchException {
+        Long idLong = validateAndGetIdLong(id, "MATCH");
+        Optional<Match> matchOptional = matchRepository.findById(idLong);
+        Match match = matchOptional.orElseThrow(() -> new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(MATCH_NOT_FOUND_CODE, MATCH_NOT_FOUND_DETAIL))));
+        List<Municipality> munis = match.getMap().getMunicipalities();
+
+        return MuniToStatsDTOMapper.mapMunis(munis);
+
     }
 
     @Override
@@ -88,7 +92,7 @@ public class MatchServiceImpl implements MatchService {
     }
 
     @Override
-    public Match createMatch(CreateMatchBean newMatchBean) throws MatchException, InterruptedException {
+    public Match createMatch(CreateMatchDTO newMatchBean) throws MatchException, InterruptedException {
         Match newMatch = validateAndGenerateMatch(newMatchBean);
 
         newMatch.setDate(LocalDateTime.now());
@@ -97,16 +101,13 @@ public class MatchServiceImpl implements MatchService {
 
         //TODO guardar en base de datos.
         addMatch(newMatch);
-        //Quizás no recibamos un Match entero, quizás recibamos el Bean de creación (dependiendo lo que elijamos)
-        //en ese caso va a haber que hacer la lógica de buscar usuarios y provincia y luego crear el objeto match para
-        //persistir
 
         return newMatch;
     }
 
-    private Match validateAndGenerateMatch(CreateMatchBean newMatchBean) throws MatchException, InterruptedException {
+    private Match validateAndGenerateMatch(CreateMatchDTO newMatchBean) throws MatchException, InterruptedException {
         List<ApiError> errors = new ArrayList<>();
-        //TODO Algunas de estas validaciones se pueden hacer con annotations en los models. Revisar.
+
         if (newMatchBean.getUserIds() == null || newMatchBean.getUserIds().isEmpty()) {
             errors.add(new ApiError("MATCH_EMPTY_USERS", "Match Players not specified"));
         }
@@ -152,7 +153,7 @@ public class MatchServiceImpl implements MatchService {
         newMatch.setUsers(usersInMatch);
 
         //crear configuracion
-        MatchConfiguration newConfig = CreateConfig(newMatchBean);
+        MatchConfiguration newConfig = createConfig(newMatchBean);
         newMatch.setConfig(newConfig);
 
         Province newProvince = new Province();
@@ -222,7 +223,7 @@ public class MatchServiceImpl implements MatchService {
                 //asignar municipalidades a usuarios
                 assignMunicipalities(newMatch.getMap().getMunicipalities(), newMatch.getUsers());
 
-                CalculateConfigVariables(newMatch);
+                calculateConfigVariables(newMatch);
 
                 return newMatch;
             }
@@ -235,11 +236,11 @@ public class MatchServiceImpl implements MatchService {
     }
 
     /**
-     * @method CreateConfig
+     * @method createConfig
      * @param newMatchBean
      * @return the config class of the created match
      */
-    private MatchConfiguration CreateConfig(CreateMatchBean newMatchBean) {
+    private MatchConfiguration createConfig(CreateMatchDTO newMatchBean) {
 
         MatchConfiguration newConfig = new MatchConfiguration();
 
@@ -256,12 +257,12 @@ public class MatchServiceImpl implements MatchService {
     }
 
     /**
-     * @method CalculateConfigMultipliers
+     * @method calculateConfigMultipliers
      * @param match
      * @description calcula las variables de maxima altura y distancia
      */
     @Override
-    public void CalculateConfigVariables(Match match)
+    public void calculateConfigVariables(Match match)
     {
         double MaxHeight = 0;
         double MinHeight = 100000;
@@ -307,6 +308,21 @@ public class MatchServiceImpl implements MatchService {
         match.getConfig().setMinDist(MinDistance);
     }
 
+    @Override
+    public void updateMunicipalityState(String matchIdString, String muniIdString, UpdateMunicipalityStateDTO dto) throws MatchException {
+        Long matchId = validateAndGetIdLong(matchIdString, "MATCH");
+        Integer muniId = validateAndGetIdLong(muniIdString, "MUNICIPALITY").intValue();
+        Optional<Match> matchOptional = matchRepository.findById(matchId);
+        Match match = matchOptional.orElseThrow(() -> new MatchException(HttpStatus.NOT_FOUND, Arrays.asList(new ApiError(MATCH_NOT_FOUND_CODE, MATCH_NOT_FOUND_DETAIL))));
+
+        Optional<Municipality> muniOptional = match.getMap().getMunicipalities().stream().filter(muni -> muni.getId().equals(muniId)).findFirst();
+        Municipality muni = muniOptional.orElseThrow(() -> new MatchException(HttpStatus.NOT_FOUND, Arrays.asList(new ApiError(MUNICIPALITY_NOT_FOUND_CODE, MUNICIPALITY_NOT_FOUND_DETAIL))));
+
+        muni.setState(dto.getNewState());
+
+        matchRepository.update(match);
+    }
+
     private List<LocalDateTime> validateDatesToSearch(String isoDateFrom, String isoDateTo) throws MatchException {
         List<LocalDateTime> dates = new ArrayList<>();
         try {
@@ -345,4 +361,19 @@ public class MatchServiceImpl implements MatchService {
             }
         }
     }
+
+    private Long validateAndGetIdLong(String idString, String entity) throws MatchException {
+        Long idLong;
+        if (idString == null || idString.isEmpty()) {
+            throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(entity.concat("_ID_EMPTY"), "Must provide an id")));
+        }
+        try {
+            idLong = Long.valueOf(idString);
+        } catch (NumberFormatException e) {
+            LOGGER.error("Invalid " + entity + " number id", e);
+            throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(entity.concat("_ID_INVALID"), "Must provide a valid id")));
+        }
+        return idLong;
+    }
+
 }
