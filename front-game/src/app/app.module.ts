@@ -32,6 +32,9 @@ import { MatchService } from './services/matches.service';
 
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { InterceptorService } from './services/interceptor.service';
+import { StatisticsPanelComponent } from './components/match/statistics-panel/statistics-panel.component';
+import {WebSocketService} from "./services/web-socket.service";
+
 
 
 @NgModule({
@@ -40,7 +43,8 @@ import { InterceptorService } from './services/interceptor.service';
     MenuComponent,
     HomeComponent,
     MatchCreateDialogComponent,
-    MatchSearchComponent
+    MatchSearchComponent,
+    StatisticsPanelComponent
    
   ],
   imports: [
@@ -69,7 +73,7 @@ import { InterceptorService } from './services/interceptor.service';
     MatchCreateDialogComponent,
     MatchSearchComponent
   ],
-  providers: [MatchDTO, FindMatchDTO, MatchService, { provide: HTTP_INTERCEPTORS, useClass: InterceptorService, multi: true }], 
+  providers: [MatchDTO, FindMatchDTO, MatchService, { provide: HTTP_INTERCEPTORS, useClass: InterceptorService, multi: true },WebSocketService], 
   bootstrap: [AppComponent]
 })
 export class AppModule { }

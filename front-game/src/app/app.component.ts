@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import {WebSocketService} from "./services/web-socket.service";
+
 
 @Component({
   selector: 'app-root',
@@ -7,4 +9,9 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'front-game';
+  public notifications = 0;
+
+  constructor(private webSocketService: WebSocketService) {
+
+  }
 }

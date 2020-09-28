@@ -2,12 +2,14 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { HomeComponent } from './components/home/home.component';
 import { MatchSearchComponent } from './components/match/match-search/match-search.component';
+import { StatisticsPanelComponent } from './components/match/statistics-panel/statistics-panel.component';
 
 const appRoutes: Routes = [
     //Ejemplo: { path: 'home', component: HomeComponent}
     { path: 'home', component: HomeComponent },
     { path:'searchMatches', component: MatchSearchComponent},
     { path: '**', redirectTo: 'home' },
+    { path:'getStatistics', component: StatisticsPanelComponent},
 ];
 
 export const AppRoutes = RouterModule.forRoot(appRoutes);
