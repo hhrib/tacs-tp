@@ -18,4 +18,6 @@ public class Constants {
     public static final String MUNICIPALITY_NOT_FOUND_CODE = "MUNICIPALITY_NOT_FOUND";
     public static final String MUNICIPALITY_NOT_FOUND_DETAIL = "Municipality not found for provided id";
 
+    public static final String MUNICIPALITY_DESTINY_BLOCKED_CODE = "MUNICIPALITY_DESTINY_BLOCKED";
+    public static final String MUNICIPALITY_DESTINY_BLOCKED_DETAIL = "The destiny municipality is blocked";
 }

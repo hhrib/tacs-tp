@@ -7,6 +7,7 @@ import net.tacs.game.model.enums.MunicipalityState;
 //@Entity
 //@Table(name = "municipality")
 public class Municipality {
+    private static Integer idCounter = 0;
 
     private Integer id;
 
@@ -22,8 +23,11 @@ public class Municipality {
 
     private Integer gauchosQty;
 
+    private boolean bBlocked = false;
+
 	public Municipality() {
 		super();
+		id = idCounter++;
 	}
 
 	public Municipality(String nombre) {
@@ -88,6 +92,14 @@ public class Municipality {
 
     public void addGauchos(int Quantity){
 	    this.gauchosQty += Quantity;
+    }
+
+    public boolean isBlocked() {
+        return bBlocked;
+    }
+
+    public void setBlocked(boolean bBlocked) {
+        this.bBlocked = bBlocked;
     }
 
     @Override

@@ -29,14 +29,12 @@ public class GameApplication {
 		return new ObjectMapper();
 	}
 
+	//Listas temporales para guardar en memoria hasta que implementemos la DB
 	private static List<Match> matches = new ArrayList<>();
 	private static List<Province> provinces = new ArrayList<>();
 	private static List<Municipality> municipalities = new ArrayList<>();
 	private static List<User> users = new ArrayList<>();
 	private static String auth0Token;
-
-	@Autowired
-	private ProvinceService provinceService;
 
 	public static void main(String[] args) {
 		SpringApplication.run(GameApplication.class, args);
@@ -92,7 +90,4 @@ public class GameApplication {
 	public static String getToken() {
 		return auth0Token;
 	}
-
-
-	//Agregar los métodos para buscar/guardar en memoria que hagan falta (hasta que tengamos persistencia)
 }

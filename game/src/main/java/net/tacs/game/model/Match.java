@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class Match {
-
+    private static long idCounter = 0;
     private Long id;
 
     private List<User> users;
@@ -78,6 +78,7 @@ public class Match {
     }
 
     public Match(){
+        id = idCounter++;
     }
 
     @Override

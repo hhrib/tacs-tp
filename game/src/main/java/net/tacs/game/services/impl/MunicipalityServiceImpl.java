@@ -55,6 +55,8 @@ public class MunicipalityServiceImpl implements MunicipalityService {
 		for (Municipality municipality : match.getMap().getMunicipalities()) {
 			if(municipality.getOwner().equals(user))
 			{
+			    //Desbloquear municipio y producir gauchos
+                municipality.setBlocked(false);
 				municipality.produceGauchos(match.getConfig());
 			}
 		}
@@ -92,6 +94,11 @@ public class MunicipalityServiceImpl implements MunicipalityService {
             }
         }
 
+        if(muniDestiny.isBlocked())
+        {
+            throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(MUNICIPALITY_DESTINY_BLOCKED_CODE, MUNICIPALITY_DESTINY_BLOCKED_DETAIL)));
+        }
+
         if(idsNotFound.isEmpty())
         {
             if(muniOrigin.getGauchosQty() < requestBean.getQty())
@@ -100,7 +107,10 @@ public class MunicipalityServiceImpl implements MunicipalityService {
             }
 
             muniOrigin.addGauchos(-requestBean.getQty());
+
+            //El municipio destino se bloquea
             muniDestiny.addGauchos(requestBean.getQty());
+            muniDestiny.setBlocked(true);
         }
         else
         {
