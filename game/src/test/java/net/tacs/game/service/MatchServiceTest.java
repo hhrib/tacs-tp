@@ -206,6 +206,23 @@ public class MatchServiceTest {
         assertEquals(1.41421D, match.getConfig().getMinDist(), 0.0001D);
     }
 
+    @Test
+    public void assignPlayersTurns()
+    {
+        Match match = new Match();
+        match.setConfig(configuration);
+
+        User user3 = new User("Papa");
+        User user4 = new User("Pipi");
+
+        match.setUsers(Arrays.asList(user1, user2, user3, user4));
+
+        matchService.assignPlayersOrder(match);
+
+        assertEquals(4, match.getConfig().getPlayersTurns().size());
+        assertNotNull(match.getTurnPlayer());
+    }
+
     @Test(expected = MatchException.class)
     public void createMatchUsersNotFoundTest() throws MatchException, InterruptedException {
         CreateMatchDTO dto = new CreateMatchDTO();

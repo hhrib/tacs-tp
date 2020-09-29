@@ -239,8 +239,37 @@ public class MatchServiceImpl implements MatchService {
 
             calculateConfigVariables(newMatch);
 
+            //create players order
+            assignPlayersOrder(newMatch);
+
             return newMatch;
         }
+    }
+
+    /**
+     * @method assignPlayersOrder
+     * @param newMatch
+     * @description creates an order for the match and assigns the starting player
+     */
+    public void assignPlayersOrder(Match newMatch)
+    {
+        MatchConfiguration matchConfig = newMatch.getConfig();
+
+        List<User> playersInMatch = new ArrayList<>(newMatch.getUsers());
+        List<User> playersOrder = new ArrayList<>();
+        int playersCounter = playersInMatch.size();
+
+        Random random = new Random();
+
+        for(int i = 0; i < playersCounter; i++)
+        {
+            int randomPlayer = random.nextInt(playersInMatch.size());
+
+            playersOrder.add(playersInMatch.remove(randomPlayer));
+        }
+
+        matchConfig.setPlayersTurns(playersOrder);
+        newMatch.setTurnPlayer(playersOrder.get(0));
     }
 
     /**

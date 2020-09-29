@@ -20,6 +20,8 @@ public class Match {
 
     private Province map;
 
+    private User turnPlayer;
+
     private User winner;
 
     private MatchConfiguration config;
@@ -75,6 +77,22 @@ public class Match {
 
     public void setConfig(MatchConfiguration config) {
         this.config = config;
+    }
+
+    public User getTurnPlayer() {
+        return turnPlayer;
+    }
+
+    public void setTurnPlayer(User turnPlayer) {
+        this.turnPlayer = turnPlayer;
+    }
+
+    public User getWinner() {
+        return winner;
+    }
+
+    public void setWinner(User winner) {
+        this.winner = winner;
     }
 
     public Match(){
