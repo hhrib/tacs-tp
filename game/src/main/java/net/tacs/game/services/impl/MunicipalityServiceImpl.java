@@ -94,13 +94,13 @@ public class MunicipalityServiceImpl implements MunicipalityService {
             }
         }
 
-        if(muniDestiny.isBlocked())
-        {
-            throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(MUNICIPALITY_DESTINY_BLOCKED_CODE, MUNICIPALITY_DESTINY_BLOCKED_DETAIL)));
-        }
-
         if(idsNotFound.isEmpty())
         {
+            if(muniDestiny.isBlocked())
+            {
+                throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(MUNICIPALITY_DESTINY_BLOCKED_CODE, MUNICIPALITY_DESTINY_BLOCKED_DETAIL)));
+            }
+
             if(muniOrigin.getGauchosQty() < requestBean.getQty())
             {
                 throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(NOT_ENOUGH_GAUCHOS_CODE, NOT_ENOUGH_GAUCHOS_DETAIL)));
