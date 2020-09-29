@@ -1,16 +1,21 @@
 package net.tacs.game.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MatchConfiguration {
     private double minDist; //<-- Se calculan
     private double maxDist; //<-- Se calculan
     private double minHeight; //<-- Se calculan
     private double maxHeight; //<-- Se calculan
-    private double multDefense = 1.25D;
     private double multGauchosProduction = 15;
     private double multGauchosDefense = 10;
-    private double multHeight = 2;
     private double multDistance = 2;
+    private double multHeight = 2;
+    private double multDefense = 1.25D;
     private int initialGauchos = 3000;
+
+    private List<User> playersTurns = new ArrayList<>();
 
     public void setMinDist(double minDist) {
         this.minDist = minDist;
@@ -90,5 +95,13 @@ public class MatchConfiguration {
 
     public int getInitialGauchos() {
         return initialGauchos;
+    }
+
+    public List<User> getPlayersTurns() {
+        return playersTurns;
+    }
+
+    public void setPlayersTurns(List<User> playerTurns) {
+        this.playersTurns = playerTurns;
     }
 }

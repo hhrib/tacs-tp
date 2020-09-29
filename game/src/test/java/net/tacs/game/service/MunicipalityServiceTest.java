@@ -172,4 +172,83 @@ public class MunicipalityServiceTest {
         assertEquals(2000, Avellaneda.getGauchosQty());
         assertEquals(2000, Quilmes.getGauchosQty());
     }
+
+    @Test (expected = MatchException.class)
+    public void municipalityMoveGauchosBlocked() throws MatchException {
+        Match match = new Match();
+        match.setId(1235L);
+        match.setMap(buenosAires);
+        match.setConfig(configuration);
+        buenosAires.setMunicipalities(Arrays.asList(Avellaneda, Quilmes));
+
+        Avellaneda.setId(99999);
+        Quilmes.setId(88888);
+
+        Avellaneda.setGauchosQty(2500);
+        Quilmes.setGauchosQty(1500);
+
+        Quilmes.setBlocked(true);
+
+        GameApplication.addMatch(match);
+
+        MoveGauchosDTO dto = new MoveGauchosDTO();
+        dto.setMatchId(match.getId());
+        dto.setIdOriginMuni(99999);
+        dto.setIdDestinyMuni(88888);
+        dto.setQty(500);
+
+        municipalityService.moveGauchos(dto);
+    }
+
+    @Test
+    public void allMunicipalitiesProduceGauchos()
+    {
+        Match match = new Match();
+        match.setId(1235L);
+        match.setMap(buenosAires);
+        match.setConfig(configuration);
+        buenosAires.setMunicipalities(Arrays.asList(Lanus, Avellaneda, Quilmes, Tigre, Matanza, Lomas));
+
+        Lanus.setId(77777);
+        Avellaneda.setId(99999);
+        Quilmes.setId(88888);
+        Tigre.setId(66666);
+        Matanza.setId(55555);
+        Lomas.setId(44444);
+
+        Lanus.setGauchosQty(0);
+        Avellaneda.setGauchosQty(1000);
+        Quilmes.setGauchosQty(0);
+        Tigre.setGauchosQty(10);
+        Matanza.setGauchosQty(1200);
+        Lomas.setGauchosQty(500);
+
+        Lanus.setOwner(user1);
+        Avellaneda.setOwner(user1);
+        Quilmes.setOwner(user1);
+        Tigre.setOwner(user2);
+        Matanza.setOwner(user2);
+        Lomas.setOwner(user2);
+
+        configuration.setMaxHeight(2000D);
+        configuration.setMinHeight(1000D);
+        configuration.setMaxDist(20D);
+        configuration.setMinDist(10D);
+
+        Lanus.setElevation(1500D);
+        Lanus.setState(MunicipalityState.DEFENSE);
+        Avellaneda.setElevation(1500D);
+        Avellaneda.setState(MunicipalityState.PRODUCTION);
+        Quilmes.setElevation(1500D);
+        Quilmes.setState(MunicipalityState.PRODUCTION);
+
+        municipalityService.produceGauchos(match, user1);
+
+        assertEquals(7, Lanus.getGauchosQty());
+        assertEquals(1011, Avellaneda.getGauchosQty());
+        assertEquals(11, Quilmes.getGauchosQty());
+        assertEquals(10, Tigre.getGauchosQty());
+        assertEquals(1200, Matanza.getGauchosQty());
+        assertEquals(500, Lomas.getGauchosQty());
+    }
 }

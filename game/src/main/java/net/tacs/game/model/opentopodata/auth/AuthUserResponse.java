@@ -1,10 +1,12 @@
 package net.tacs.game.model.opentopodata.auth;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class AuthUserResponse {
 
     @JsonProperty("created_at")
@@ -45,6 +47,9 @@ public class AuthUserResponse {
 
     @JsonProperty("logins_count")
     private Integer loginsCount;
+
+    //@JsonProperty("gender")
+    //private String gender;
 
 
     public String getCreatedAt() {
