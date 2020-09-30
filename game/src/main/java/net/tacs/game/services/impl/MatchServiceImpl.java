@@ -5,9 +5,7 @@ import net.tacs.game.controller.MatchController;
 import net.tacs.game.exceptions.MatchException;
 import net.tacs.game.mapper.MuniToStatsDTOMapper;
 import net.tacs.game.model.*;
-import net.tacs.game.model.dto.CreateMatchDTO;
-import net.tacs.game.model.dto.MuniStatisticsDTOResponse;
-import net.tacs.game.model.dto.UpdateMunicipalityStateDTO;
+import net.tacs.game.model.dto.*;
 import net.tacs.game.model.enums.MatchState;
 import net.tacs.game.model.enums.MunicipalityState;
 import net.tacs.game.repositories.MatchRepository;
@@ -268,7 +266,10 @@ public class MatchServiceImpl implements MatchService {
             playersOrder.add(playersInMatch.remove(randomPlayer));
         }
 
+        //listado con el orden de los jugadores
         matchConfig.setPlayersTurns(playersOrder);
+
+        //el jugador que comienza la partida
         newMatch.setTurnPlayer(playersOrder.get(0));
     }
 
@@ -358,6 +359,16 @@ public class MatchServiceImpl implements MatchService {
         muni.setState(dto.getNewState());
 
         matchRepository.update(match);
+    }
+
+    @Override
+    public AttackResultDTO attackMunis(String id, AttackMuniDTO attackMuniDTO) throws MatchException {
+        Long matchId = validateAndGetIdLong(id, "MATCH");
+
+        Optional<Match> matchOptional = matchRepository.findById(matchId);
+        Match match = matchOptional.orElseThrow(() -> new MatchException(HttpStatus.NOT_FOUND, Arrays.asList(new ApiError(MATCH_NOT_FOUND_CODE, MATCH_NOT_FOUND_DETAIL))));
+
+        return municipalityService.attackMunicipality(match, attackMuniDTO);
     }
 
     private List<LocalDateTime> validateDatesToSearch(String isoDateFrom, String isoDateTo) throws MatchException {

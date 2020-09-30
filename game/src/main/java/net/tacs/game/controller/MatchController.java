@@ -7,11 +7,7 @@ import net.tacs.game.exceptions.MatchException;
 import net.tacs.game.mapper.MatchToDTOMapper;
 import net.tacs.game.model.ApiError;
 import net.tacs.game.model.Match;
-import net.tacs.game.model.dto.CreateMatchDTO;
-import net.tacs.game.model.dto.MatchDTOResponse;
-import net.tacs.game.model.dto.MuniStatisticsDTOResponse;
-import net.tacs.game.model.dto.UpdateMunicipalityStateDTO;
-import net.tacs.game.model.enums.MunicipalityState;
+import net.tacs.game.model.dto.*;
 import net.tacs.game.services.MatchService;
 import net.tacs.game.services.UserService;
 import org.slf4j.Logger;
@@ -84,6 +80,14 @@ public class MatchController {
     public ResponseEntity<Match> createMatch(@RequestBody CreateMatchDTO matchBean) throws MatchException, InterruptedException {
         Match newMatch = this.matchService.createMatch(matchBean);
         return new ResponseEntity<>(newMatch, HttpStatus.CREATED);
+    }
+
+    //User story 3
+    @PostMapping(value = "/match/{id}/attack")
+    public ResponseEntity<AttackResultDTO> attackMunicipalities(@PathVariable("id") String matchId, @RequestBody AttackMuniDTO attackMuniDTO) throws MatchException
+    {
+        AttackResultDTO resultDTO = this.matchService.attackMunis(matchId, attackMuniDTO);
+        return new ResponseEntity<>(resultDTO, HttpStatus.OK);
     }
 
     @GetMapping("/matches/{id}/municipalities/statistics")

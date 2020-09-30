@@ -2,6 +2,8 @@ package net.tacs.game.services;
 
 import net.tacs.game.exceptions.MatchException;
 import net.tacs.game.model.*;
+import net.tacs.game.model.dto.AttackMuniDTO;
+import net.tacs.game.model.dto.AttackResultDTO;
 import net.tacs.game.model.dto.MoveGauchosDTO;
 import net.tacs.game.model.dto.UpdateMunicipalityStateDTO;
 
@@ -24,7 +26,7 @@ public interface MunicipalityService {
 	 * @return attackResult
 	 * @description return the result of the attack between municipalities
 	 */
-	public int attackMunicipality(Municipality myMunicipality, Municipality enemyMunicipality, MatchConfiguration config, int gauchosAttacking);
+	public AttackResultDTO attackMunicipality(Match match, AttackMuniDTO attackMuniDTO) throws MatchException;
 
 	public void produceGauchos(Match match, User user);
 

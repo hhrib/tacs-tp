@@ -92,6 +92,9 @@ public class Municipality {
 
     public void addGauchos(int Quantity){
 	    this.gauchosQty += Quantity;
+
+	    if(gauchosQty < 0)
+	        gauchosQty = 0;
     }
 
     public boolean isBlocked() {
