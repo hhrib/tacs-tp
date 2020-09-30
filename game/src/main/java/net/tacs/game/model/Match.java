@@ -128,4 +128,14 @@ public class Match {
     public int hashCode() {
         return Objects.hash(id, users, state, map, winner, date);
     }
+
+    public boolean userIsInMatch(String userId) {
+        for(User aUser : getUsers())
+        {
+            if(aUser.getId().equals(userId))
+                return true;
+        }
+
+        return false;
+    }
 }

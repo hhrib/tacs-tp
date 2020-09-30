@@ -23,4 +23,6 @@ public interface MatchService {
     public void calculateConfigVariables(Match match);
 
     public void updateMunicipalityState(String matchId, String muniId, UpdateMunicipalityStateDTO dto) throws MatchException;
+
+    public void passTurn(String matchId, String playerId) throws MatchException;
 }

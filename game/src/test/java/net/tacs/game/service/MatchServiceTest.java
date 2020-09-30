@@ -358,4 +358,89 @@ public class MatchServiceTest {
         Match matchRetrieved = matchService.getMatchById("wrongNumberFormat");
     }
 
+    @Test
+    public void passTurnPlayerLastOnTheList() throws MatchException{
+        Match match = new Match();
+        MatchConfiguration config = new MatchConfiguration();
+        match.setId(123456L);
+        match.setConfig(config);
+        match.setUsers(Arrays.asList(user1, user2));
+        match.setTurnPlayer(user2);
+
+        user1.setId("ABC1");
+        user2.setId("ABC2");
+
+        config.setPlayersTurns(Arrays.asList(user1, user2));
+
+        Mockito.when(matchRepository.findById(123456L)).thenReturn(java.util.Optional.of(match));
+
+        matchService.passTurn("123456", "ABC2");
+
+        assertEquals(user1, match.getTurnPlayer());
+    }
+
+    @Test
+    public void passTurnPlayerMiddleOnTheList() throws MatchException{
+        Match match = new Match();
+        MatchConfiguration config = new MatchConfiguration();
+        match.setId(123456L);
+        match.setConfig(config);
+        match.setTurnPlayer(user2);
+
+        User user3 = new User("Laura");
+
+        user1.setId("ABC1");
+        user2.setId("ABC2");
+        user3.setId("ABC3");
+
+        match.setUsers(Arrays.asList(user1, user2, user3));
+        config.setPlayersTurns(Arrays.asList(user1, user2, user3));
+
+        Mockito.when(matchRepository.findById(123456L)).thenReturn(java.util.Optional.of(match));
+
+        matchService.passTurn("123456", "ABC2");
+
+        assertEquals(user3, match.getTurnPlayer());
+    }
+
+    @Test(expected = MatchException.class)
+    public void passTurnPlayerNotInMatch() throws MatchException {
+        Match match = new Match();
+        MatchConfiguration config = new MatchConfiguration();
+        match.setId(123456L);
+        match.setConfig(config);
+        match.setUsers(Arrays.asList(user1, user2));
+        match.setTurnPlayer(user2);
+
+        User user3 = new User("Laura");
+
+        user1.setId("ABC1");
+        user2.setId("ABC2");
+        user3.setId("ABC3");
+
+        config.setPlayersTurns(Arrays.asList(user1, user2));
+
+        Mockito.when(matchRepository.findById(123456L)).thenReturn(java.util.Optional.of(match));
+
+        matchService.passTurn("123456", "ABC3");
+    }
+
+    @Test(expected = MatchException.class)
+    public void passTurnPlayerNotInTurn() throws MatchException {
+        Match match = new Match();
+        MatchConfiguration config = new MatchConfiguration();
+        match.setId(123456L);
+        match.setConfig(config);
+        match.setUsers(Arrays.asList(user1, user2));
+        match.setTurnPlayer(user2);
+
+        user1.setId("ABC1");
+        user2.setId("ABC2");
+
+        config.setPlayersTurns(Arrays.asList(user1, user2));
+
+        Mockito.when(matchRepository.findById(123456L)).thenReturn(java.util.Optional.of(match));
+
+        matchService.passTurn("123456", "ABC1");
+    }
 }

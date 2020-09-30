@@ -359,6 +359,32 @@ public class MatchServiceImpl implements MatchService {
         matchRepository.update(match);
     }
 
+    @Override
+    public void passTurn(String matchIdString, String playerId) throws MatchException {
+        Long matchId = validateAndGetIdLong(matchIdString, "MATCH");
+        Optional<Match> matchOptional = matchRepository.findById(matchId);
+        Match match = matchOptional.orElseThrow(() -> new MatchException(HttpStatus.NOT_FOUND, Arrays.asList(new ApiError(MATCH_NOT_FOUND_CODE, MATCH_NOT_FOUND_DETAIL))));
+
+        //si el jugador pertence a la partida
+        if(!match.userIsInMatch(playerId))
+        {
+            throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError("PLAYER_NOT_IN_MATCH", "This player doesn't belong here")));
+        }
+
+        //si el jugador tiene el turno
+        if(match.getTurnPlayer().getId().equals(playerId))
+        {
+            List<User> playerTurns = match.getConfig().getPlayersTurns();
+
+            User nextPlayer = match.getConfig().setNextPlayerTurn(playerId);
+            match.setTurnPlayer(nextPlayer);
+        }
+        else //el jugador no tiene el turno
+        {
+            throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(PLAYER_DOESNT_HAVE_TURN_CODE, PLAYER_DOESNT_HAVE_TURN_DETAIL)));
+        }
+    }
+
     private List<LocalDateTime> validateDatesToSearch(String isoDateFrom, String isoDateTo) throws MatchException {
         List<LocalDateTime> dates = new ArrayList<>();
         try {
