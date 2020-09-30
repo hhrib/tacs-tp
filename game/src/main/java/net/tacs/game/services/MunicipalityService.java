@@ -26,7 +26,7 @@ public interface MunicipalityService {
 	 * @return attackResult
 	 * @description return the result of the attack between municipalities
 	 */
-	public AttackResultDTO attackMunicipality(Match match, AttackMuniDTO attackMuniDTO) throws MatchException;
+	public AttackResultDTO attackMunicipality(AttackMuniDTO attackMuniDTO) throws MatchException;
 
 	public void produceGauchos(Match match, User user);
 

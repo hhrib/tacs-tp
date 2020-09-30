@@ -1,9 +1,18 @@
 package net.tacs.game.model.dto;
 
 public class AttackMuniDTO {
+    private Long matchId;
     private int muniAttackingId;
     private int muniDefendingId;
     private int gauchosQty;
+
+    public Long getMatchId() {
+        return matchId;
+    }
+
+    public void setMatchId(Long matchId) {
+        this.matchId = matchId;
+    }
 
     public int getMuniAttackingId() {
         return muniAttackingId;

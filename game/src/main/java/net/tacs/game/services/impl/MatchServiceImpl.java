@@ -28,7 +28,6 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static net.tacs.game.GameApplication.*;
 import static net.tacs.game.constants.Constants.*;
 import static net.tacs.game.constants.Constants.MUNICIPALITY_NOT_FOUND_DETAIL;
 
@@ -54,7 +53,7 @@ public class MatchServiceImpl implements MatchService {
 
     @Override
     public List<Match> findAll() {
-        List<Match> matches = GameApplication.getMatches();
+        List<Match> matches = matchRepository.getMatches();
         return matches;
     }
 
@@ -81,7 +80,7 @@ public class MatchServiceImpl implements MatchService {
             List<LocalDateTime> dates = validateDatesToSearch(isoDateFrom, isoDateTo);
             LocalDateTime dateFrom = dates.get(0);
             LocalDateTime dateTo = dates.get(1);
-            List<Match> matches = GameApplication.getMatches();
+            List<Match> matches = matchRepository.getMatches();
 
             if (matches == null || matches.isEmpty()) {
                 throw new MatchException(HttpStatus.NOT_FOUND, Arrays.asList(new ApiError("MATCHES_NOT_FOUND", "Matches not found for dates")));
@@ -105,8 +104,7 @@ public class MatchServiceImpl implements MatchService {
         newMatch.setState(MatchState.CREATED);
         LOGGER.info(newMatchBean.toString());
 
-        //TODO guardar en base de datos.
-        addMatch(newMatch);
+        matchRepository.add(newMatch);
 
         return newMatch;
     }
@@ -359,16 +357,6 @@ public class MatchServiceImpl implements MatchService {
         muni.setState(dto.getNewState());
 
         matchRepository.update(match);
-    }
-
-    @Override
-    public AttackResultDTO attackMunis(String id, AttackMuniDTO attackMuniDTO) throws MatchException {
-        Long matchId = validateAndGetIdLong(id, "MATCH");
-
-        Optional<Match> matchOptional = matchRepository.findById(matchId);
-        Match match = matchOptional.orElseThrow(() -> new MatchException(HttpStatus.NOT_FOUND, Arrays.asList(new ApiError(MATCH_NOT_FOUND_CODE, MATCH_NOT_FOUND_DETAIL))));
-
-        return municipalityService.attackMunicipality(match, attackMuniDTO);
     }
 
     private List<LocalDateTime> validateDatesToSearch(String isoDateFrom, String isoDateTo) throws MatchException {

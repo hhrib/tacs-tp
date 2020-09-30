@@ -7,6 +7,7 @@ import net.tacs.game.model.dto.AttackMuniDTO;
 import net.tacs.game.model.dto.AttackResultDTO;
 import net.tacs.game.model.dto.MoveGauchosDTO;
 import net.tacs.game.model.enums.MunicipalityState;
+import net.tacs.game.repositories.MatchRepository;
 import net.tacs.game.services.MunicipalityService;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,6 +15,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -30,6 +32,9 @@ public class MunicipalityServiceTest {
     @Autowired
     private MunicipalityService municipalityService;
 
+    @MockBean
+    private MatchRepository matchRepository;
+
     private User user1;
     private User user2;
     private Province buenosAires;
@@ -44,10 +49,6 @@ public class MunicipalityServiceTest {
     @Before
     public void setUp() {
         GameApplication.setToken("");
-        GameApplication.setUsers(new ArrayList<>());
-        GameApplication.setMunicipalities(new ArrayList<>());
-        GameApplication.setMatches(new ArrayList<>());
-        GameApplication.setProvinces(new ArrayList<>());
         user1 = new User("Pepe");
         user2 = new User("Paula");
         buenosAires = new Province("Buenos Aires");
@@ -63,8 +64,11 @@ public class MunicipalityServiceTest {
     @Test
     public void attackSuccessfullMunicipality() throws MatchException {
         Match match = new Match();
+        match.setId(111111L);
         match.setMap(buenosAires);
         match.getMap().setMunicipalities(Arrays.asList(Lanus, Avellaneda));
+
+        Mockito.when(matchRepository.findById(111111L)).thenReturn(java.util.Optional.of(match));
 
         MatchConfiguration Config = new MatchConfiguration();
         match.setConfig(Config);
@@ -92,11 +96,12 @@ public class MunicipalityServiceTest {
         Avellaneda.setState(MunicipalityState.DEFENSE);
 
         AttackMuniDTO attackMuniDTO = new AttackMuniDTO();
+        attackMuniDTO.setMatchId(111111L);
         attackMuniDTO.setGauchosQty(250);
         attackMuniDTO.setMuniAttackingId(999999);
         attackMuniDTO.setMuniDefendingId(888888);
 
-        AttackResultDTO attackResultDTO = municipalityService.attackMunicipality(match, attackMuniDTO);
+        AttackResultDTO attackResultDTO = municipalityService.attackMunicipality(attackMuniDTO);
 
         assertEquals(1, attackResultDTO.getResult());
     }
@@ -104,8 +109,11 @@ public class MunicipalityServiceTest {
     @Test
     public void attackRepelledMunicipality() throws MatchException {
         Match match = new Match();
+        match.setId(111111L);
         match.setMap(buenosAires);
         match.getMap().setMunicipalities(Arrays.asList(Lanus, Avellaneda));
+
+        Mockito.when(matchRepository.findById(111111L)).thenReturn(java.util.Optional.of(match));
 
         MatchConfiguration Config = new MatchConfiguration();
         match.setConfig(Config);
@@ -133,11 +141,12 @@ public class MunicipalityServiceTest {
         Avellaneda.setState(MunicipalityState.PRODUCTION);
 
         AttackMuniDTO attackMuniDTO = new AttackMuniDTO();
+        attackMuniDTO.setMatchId(111111L);
         attackMuniDTO.setGauchosQty(100);
         attackMuniDTO.setMuniAttackingId(999999);
         attackMuniDTO.setMuniDefendingId(888888);
 
-        AttackResultDTO attackResultDTO = municipalityService.attackMunicipality(match, attackMuniDTO);
+        AttackResultDTO attackResultDTO = municipalityService.attackMunicipality(attackMuniDTO);
 
         assertEquals(0, attackResultDTO.getResult());
     }
@@ -190,7 +199,9 @@ public class MunicipalityServiceTest {
         Avellaneda.setGauchosQty(2500);
         Quilmes.setGauchosQty(1500);
 
-        GameApplication.addMatch(match);
+        Quilmes.setBlocked(false);
+
+        Mockito.when(matchRepository.findById(1235L)).thenReturn(java.util.Optional.of(match));
 
         MoveGauchosDTO dto = new MoveGauchosDTO();
         dto.setMatchId(match.getId());
@@ -221,7 +232,7 @@ public class MunicipalityServiceTest {
 
         Quilmes.setBlocked(true);
 
-        GameApplication.addMatch(match);
+        Mockito.when(matchRepository.findById(1235L)).thenReturn(java.util.Optional.of(match));
 
         MoveGauchosDTO dto = new MoveGauchosDTO();
         dto.setMatchId(match.getId());

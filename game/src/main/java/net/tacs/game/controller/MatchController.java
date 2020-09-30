@@ -82,14 +82,6 @@ public class MatchController {
         return new ResponseEntity<>(newMatch, HttpStatus.CREATED);
     }
 
-    //User story 3
-    @PostMapping(value = "/match/{id}/attack")
-    public ResponseEntity<AttackResultDTO> attackMunicipalities(@PathVariable("id") String matchId, @RequestBody AttackMuniDTO attackMuniDTO) throws MatchException
-    {
-        AttackResultDTO resultDTO = this.matchService.attackMunis(matchId, attackMuniDTO);
-        return new ResponseEntity<>(resultDTO, HttpStatus.OK);
-    }
-
     @GetMapping("/matches/{id}/municipalities/statistics")
     public ResponseEntity<List<MuniStatisticsDTOResponse>> getAllStatistics(@PathVariable("id") String id) throws MatchException {
         List<MuniStatisticsDTOResponse> stats = this.matchService.getAllStatisticsForMatch(id);

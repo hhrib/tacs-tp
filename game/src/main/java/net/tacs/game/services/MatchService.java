@@ -23,6 +23,4 @@ public interface MatchService {
     public void calculateConfigVariables(Match match);
 
     public void updateMunicipalityState(String matchId, String muniId, UpdateMunicipalityStateDTO dto) throws MatchException;
-
-    public AttackResultDTO attackMunis(String id, AttackMuniDTO attackMuniDTO) throws MatchException;
 }

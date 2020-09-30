@@ -51,7 +51,16 @@ public class MunicipalityServiceImpl implements MunicipalityService {
 	}
 
 	@Override
-	public AttackResultDTO attackMunicipality(Match match, AttackMuniDTO attackMuniDTO) throws MatchException {
+	public AttackResultDTO attackMunicipality(AttackMuniDTO attackMuniDTO) throws MatchException {
+        Optional<Match> matchOptional = matchRepository.findById(attackMuniDTO.getMatchId());
+
+        Match match = matchOptional.orElseThrow(() -> new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(MATCH_NOT_FOUND_CODE, MATCH_NOT_FOUND_DETAIL))));
+
+        if(attackMuniDTO.getMuniAttackingId() == (attackMuniDTO.getMuniDefendingId()))
+        {
+            throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(SAME_ORIGIN_DESTINY_CODE, SAME_ORIGIN_DESTINY_DETAIL)));
+        }
+
 	    boolean bMuniAttackFound = false;
         boolean bMuniDefenseFound = false;
 
@@ -158,7 +167,6 @@ public class MunicipalityServiceImpl implements MunicipalityService {
         }
 
         return Arrays.asList(muniOrigin, muniDestiny);
-
     }
 
 }

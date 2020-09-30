@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.tacs.game.exceptions.MatchException;
+import net.tacs.game.model.dto.AttackMuniDTO;
+import net.tacs.game.model.dto.AttackResultDTO;
 import net.tacs.game.model.dto.MoveGauchosDTO;
 import net.tacs.game.model.dto.UpdateMunicipalityStateDTO;
 import org.slf4j.Logger;
@@ -62,5 +64,11 @@ public class MunicipalityController {
         return new ResponseEntity<>(municipalities, HttpStatus.OK);
     }
 
-
+    //User story 3
+    @PostMapping(value = "/municipalities/attack")
+    public ResponseEntity<AttackResultDTO> attackMunicipalities(@RequestBody AttackMuniDTO attackMuniDTO) throws MatchException
+    {
+        AttackResultDTO resultDTO = municipalityService.attackMunicipality(attackMuniDTO);
+        return new ResponseEntity<>(resultDTO, HttpStatus.OK);
+    }
 }
