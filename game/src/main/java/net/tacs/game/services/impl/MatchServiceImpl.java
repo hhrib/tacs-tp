@@ -269,6 +269,7 @@ public class MatchServiceImpl implements MatchService {
 
         //el jugador que comienza la partida
         newMatch.setTurnPlayer(playersOrder.get(0));
+        municipalityService.produceGauchos(newMatch, playersOrder.get(0));
     }
 
     /**
@@ -378,6 +379,7 @@ public class MatchServiceImpl implements MatchService {
 
             User nextPlayer = match.getConfig().setNextPlayerTurn(playerId);
             match.setTurnPlayer(nextPlayer);
+            municipalityService.produceGauchos(match, nextPlayer);
         }
         else //el jugador no tiene el turno
         {

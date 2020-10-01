@@ -94,6 +94,12 @@ public class MatchController {
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
+    @PatchMapping("/matches/{matchId}/passTurn")
+    public ResponseEntity updateMatchTurn(@PathVariable("matchId") String matchId, @RequestBody String userId) throws MatchException {
+        this.matchService.passTurn(matchId, userId);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
+    }
+
     /**
      * MatchService puede arrojar MatchException ante alguna validación que no pasa. Este método lo handlea para
      * responder con el detalle del error.
