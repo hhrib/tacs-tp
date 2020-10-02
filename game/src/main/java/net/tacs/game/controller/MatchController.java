@@ -65,9 +65,9 @@ public class MatchController {
             @ApiResponse(code = 500, message = "Internal Server Error")
     })
     @GetMapping("/matches/{id}")
-    public ResponseEntity<MatchDTOResponse> getMatchById(@PathVariable("id") String id) throws MatchException {
+    public ResponseEntity<Match> getMatchById(@PathVariable("id") String id) throws MatchException {
         Match match = this.matchService.getMatchById(id);
-        return new ResponseEntity<>(MatchToDTOMapper.mapMatch(match), HttpStatus.OK);
+        return new ResponseEntity<>(match, HttpStatus.OK);
     }
 
 
@@ -95,8 +95,8 @@ public class MatchController {
     }
 
     @PatchMapping("/matches/{matchId}/passTurn")
-    public ResponseEntity updateMatchTurn(@PathVariable("matchId") String matchId, @RequestBody String userId) throws MatchException {
-        this.matchService.passTurn(matchId, userId);
+    public ResponseEntity updateMatchTurn(@PathVariable("matchId") String matchId, @RequestBody PassTurnDTO passTurnDTO) throws MatchException {
+        this.matchService.passTurn(matchId, passTurnDTO.getUserId());
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
