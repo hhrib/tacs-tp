@@ -10,7 +10,7 @@ const appRoutes: Routes = [
     //Ejemplo: { path: 'home', component: HomeComponent}
     { path: 'home', component: HomeComponent },
     { path:'searchMatches', component: MatchSearchComponent, canActivate: [AuthGuard]},
-    { path:'mapMatch', component: MatchComponent, canActivate: [AuthGuard]},
+    { path:'mapMatch/:id', component: MatchComponent, canActivate: [AuthGuard]},
     { path: '**', redirectTo: 'home' },
 
 ];

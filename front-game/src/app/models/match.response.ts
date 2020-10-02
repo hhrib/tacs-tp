@@ -1,6 +1,8 @@
-import { Config } from '../config';
-import { Map } from '../map';
-import { User } from '../user';
+import { Config } from './config';
+import { Map } from './map';
+import { User } from './user';
+
+// global
 
 export class MatchResponse {
     //TODO: Ver qué campos se le agregan para la consulta
@@ -11,5 +13,5 @@ export class MatchResponse {
     public id: string;
     public map: Map;
     public state: string;
-    users: Array<User>;
+    public users: Array<User>;
 }

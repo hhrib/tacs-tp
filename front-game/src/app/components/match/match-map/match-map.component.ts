@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import * as L from 'leaflet';
 import { MatchDTO } from 'src/app/models/match.dto';
-import { MatchResponse } from 'src/app/models/Response/match.response';
+import { MatchResponse } from 'src/app/models/match.response';
 import { MarkerService } from 'src/app/services/marker.service';
 
 const iconRetinaUrl = 'assets/marker-icon-2x.png';
@@ -28,20 +28,29 @@ export class MatchMapComponent implements OnInit {
 
   private map;
 
-  constructor(private match: MatchResponse, private markerService: MarkerService) {
+  constructor(private markerService: MarkerService, private match: MatchResponse) {
   }
 
   ngOnInit(): void {
-    console.log("MatchResponse: ");
-    console.log(this.match);
+    // console.log("MatchResponse: ");
+    // console.log(this.match);
     //this.initMap(this.match.map.centroide.lat, this.match.map.centroide.lon);
-    this.initMap();
+    console.log("Match-Map");
+    console.log(this.match);
+    this.initMap(this.match.map?.centroide.lat,this.match.map?.centroide.lon);
     this.markerService.makeMunicipalitiesMarkers(this.map);
   }
 
-  private initMap(): void {
+  private initMap(lat: string, lon: string): void {
+    
+    if(lat == null || lon == null)
+    {
+      lat = "-37";
+      lon = "-60.5";
+    }
+
     this.map = L.map('map', {
-      center: [-37, -60.5],
+      center: [Number(lat), Number(lon)],
       zoom: 6,
     });
 

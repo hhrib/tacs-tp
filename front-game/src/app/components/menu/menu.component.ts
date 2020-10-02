@@ -12,7 +12,7 @@ import { MatchSearchComponent } from '../match/match-search/match-search.compone
 import { ProvincesService } from 'src/app/services/provinces.service';
 import { windowWhen } from 'rxjs/operators';
 import { MatchDTO } from 'src/app/models/match.dto';
-
+import { MatchResponse } from 'src/app/models/match.response';
 
 @Component({
   selector: 'app-menu',
@@ -29,6 +29,7 @@ export class MenuComponent implements OnInit {
     public dialog: MatDialog,
     public auth: AuthService,
     public match: MatchDTO,
+    public matchOutput: MatchResponse,
     public route: ActivatedRoute,
     public router: Router,
     ) { }

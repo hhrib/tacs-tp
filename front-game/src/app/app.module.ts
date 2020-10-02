@@ -39,7 +39,8 @@ import { MarkerService } from './services/marker.service';
 import { PopUpService } from './services/pop-up.service';
 
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
-import { MatchResponse } from './models/Response/match.response';
+import { MatchResponse } from './models/match.response';
+
 
 @NgModule({
   declarations: [

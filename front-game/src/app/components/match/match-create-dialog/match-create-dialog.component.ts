@@ -10,7 +10,7 @@ import { ProvincesService } from 'src/app/services/provinces.service';
 import { UsersService } from 'src/app/services/users.service';
 import { MatchService } from 'src/app/services/matches.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MatchResponse } from 'src/app/models/Response/match.response';
+import { MatchResponse } from 'src/app/models/match.response';
 
 @Component({
   selector: 'app-match-create-dialog',
@@ -96,12 +96,18 @@ export class MatchCreateDialogComponent implements OnInit {
     this.matchInput.municipalitiesQty = form.value.quantity;
     this.matchInput.provinceId = form.value.province;
     this.matchInput.userIds = form.value.players;
-    this.dialogRef.disableClose;
     this.matchService.createMatch(this.matchInput).subscribe(
       response => {
+        console.log("CreateMatch");
         console.log(response);
-        this.matchOutput = response;
-        this.router.navigate(['/mapMatch']);
+        this.matchOutput.id = response.id;
+        this.matchOutput.date = response.date;
+        this.matchOutput.config = response.config;
+        this.matchOutput.map = response.map;
+        this.matchOutput.state = response.state;
+        this.matchOutput.users = response.users;
+        console.log(this.matchOutput);
+        this.router.navigate(['/mapMatch/'+this.matchOutput.id]);
         this.dialogRef.close(this.matchInput);
       },
       err => {console.log(err)}
