@@ -1,5 +1,8 @@
 package net.tacs.game.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MatchConfiguration {
     private double minDist; //<-- Se calculan
     private double maxDist; //<-- Se calculan
@@ -11,6 +14,8 @@ public class MatchConfiguration {
     private double multHeight = 2;
     private double multDefense = 1.25D;
     private int initialGauchos = 3000;
+
+    private List<User> playersTurns = new ArrayList<>();
 
     public void setMinDist(double minDist) {
         this.minDist = minDist;
@@ -90,5 +95,35 @@ public class MatchConfiguration {
 
     public int getInitialGauchos() {
         return initialGauchos;
+    }
+
+    public List<User> getPlayersTurns() {
+        return playersTurns;
+    }
+
+    public void setPlayersTurns(List<User> playerTurns) {
+        this.playersTurns = playerTurns;
+    }
+
+    public User setNextPlayerTurn(String playerId) {
+        for(User aUser : playersTurns)
+        {
+            if(aUser.getId().equals(playerId))
+            {
+                int index = playersTurns.indexOf(aUser);
+
+                //es el ultimo de la lista?
+                if(index == (playersTurns.size() - 1))
+                {
+                    return playersTurns.get(0);
+                }
+                else
+                {
+                    return playersTurns.get(index + 1);
+                }
+            }
+        }
+
+        return null;
     }
 }

@@ -7,11 +7,7 @@ import net.tacs.game.exceptions.MatchException;
 import net.tacs.game.mapper.MatchToDTOMapper;
 import net.tacs.game.model.ApiError;
 import net.tacs.game.model.Match;
-import net.tacs.game.model.dto.CreateMatchDTO;
-import net.tacs.game.model.dto.MatchDTOResponse;
-import net.tacs.game.model.dto.MuniStatisticsDTOResponse;
-import net.tacs.game.model.dto.UpdateMunicipalityStateDTO;
-import net.tacs.game.model.enums.MunicipalityState;
+import net.tacs.game.model.dto.*;
 import net.tacs.game.services.MatchService;
 import net.tacs.game.services.UserService;
 import org.slf4j.Logger;
@@ -69,9 +65,9 @@ public class MatchController {
             @ApiResponse(code = 500, message = "Internal Server Error")
     })
     @GetMapping("/matches/{id}")
-    public ResponseEntity<MatchDTOResponse> getMatchById(@PathVariable("id") String id) throws MatchException {
+    public ResponseEntity<Match> getMatchById(@PathVariable("id") String id) throws MatchException {
         Match match = this.matchService.getMatchById(id);
-        return new ResponseEntity<>(MatchToDTOMapper.mapMatch(match), HttpStatus.OK);
+        return new ResponseEntity<>(match, HttpStatus.OK);
     }
 
 
@@ -95,6 +91,12 @@ public class MatchController {
     @PatchMapping("/matches/{matchId}/municipalities/{muniId}/")
     public ResponseEntity updateMunicipalityState(@PathVariable("matchId") String matchId, @PathVariable("muniId") String muniId, @RequestBody UpdateMunicipalityStateDTO dto) throws MatchException {
         this.matchService.updateMunicipalityState(matchId, muniId, dto);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
+    }
+
+    @PatchMapping("/matches/{matchId}/passTurn")
+    public ResponseEntity updateMatchTurn(@PathVariable("matchId") String matchId, @RequestBody PassTurnDTO passTurnDTO) throws MatchException {
+        this.matchService.passTurn(matchId, passTurnDTO.getUserId());
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 

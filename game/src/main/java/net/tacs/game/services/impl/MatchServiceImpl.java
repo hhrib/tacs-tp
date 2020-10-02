@@ -5,12 +5,12 @@ import net.tacs.game.controller.MatchController;
 import net.tacs.game.exceptions.MatchException;
 import net.tacs.game.mapper.MuniToStatsDTOMapper;
 import net.tacs.game.model.*;
-import net.tacs.game.model.dto.CreateMatchDTO;
-import net.tacs.game.model.dto.MuniStatisticsDTOResponse;
-import net.tacs.game.model.dto.UpdateMunicipalityStateDTO;
+import net.tacs.game.model.dto.*;
 import net.tacs.game.model.enums.MatchState;
 import net.tacs.game.model.enums.MunicipalityState;
 import net.tacs.game.repositories.MatchRepository;
+import net.tacs.game.repositories.ProvinceRepository;
+import net.tacs.game.repositories.UserRepository;
 import net.tacs.game.services.MatchService;
 import net.tacs.game.services.ProvinceService;
 import net.tacs.game.services.MunicipalityService;
@@ -28,7 +28,6 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static net.tacs.game.GameApplication.*;
 import static net.tacs.game.constants.Constants.*;
 import static net.tacs.game.constants.Constants.MUNICIPALITY_NOT_FOUND_DETAIL;
 
@@ -46,9 +45,15 @@ public class MatchServiceImpl implements MatchService {
     @Autowired
     private ProvinceService provinceService;
 
+    @Autowired
+    private ProvinceRepository provinceRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
     @Override
     public List<Match> findAll() {
-        List<Match> matches = GameApplication.getMatches();
+        List<Match> matches = matchRepository.getMatches();
         return matches;
     }
 
@@ -75,7 +80,7 @@ public class MatchServiceImpl implements MatchService {
             List<LocalDateTime> dates = validateDatesToSearch(isoDateFrom, isoDateTo);
             LocalDateTime dateFrom = dates.get(0);
             LocalDateTime dateTo = dates.get(1);
-            List<Match> matches = GameApplication.getMatches();
+            List<Match> matches = matchRepository.getMatches();
 
             if (matches == null || matches.isEmpty()) {
                 throw new MatchException(HttpStatus.NOT_FOUND, Arrays.asList(new ApiError("MATCHES_NOT_FOUND", "Matches not found for dates")));
@@ -99,8 +104,7 @@ public class MatchServiceImpl implements MatchService {
         newMatch.setState(MatchState.CREATED);
         LOGGER.info(newMatchBean.toString());
 
-        //TODO guardar en base de datos.
-        addMatch(newMatch);
+        matchRepository.add(newMatch);
 
         return newMatch;
     }
@@ -117,7 +121,6 @@ public class MatchServiceImpl implements MatchService {
         if (newMatchBean.getProvinceId() == null) {
             errors.add(new ApiError("MATCH_EMPTY_MAP", "Match Map not specified"));
         }
-        //TODO error al no recibir configs
 
         if (!errors.isEmpty()) {
             throw new MatchException(HttpStatus.BAD_REQUEST, errors);
@@ -134,13 +137,11 @@ public class MatchServiceImpl implements MatchService {
         {
             boolean bUserFound = false;
 
-            for(User aUser : getUsers())
+            Optional<User> userOptional = userRepository.findById(aId);
+            if(userOptional.isPresent())
             {
-                if(aUser.getId().equals(aId))
-                {
-                    bUserFound = true;
-                    usersInMatch.add(aUser);
-                }
+                bUserFound = true;
+                usersInMatch.add(userOptional.get());
             }
 
             if(!bUserFound)
@@ -156,83 +157,119 @@ public class MatchServiceImpl implements MatchService {
         MatchConfiguration newConfig = createConfig(newMatchBean);
         newMatch.setConfig(newConfig);
 
+        //Copia de Provincia
         Province newProvince = new Province();
 
-        //TODO Buscar en base de datos
-        for (Province aProvince: getProvinces()) {
-            if(aProvince.getId() == (newMatchBean.getProvinceId()))
+        //Provincia Seleccionada a copiar
+        Optional<Province> provinceOptional = provinceRepository.findById(newMatchBean.getProvinceId());
+        if(provinceOptional.isEmpty())
+        {
+            errors.add(new ApiError("PROVINCE_NOT_FOUND",
+                    "Province Id does not exist"));
+
+            throw new MatchException(HttpStatus.NOT_FOUND, errors);
+        }
+        else
+        {
+            Province selectedProvince = provinceOptional.get();
+
+            newProvince.setNombre(selectedProvince.getNombre());
+
+            Random random = new Random();
+
+            List<Municipality> tempMunicipalities;
+
+            if(selectedProvince.getMunicipalities().isEmpty())
             {
-                //Copia de Provincia
-                newProvince.setNombre(aProvince.getNombre());
+                tempMunicipalities = provinceService.findMunicipios(selectedProvince.getId().intValue(), null);
 
-                Random random = new Random();
-
-                List<Municipality> tempMunicipalities;
-
-                if(aProvince.getMunicipalities().isEmpty())
-                {
-                    tempMunicipalities = provinceService.findMunicipios((int)aProvince.getId(), null);
-
-                    //Se guarda en la cache
-                    aProvince.setMunicipalities(tempMunicipalities);
-                }
-                else {
-                    tempMunicipalities = aProvince.getMunicipalities();
-                }
-
-                if (newMatchBean.getMunicipalitiesQty() > aProvince.getMunicipalities().size()) {
-                    errors.add(new ApiError("EXCEEDED_MUNICIPALITIES_LIMIT",
-                            "Quantity of municipalities selected exceeds province availability"));
-
-                    throw new MatchException(HttpStatus.BAD_REQUEST, errors);
-                }
-
-                List<Integer> selectedIndexes = new ArrayList<>();
-
-                //Crear Municipalidades
-                for(int i = 1; i <= newMatchBean.getMunicipalitiesQty(); i++)
-                {
-                    Municipality muni = new Municipality();
-
-                    int selectedMuniIndex = random.nextInt(tempMunicipalities.size());
-                    while(selectedIndexes.contains(selectedMuniIndex))
-                    {
-                        selectedMuniIndex = random.nextInt(tempMunicipalities.size());
-                    }
-
-                    muni.setNombre(tempMunicipalities.get(selectedMuniIndex).getNombre());
-                    selectedIndexes.add(selectedMuniIndex);
-
-                    muni.setCentroide(tempMunicipalities.get(selectedMuniIndex).getCentroide());
-
-                    muni.setElevation(municipalityService.getElevation(muni.getCentroide()));
-
-                    //TODO: LA API SOLO ME DEJA HACER 1 REQUEST POR SEGUNDO
-                    TimeUnit.SECONDS.sleep(1);
-
-                    muni.setGauchosQty(newMatch.getConfig().getInitialGauchos());
-
-                    //Por defecto se pone en defensa
-                    muni.setState(MunicipalityState.DEFENSE);
-
-                    newProvince.addMunicipality(muni);
-                }
-
-                newMatch.setMap(newProvince);
-
-                //asignar municipalidades a usuarios
-                assignMunicipalities(newMatch.getMap().getMunicipalities(), newMatch.getUsers());
-
-                calculateConfigVariables(newMatch);
-
-                return newMatch;
+                //Se guarda en la cache
+                selectedProvince.setMunicipalities(tempMunicipalities);
             }
+            else {
+                tempMunicipalities = selectedProvince.getMunicipalities();
+            }
+
+            if (newMatchBean.getMunicipalitiesQty() > selectedProvince.getMunicipalities().size()) {
+                errors.add(new ApiError("EXCEEDED_MUNICIPALITIES_LIMIT",
+                        "Quantity of municipalities selected exceeds province availability"));
+
+                throw new MatchException(HttpStatus.BAD_REQUEST, errors);
+            }
+
+            List<Integer> selectedIndexes = new ArrayList<>();
+
+            //Crear Municipalidades
+            for(int i = 1; i <= newMatchBean.getMunicipalitiesQty(); i++)
+            {
+                Municipality muni = new Municipality();
+
+                int selectedMuniIndex = random.nextInt(tempMunicipalities.size());
+                while(selectedIndexes.contains(selectedMuniIndex))
+                {
+                    selectedMuniIndex = random.nextInt(tempMunicipalities.size());
+                }
+
+                muni.setNombre(tempMunicipalities.get(selectedMuniIndex).getNombre());
+                selectedIndexes.add(selectedMuniIndex);
+
+                muni.setCentroide(tempMunicipalities.get(selectedMuniIndex).getCentroide());
+
+                muni.setElevation(municipalityService.getElevation(muni.getCentroide()));
+
+                //TODO: LA API SOLO ME DEJA HACER 1 REQUEST POR SEGUNDO
+                TimeUnit.SECONDS.sleep(1);
+
+                muni.setGauchosQty(newMatch.getConfig().getInitialGauchos());
+
+                //Por defecto se pone en defensa
+                muni.setState(MunicipalityState.DEFENSE);
+
+                newProvince.addMunicipality(muni);
+            }
+
+            newMatch.setMap(newProvince);
+
+            //asignar municipalidades a usuarios
+            assignMunicipalities(newMatch.getMap().getMunicipalities(), newMatch.getUsers());
+
+            calculateConfigVariables(newMatch);
+
+            //create players order
+            assignPlayersOrder(newMatch);
+
+            return newMatch;
+        }
+    }
+
+    /**
+     * @method assignPlayersOrder
+     * @param newMatch
+     * @description creates an order for the match and assigns the starting player
+     */
+    public void assignPlayersOrder(Match newMatch)
+    {
+        MatchConfiguration matchConfig = newMatch.getConfig();
+
+        List<User> playersInMatch = new ArrayList<>(newMatch.getUsers());
+        List<User> playersOrder = new ArrayList<>();
+        int playersCounter = playersInMatch.size();
+
+        Random random = new Random();
+
+        for(int i = 0; i < playersCounter; i++)
+        {
+            int randomPlayer = random.nextInt(playersInMatch.size());
+
+            playersOrder.add(playersInMatch.remove(randomPlayer));
         }
 
-        errors.add(new ApiError("PROVINCE_NOT_FOUND",
-                "Province Id does not exist"));
+        //listado con el orden de los jugadores
+        matchConfig.setPlayersTurns(playersOrder);
 
-        throw new MatchException(HttpStatus.NOT_FOUND, errors);
+        //el jugador que comienza la partida
+        newMatch.setTurnPlayer(playersOrder.get(0));
+        municipalityService.produceGauchos(newMatch, playersOrder.get(0));
     }
 
     /**
@@ -321,6 +358,33 @@ public class MatchServiceImpl implements MatchService {
         muni.setState(dto.getNewState());
 
         matchRepository.update(match);
+    }
+
+    @Override
+    public void passTurn(String matchIdString, String playerId) throws MatchException {
+        Long matchId = validateAndGetIdLong(matchIdString, "MATCH");
+        Optional<Match> matchOptional = matchRepository.findById(matchId);
+        Match match = matchOptional.orElseThrow(() -> new MatchException(HttpStatus.NOT_FOUND, Arrays.asList(new ApiError(MATCH_NOT_FOUND_CODE, MATCH_NOT_FOUND_DETAIL))));
+
+        //si el jugador pertence a la partida
+        if(!match.userIsInMatch(playerId))
+        {
+            throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError("PLAYER_NOT_IN_MATCH", "This player doesn't belong here")));
+        }
+
+        //si el jugador tiene el turno
+        if(match.getTurnPlayer().getId().equals(playerId))
+        {
+            List<User> playerTurns = match.getConfig().getPlayersTurns();
+
+            User nextPlayer = match.getConfig().setNextPlayerTurn(playerId);
+            match.setTurnPlayer(nextPlayer);
+            municipalityService.produceGauchos(match, nextPlayer);
+        }
+        else //el jugador no tiene el turno
+        {
+            throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(PLAYER_DOESNT_HAVE_TURN_CODE, PLAYER_DOESNT_HAVE_TURN_DETAIL)));
+        }
     }
 
     private List<LocalDateTime> validateDatesToSearch(String isoDateFrom, String isoDateTo) throws MatchException {

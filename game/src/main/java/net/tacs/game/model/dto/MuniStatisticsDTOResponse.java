@@ -12,6 +12,8 @@ public class MuniStatisticsDTOResponse {
 
     private Integer gauchosQty;
 
+    private boolean blocked;
+
     public Integer getMuniId() {
         return muniId;
     }
@@ -35,6 +37,10 @@ public class MuniStatisticsDTOResponse {
     public void setGauchosQty(Integer gauchosQty) {
         this.gauchosQty = gauchosQty;
     }
+
+    public boolean getBlocked() {return blocked;}
+
+    public void setBlocked(boolean bValue) {this.blocked = bValue;}
 
     @Override
     public boolean equals(Object o) {

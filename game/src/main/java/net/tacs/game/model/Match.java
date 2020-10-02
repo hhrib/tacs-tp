@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class Match {
-
+    private static long idCounter = 0;
     private Long id;
 
     private List<User> users;
@@ -19,6 +19,8 @@ public class Match {
     private MatchState state;
 
     private Province map;
+
+    private User turnPlayer;
 
     private User winner;
 
@@ -77,7 +79,24 @@ public class Match {
         this.config = config;
     }
 
+    public User getTurnPlayer() {
+        return turnPlayer;
+    }
+
+    public void setTurnPlayer(User turnPlayer) {
+        this.turnPlayer = turnPlayer;
+    }
+
+    public User getWinner() {
+        return winner;
+    }
+
+    public void setWinner(User winner) {
+        this.winner = winner;
+    }
+
     public Match(){
+        id = idCounter++;
     }
 
     @Override
@@ -108,5 +127,15 @@ public class Match {
     @Override
     public int hashCode() {
         return Objects.hash(id, users, state, map, winner, date);
+    }
+
+    public boolean userIsInMatch(String userId) {
+        for(User aUser : getUsers())
+        {
+            if(aUser.getId().equals(userId))
+                return true;
+        }
+
+        return false;
     }
 }

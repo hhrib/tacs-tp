@@ -1,7 +1,5 @@
 package net.tacs.game.service;
 
-import static net.tacs.game.GameApplication.addMunicipality;
-import static net.tacs.game.GameApplication.addProvince;
 import static org.junit.Assert.*;
 
 
@@ -13,6 +11,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import net.tacs.game.model.*;
+import net.tacs.game.repositories.MatchRepository;
+import net.tacs.game.repositories.ProvinceRepository;
+import net.tacs.game.repositories.UserRepository;
 import net.tacs.game.services.MunicipalityService;
 import net.tacs.game.GameApplication;
 import org.mockito.Mockito;
@@ -44,6 +45,15 @@ public class MatchServiceTest {
     @MockBean
     private SecurityProviderService securityProviderService;
 
+    @MockBean
+    private MatchRepository matchRepository;
+
+    @MockBean
+    private ProvinceRepository provinceRepository;
+
+    @MockBean
+    private UserRepository userRepository;
+
     private User user1;
     private User user2;
     private Province buenosAires;
@@ -58,10 +68,6 @@ public class MatchServiceTest {
     @Before
     public void setUp() {
         GameApplication.setToken("");
-        GameApplication.setUsers(new ArrayList<>());
-        GameApplication.setMunicipalities(new ArrayList<>());
-        GameApplication.setMatches(new ArrayList<>());
-        GameApplication.setProvinces(new ArrayList<>());
         user1 = new User("Pepe");
         user2 = new User("Paula");
         buenosAires = new Province("Buenos Aires");
@@ -83,14 +89,8 @@ public class MatchServiceTest {
         dto.setUserIds(Arrays.asList("ABC1","ABC2"));
         dto.setConfigs(Arrays.asList(1.25D, 15D, 10D, 2D, 2D, 3000D));
 
-        addProvince(buenosAires);
-        addMunicipality(lanus);
-        addMunicipality(avellaneda);
-        addMunicipality(quilmes);
-        addMunicipality(tigre);
-        addMunicipality(lomas);
-        addMunicipality(matanza);
-        GameApplication.setUsers(Arrays.asList(user1,user2));
+        provinceRepository.add(buenosAires);
+        userRepository.setUsers(Arrays.asList(user1,user2));
 
         List<Municipality> municipalityList = new ArrayList<>();
         municipalityList.add(lanus);
@@ -127,6 +127,9 @@ public class MatchServiceTest {
         lomas.setElevation(5D);
         matanza.setElevation(6D);
 
+        Mockito.when(userRepository.findById("ABC1")).thenReturn(java.util.Optional.ofNullable(user1));
+        Mockito.when(userRepository.findById("ABC2")).thenReturn(java.util.Optional.ofNullable(user2));
+        Mockito.when(provinceRepository.findById(99999997L)).thenReturn(java.util.Optional.ofNullable(buenosAires));
         Mockito.when(municipalityService.getElevation(lanus.getCentroide())).thenReturn(3000D);
         Mockito.when(municipalityService.getElevation(avellaneda.getCentroide())).thenReturn(3100D);
         Mockito.when(municipalityService.getElevation(quilmes.getCentroide())).thenReturn(3200D);
@@ -206,6 +209,23 @@ public class MatchServiceTest {
         assertEquals(1.41421D, match.getConfig().getMinDist(), 0.0001D);
     }
 
+    @Test
+    public void assignPlayersTurns()
+    {
+        Match match = new Match();
+        match.setConfig(configuration);
+
+        User user3 = new User("Papa");
+        User user4 = new User("Pipi");
+
+        match.setUsers(Arrays.asList(user1, user2, user3, user4));
+
+        matchService.assignPlayersOrder(match);
+
+        assertEquals(4, match.getConfig().getPlayersTurns().size());
+        assertNotNull(match.getTurnPlayer());
+    }
+
     @Test(expected = MatchException.class)
     public void createMatchUsersNotFoundTest() throws MatchException, InterruptedException {
         CreateMatchDTO dto = new CreateMatchDTO();
@@ -213,15 +233,18 @@ public class MatchServiceTest {
         dto.setProvinceId(99999997L);
         dto.setUserIds(Arrays.asList("ABC1","ABC2"));
 
-        addProvince(buenosAires);
-        addMunicipality(lanus);
+        provinceRepository.add(buenosAires);
         List<Municipality> municipalityList = new ArrayList<>();
         municipalityList.add(lanus);
         buenosAires.setId(99999997L);
         buenosAires.setMunicipalities(municipalityList);
         user1.setId("user1");
         user2.setId("user2");
-        GameApplication.setUsers(Arrays.asList(user1,user2));
+        userRepository.setUsers(Arrays.asList(user1,user2));
+
+        Mockito.when(provinceRepository.findById(99999997L)).thenReturn(java.util.Optional.ofNullable(buenosAires));
+        Mockito.when(userRepository.findById("ABC1")).thenReturn(java.util.Optional.empty());
+        Mockito.when(userRepository.findById("ABC2")).thenReturn(java.util.Optional.empty());
 
         Match match = matchService.createMatch(dto);
     }
@@ -258,19 +281,18 @@ public class MatchServiceTest {
         dto.setUserIds(Arrays.asList("ABC1", "ABC2"));
         dto.setConfigs(Arrays.asList(1.25D, 15D, 10D, 2D, 2D, 3000D));
 
-        addProvince(buenosAires);
-        addMunicipality(lanus);
+        provinceRepository.add(buenosAires);
         List<Municipality> municipalityList = new ArrayList<>();
         municipalityList.add(lanus);
-        addMunicipality(avellaneda);
-        addMunicipality(quilmes);
         buenosAires.setId(99999997L);
         buenosAires.setMunicipalities(municipalityList);
         user1.setId("ABC1");
         user2.setId("ABC2");
         lanus.setElevation(3D);
         lanus.setGauchosQty(300);
-        GameApplication.setUsers(Arrays.asList(user1, user2));
+        userRepository.setUsers(Arrays.asList(user1, user2));
+
+        Mockito.when(provinceRepository.findById(99999997L)).thenReturn(java.util.Optional.ofNullable(buenosAires));
 
         matchService.createMatch(dto);
     }
@@ -280,7 +302,7 @@ public class MatchServiceTest {
         Match match = new Match();
         match.setId(1234L);
         match.setDate(LocalDateTime.of(2020, 9, 10, 0, 0));
-        GameApplication.setMatches(Arrays.asList(match));
+        Mockito.when(matchRepository.getMatches()).thenReturn(Arrays.asList(match));
         LocalDate dateFrom = LocalDate.of(2020, 9, 10);
         LocalDate dateTo = LocalDate.of(2020, 9, 20);
 
@@ -304,7 +326,7 @@ public class MatchServiceTest {
         Match match = new Match();
         match.setId(1234L);
         match.setDate(LocalDateTime.of(2020, 9, 10, 0, 0));
-        GameApplication.setMatches(Arrays.asList(match));
+        Mockito.when(matchRepository.getMatches()).thenReturn(Arrays.asList(match));
         LocalDate dateTo = LocalDate.of(2020, 9, 10);
         LocalDate dateFrom = LocalDate.of(2020, 9, 20);
 
@@ -320,7 +342,7 @@ public class MatchServiceTest {
     public void getMatchByIdOKTest() throws MatchException {
         Match match = new Match();
         match.setId(1234L);
-        GameApplication.setMatches(Arrays.asList(match));
+        Mockito.when(matchRepository.findById(1234L)).thenReturn(java.util.Optional.of(match));
         Match matchRetrieved = matchService.getMatchById("1234");
 
         assertTrue(matchRetrieved.equals(match));
@@ -336,4 +358,89 @@ public class MatchServiceTest {
         Match matchRetrieved = matchService.getMatchById("wrongNumberFormat");
     }
 
+    @Test
+    public void passTurnPlayerLastOnTheList() throws MatchException{
+        Match match = new Match();
+        MatchConfiguration config = new MatchConfiguration();
+        match.setId(123456L);
+        match.setConfig(config);
+        match.setUsers(Arrays.asList(user1, user2));
+        match.setTurnPlayer(user2);
+
+        user1.setId("ABC1");
+        user2.setId("ABC2");
+
+        config.setPlayersTurns(Arrays.asList(user1, user2));
+
+        Mockito.when(matchRepository.findById(123456L)).thenReturn(java.util.Optional.of(match));
+
+        matchService.passTurn("123456", "ABC2");
+
+        assertEquals(user1, match.getTurnPlayer());
+    }
+
+    @Test
+    public void passTurnPlayerMiddleOnTheList() throws MatchException{
+        Match match = new Match();
+        MatchConfiguration config = new MatchConfiguration();
+        match.setId(123456L);
+        match.setConfig(config);
+        match.setTurnPlayer(user2);
+
+        User user3 = new User("Laura");
+
+        user1.setId("ABC1");
+        user2.setId("ABC2");
+        user3.setId("ABC3");
+
+        match.setUsers(Arrays.asList(user1, user2, user3));
+        config.setPlayersTurns(Arrays.asList(user1, user2, user3));
+
+        Mockito.when(matchRepository.findById(123456L)).thenReturn(java.util.Optional.of(match));
+
+        matchService.passTurn("123456", "ABC2");
+
+        assertEquals(user3, match.getTurnPlayer());
+    }
+
+    @Test(expected = MatchException.class)
+    public void passTurnPlayerNotInMatch() throws MatchException {
+        Match match = new Match();
+        MatchConfiguration config = new MatchConfiguration();
+        match.setId(123456L);
+        match.setConfig(config);
+        match.setUsers(Arrays.asList(user1, user2));
+        match.setTurnPlayer(user2);
+
+        User user3 = new User("Laura");
+
+        user1.setId("ABC1");
+        user2.setId("ABC2");
+        user3.setId("ABC3");
+
+        config.setPlayersTurns(Arrays.asList(user1, user2));
+
+        Mockito.when(matchRepository.findById(123456L)).thenReturn(java.util.Optional.of(match));
+
+        matchService.passTurn("123456", "ABC3");
+    }
+
+    @Test(expected = MatchException.class)
+    public void passTurnPlayerNotInTurn() throws MatchException {
+        Match match = new Match();
+        MatchConfiguration config = new MatchConfiguration();
+        match.setId(123456L);
+        match.setConfig(config);
+        match.setUsers(Arrays.asList(user1, user2));
+        match.setTurnPlayer(user2);
+
+        user1.setId("ABC1");
+        user2.setId("ABC2");
+
+        config.setPlayersTurns(Arrays.asList(user1, user2));
+
+        Mockito.when(matchRepository.findById(123456L)).thenReturn(java.util.Optional.of(match));
+
+        matchService.passTurn("123456", "ABC1");
+    }
 }

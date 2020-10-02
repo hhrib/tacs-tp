@@ -3,8 +3,11 @@ package net.tacs.game.service;
 import net.tacs.game.GameApplication;
 import net.tacs.game.exceptions.MatchException;
 import net.tacs.game.model.*;
+import net.tacs.game.model.dto.AttackMuniDTO;
+import net.tacs.game.model.dto.AttackResultDTO;
 import net.tacs.game.model.dto.MoveGauchosDTO;
 import net.tacs.game.model.enums.MunicipalityState;
+import net.tacs.game.repositories.MatchRepository;
 import net.tacs.game.services.MunicipalityService;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,6 +15,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -28,6 +32,9 @@ public class MunicipalityServiceTest {
     @Autowired
     private MunicipalityService municipalityService;
 
+    @MockBean
+    private MatchRepository matchRepository;
+
     private User user1;
     private User user2;
     private Province buenosAires;
@@ -42,10 +49,6 @@ public class MunicipalityServiceTest {
     @Before
     public void setUp() {
         GameApplication.setToken("");
-        GameApplication.setUsers(new ArrayList<>());
-        GameApplication.setMunicipalities(new ArrayList<>());
-        GameApplication.setMatches(new ArrayList<>());
-        GameApplication.setProvinces(new ArrayList<>());
         user1 = new User("Pepe");
         user2 = new User("Paula");
         buenosAires = new Province("Buenos Aires");
@@ -59,8 +62,16 @@ public class MunicipalityServiceTest {
     }
 
     @Test
-    public void attackSuccessfullMunicipality() {
+    public void attackSuccessfullMunicipality() throws MatchException {
+        Match match = new Match();
+        match.setId(111111L);
+        match.setMap(buenosAires);
+        match.getMap().setMunicipalities(Arrays.asList(Lanus, Avellaneda));
+
+        Mockito.when(matchRepository.findById(111111L)).thenReturn(java.util.Optional.of(match));
+
         MatchConfiguration Config = new MatchConfiguration();
+        match.setConfig(Config);
         Config.setMaxHeight(2000D);
         Config.setMinHeight(1000D);
         Config.setMaxDist(20D);
@@ -68,6 +79,9 @@ public class MunicipalityServiceTest {
 
         Centroide lanusCentroide = Mockito.mock(Centroide.class);
         Centroide avellanedaCentroide = new Centroide();
+
+        Lanus.setId(999999);
+        Avellaneda.setId(888888);
 
         Lanus.setCentroide(lanusCentroide);
         Avellaneda.setCentroide(avellanedaCentroide);
@@ -81,12 +95,28 @@ public class MunicipalityServiceTest {
 
         Avellaneda.setState(MunicipalityState.DEFENSE);
 
-        assertEquals(1, municipalityService.attackMunicipality(Lanus, Avellaneda, Config, 250));
+        AttackMuniDTO attackMuniDTO = new AttackMuniDTO();
+        attackMuniDTO.setMatchId(111111L);
+        attackMuniDTO.setGauchosQty(250);
+        attackMuniDTO.setMuniAttackingId(999999);
+        attackMuniDTO.setMuniDefendingId(888888);
+
+        AttackResultDTO attackResultDTO = municipalityService.attackMunicipality(attackMuniDTO);
+
+        assertEquals(1, attackResultDTO.getResult());
     }
 
     @Test
-    public void attackRepelledMunicipality() {
+    public void attackRepelledMunicipality() throws MatchException {
+        Match match = new Match();
+        match.setId(111111L);
+        match.setMap(buenosAires);
+        match.getMap().setMunicipalities(Arrays.asList(Lanus, Avellaneda));
+
+        Mockito.when(matchRepository.findById(111111L)).thenReturn(java.util.Optional.of(match));
+
         MatchConfiguration Config = new MatchConfiguration();
+        match.setConfig(Config);
         Config.setMaxHeight(2000D);
         Config.setMinHeight(1000D);
         Config.setMaxDist(20D);
@@ -99,6 +129,9 @@ public class MunicipalityServiceTest {
         Avellaneda.setCentroide(avellanedaCentroide);
         Mockito.when(lanusCentroide.getDistance(avellanedaCentroide)).thenReturn(15D);
 
+        Lanus.setId(999999);
+        Avellaneda.setId(888888);
+
         Lanus.setElevation(1500D);
         Avellaneda.setElevation(1500D);
 
@@ -107,7 +140,15 @@ public class MunicipalityServiceTest {
 
         Avellaneda.setState(MunicipalityState.PRODUCTION);
 
-        assertEquals(0, municipalityService.attackMunicipality(Lanus, Avellaneda, Config, 100));
+        AttackMuniDTO attackMuniDTO = new AttackMuniDTO();
+        attackMuniDTO.setMatchId(111111L);
+        attackMuniDTO.setGauchosQty(100);
+        attackMuniDTO.setMuniAttackingId(999999);
+        attackMuniDTO.setMuniDefendingId(888888);
+
+        AttackResultDTO attackResultDTO = municipalityService.attackMunicipality(attackMuniDTO);
+
+        assertEquals(0, attackResultDTO.getResult());
     }
 
     @Test
@@ -158,7 +199,9 @@ public class MunicipalityServiceTest {
         Avellaneda.setGauchosQty(2500);
         Quilmes.setGauchosQty(1500);
 
-        GameApplication.addMatch(match);
+        Quilmes.setBlocked(false);
+
+        Mockito.when(matchRepository.findById(1235L)).thenReturn(java.util.Optional.of(match));
 
         MoveGauchosDTO dto = new MoveGauchosDTO();
         dto.setMatchId(match.getId());
@@ -171,5 +214,84 @@ public class MunicipalityServiceTest {
         assertEquals(3000, Lanus.getGauchosQty());
         assertEquals(2000, Avellaneda.getGauchosQty());
         assertEquals(2000, Quilmes.getGauchosQty());
+    }
+
+    @Test (expected = MatchException.class)
+    public void municipalityMoveGauchosBlocked() throws MatchException {
+        Match match = new Match();
+        match.setId(1235L);
+        match.setMap(buenosAires);
+        match.setConfig(configuration);
+        buenosAires.setMunicipalities(Arrays.asList(Avellaneda, Quilmes));
+
+        Avellaneda.setId(99999);
+        Quilmes.setId(88888);
+
+        Avellaneda.setGauchosQty(2500);
+        Quilmes.setGauchosQty(1500);
+
+        Quilmes.setBlocked(true);
+
+        Mockito.when(matchRepository.findById(1235L)).thenReturn(java.util.Optional.of(match));
+
+        MoveGauchosDTO dto = new MoveGauchosDTO();
+        dto.setMatchId(match.getId());
+        dto.setIdOriginMuni(99999);
+        dto.setIdDestinyMuni(88888);
+        dto.setQty(500);
+
+        municipalityService.moveGauchos(dto);
+    }
+
+    @Test
+    public void allMunicipalitiesProduceGauchos()
+    {
+        Match match = new Match();
+        match.setId(1235L);
+        match.setMap(buenosAires);
+        match.setConfig(configuration);
+        buenosAires.setMunicipalities(Arrays.asList(Lanus, Avellaneda, Quilmes, Tigre, Matanza, Lomas));
+
+        Lanus.setId(77777);
+        Avellaneda.setId(99999);
+        Quilmes.setId(88888);
+        Tigre.setId(66666);
+        Matanza.setId(55555);
+        Lomas.setId(44444);
+
+        Lanus.setGauchosQty(0);
+        Avellaneda.setGauchosQty(1000);
+        Quilmes.setGauchosQty(0);
+        Tigre.setGauchosQty(10);
+        Matanza.setGauchosQty(1200);
+        Lomas.setGauchosQty(500);
+
+        Lanus.setOwner(user1);
+        Avellaneda.setOwner(user1);
+        Quilmes.setOwner(user1);
+        Tigre.setOwner(user2);
+        Matanza.setOwner(user2);
+        Lomas.setOwner(user2);
+
+        configuration.setMaxHeight(2000D);
+        configuration.setMinHeight(1000D);
+        configuration.setMaxDist(20D);
+        configuration.setMinDist(10D);
+
+        Lanus.setElevation(1500D);
+        Lanus.setState(MunicipalityState.DEFENSE);
+        Avellaneda.setElevation(1500D);
+        Avellaneda.setState(MunicipalityState.PRODUCTION);
+        Quilmes.setElevation(1500D);
+        Quilmes.setState(MunicipalityState.PRODUCTION);
+
+        municipalityService.produceGauchos(match, user1);
+
+        assertEquals(7, Lanus.getGauchosQty());
+        assertEquals(1011, Avellaneda.getGauchosQty());
+        assertEquals(11, Quilmes.getGauchosQty());
+        assertEquals(10, Tigre.getGauchosQty());
+        assertEquals(1200, Matanza.getGauchosQty());
+        assertEquals(500, Lomas.getGauchosQty());
     }
 }

@@ -8,6 +8,13 @@
                     <mat-option *ngFor="let province of provinceList" [value]="province.id">{{province.name}}</mat-option>
                 </mat-select>
         </mat-form-field>
+        
+        <mat-form-field>
+            <mat-label>Players</mat-label>
+            <mat-select multiple name="players" ngModel>
+                <mat-option *ngFor="let player of playersList" [value]="player.id">{{player.name}}</mat-option> 
+            </mat-select>
+        </mat-form-field>
 
         <mat-form-field>
             <mat-label>Number of municipalities</mat-label>
@@ -17,10 +24,17 @@
         </mat-form-field>
 
         <mat-form-field>
-            <mat-label>Players</mat-label>
-            <mat-select multiple name="players" ngModel [disabled]="clicked">
-                <mat-option *ngFor="let player of playersList" [value]="player.id">{{player.name}}</mat-option> 
-            </mat-select>
+            <mat-label>Gauchos Pop</mat-label>
+                <mat-select name="gauchosQty" ngModel [disabled]="clicked">
+                    <mat-option *ngFor="let gauchosQty of gauchosQtyList" [value]="gauchosQty">{{gauchosQty}}</mat-option>
+                </mat-select>
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>Mode</mat-label>
+                <mat-select name="mode" ngModel >
+                    <mat-option *ngFor="let mode of modeList" [value]="mode.logicNums">{{mode.name}}</mat-option>
+                </mat-select>
         </mat-form-field>
 
         <div mat-dialog-actions style="display: block;">
