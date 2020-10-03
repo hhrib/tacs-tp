@@ -11,7 +11,7 @@
         
         <mat-form-field>
             <mat-label>Players</mat-label>
-            <mat-select multiple name="players" ngModel>
+            <mat-select multiple name="players" ngModel [disabled]="clicked">
                 <mat-option *ngFor="let player of playersList" [value]="player.id">{{player.name}}</mat-option> 
             </mat-select>
         </mat-form-field>
@@ -32,7 +32,7 @@
 
         <mat-form-field>
             <mat-label>Mode</mat-label>
-                <mat-select name="mode" ngModel >
+                <mat-select name="mode" ngModel [disabled]="clicked">
                     <mat-option *ngFor="let mode of modeList" [value]="mode.logicNums">{{mode.name}}</mat-option>
                 </mat-select>
         </mat-form-field>

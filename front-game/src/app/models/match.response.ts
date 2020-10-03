@@ -13,5 +13,7 @@ export class MatchResponse {
     public id: string;
     public map: Map;
     public state: string;
+    public winner: User;
     public users: Array<User>;
+    public turnPlayer: User;
 }

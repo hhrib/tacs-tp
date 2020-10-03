@@ -1,12 +1,9 @@
 import { Centroide } from './centroide';
-import { User } from './user';
+import { Municipality } from './municipality';
 
 export class Map {
     public centroide: Centroide;
-    public elevation: string;
-    public gauchosQty: string;
     public id: string;
+    public municipalities: Array<Municipality>;
     public nombre: string;
-    public owner: User;
-    public state: string;
 }

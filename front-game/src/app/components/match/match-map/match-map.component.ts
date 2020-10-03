@@ -37,7 +37,7 @@ export class MatchMapComponent implements OnInit {
     //this.initMap(this.match.map.centroide.lat, this.match.map.centroide.lon);
     console.log("Match-Map");
     console.log(this.match);
-    this.initMap(this.match.map?.centroide.lat,this.match.map?.centroide.lon);
+    this.initMap(this.match.map?.centroide?.lat,this.match.map?.centroide?.lon);
     this.markerService.makeMunicipalitiesMarkers(this.map);
   }
 
