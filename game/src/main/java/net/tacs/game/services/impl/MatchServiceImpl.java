@@ -174,6 +174,7 @@ public class MatchServiceImpl implements MatchService {
             Province selectedProvince = provinceOptional.get();
 
             newProvince.setNombre(selectedProvince.getNombre());
+            newProvince.setCentroide(selectedProvince.getCentroide());
 
             Random random = new Random();
 
