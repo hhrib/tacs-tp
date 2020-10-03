@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { HomeComponent } from './components/home/home.component';
 import { MatchSearchComponent } from './components/match/match-search/match-search.component';
+import { StatisticsPanelComponent } from './components/match/statistics-panel/statistics-panel.component';
 import { MatchComponent } from './components/match/match/match.component';
 import { AuthGuard } from './services/auth.guard';
 
@@ -12,7 +13,7 @@ const appRoutes: Routes = [
     { path:'searchMatches', component: MatchSearchComponent, canActivate: [AuthGuard]},
     { path:'mapMatch/:id', component: MatchComponent, canActivate: [AuthGuard]},
     { path: '**', redirectTo: 'home' },
-
+    { path:'getStatistics', component: StatisticsPanelComponent, canActivate: [AuthGuard]},
 ];
 
 export const AppRoutes = RouterModule.forRoot(appRoutes);

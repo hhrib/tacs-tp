@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import * as L from 'leaflet';
 import { MatchDTO } from 'src/app/models/match.dto';
 import { MatchResponse } from 'src/app/models/match.response';
 import { MarkerService } from 'src/app/services/marker.service';
+import { MatchService } from 'src/app/services/matches.service';
 
 const iconRetinaUrl = 'assets/marker-icon-2x.png';
 const iconUrl = 'assets/marker-icon.png';
@@ -27,18 +29,30 @@ L.Marker.prototype.options.icon = iconDefault;
 export class MatchMapComponent implements OnInit {
 
   private map;
+  private idMatch;
 
-  constructor(private markerService: MarkerService, private match: MatchResponse) {
+  constructor(
+    private actRoute: ActivatedRoute, 
+    private matchService: MatchService, 
+    private markerService: MarkerService, 
+    private match: MatchResponse) {
   }
 
   ngOnInit(): void {
-    // console.log("MatchResponse: ");
-    // console.log(this.match);
-    //this.initMap(this.match.map.centroide.lat, this.match.map.centroide.lon);
-    console.log("Match-Map");
-    console.log(this.match);
-    this.initMap(this.match.map?.centroide?.lat,this.match.map?.centroide?.lon);
-    this.markerService.makeMunicipalitiesMarkers(this.map);
+    this.actRoute.paramMap.subscribe(params => {
+      this.idMatch = params.get('id');
+      this.matchService.getById(this.idMatch).subscribe(
+        response => {
+          this.match = response;
+          console.log("Match-Map");
+          console.log(this.match);
+          this.initMap(this.match.map?.centroide?.lat,this.match.map?.centroide?.lon);
+          this.markerService.makeMunicipalitiesMarkers(this.map);
+        },
+        err => {console.log(err)}
+      );
+    });
+    
   }
 
   private initMap(lat: string, lon: string): void {

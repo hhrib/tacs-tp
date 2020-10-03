@@ -44,4 +44,15 @@ export class MatchService {
     public deleteMatch(matchId: any): any {
         return this.http.delete<any>(`${MATCH_URL}/${matchId}`);
     }
+
+    public getMatchMuniStatistics(matchId: any, munId: any): Observable<any> {
+        return this.http.get<any>(`${MATCH_URL}/${matchId}/municipalities/${munId}`);
+    }
+
+    
+    public getMatchMunicipalities(matchId: any): any {
+        var result = this.http.get<any>(`${MATCH_URL}/${matchId}/municipalities`,{responseType: 'json'})
+        console.log(result);
+        return result;
+    }
 }

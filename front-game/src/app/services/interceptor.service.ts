@@ -20,6 +20,17 @@ export class InterceptorService implements HttpInterceptor {
     req: HttpRequest<any>,
     next: HttpHandler
   ): Observable<HttpEvent<any>> {
+      if(req.url.startsWith("https://pixabay.com/api")){
+        return this.auth.getTokenSilently$().pipe(
+          mergeMap(token => {
+            const tokenReq = req.clone({
+              //setHeaders: { Authorization: `*` }
+            });
+            return next.handle(tokenReq);
+          }),
+          catchError(err => throwError(err))
+        );
+      }
     return this.auth.getTokenSilently$().pipe(
       mergeMap(token => {
         const tokenReq = req.clone({

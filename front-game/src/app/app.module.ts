@@ -32,6 +32,8 @@ import { MatchService } from './services/matches.service';
 
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { InterceptorService } from './services/interceptor.service';
+import { StatisticsPanelComponent } from './components/match/statistics-panel/statistics-panel.component';
+import {WebSocketService} from "./services/web-socket.service";
 
 import { MatchMapComponent } from './components/match/match-map/match-map.component';
 import { MatchComponent } from './components/match/match/match.component';
@@ -49,6 +51,7 @@ import { MatchResponse } from './models/match.response';
     HomeComponent,
     MatchCreateDialogComponent,
     MatchSearchComponent,
+    StatisticsPanelComponent,
     MatchMapComponent,
     MatchComponent
    
@@ -80,7 +83,7 @@ import { MatchResponse } from './models/match.response';
     MatchCreateDialogComponent,
     MatchSearchComponent
   ],
-  providers: [MatchDTO, MatchResponse, FindMatchDTO, MatchService, MarkerService, PopUpService,
+  providers: [MatchDTO, MatchResponse, FindMatchDTO, MatchService, MarkerService, PopUpService, WebSocketService,
     { provide: HTTP_INTERCEPTORS, useClass: InterceptorService, multi: true }],
     
   bootstrap: [AppComponent]
