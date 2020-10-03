@@ -126,4 +126,8 @@ public class MatchConfiguration {
 
         return null;
     }
+
+    public void removePlayer(User player) {
+        playersTurns.remove(player);
+    }
 }

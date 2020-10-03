@@ -26,10 +26,10 @@ public interface MunicipalityService {
 	 * @return attackResult
 	 * @description return the result of the attack between municipalities
 	 */
-	public AttackResultDTO attackMunicipality(AttackMuniDTO attackMuniDTO) throws MatchException;
+	public AttackResultDTO attackMunicipality(String matchId, AttackMuniDTO attackMuniDTO) throws MatchException;
 
 	public void produceGauchos(Match match, User user);
 
-	public List<Municipality> moveGauchos(MoveGauchosDTO requestBean) throws MatchException;
+	public List<Municipality> moveGauchos(String matchId, MoveGauchosDTO requestBean) throws MatchException;
 
 }

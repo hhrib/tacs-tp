@@ -4,21 +4,11 @@ import java.util.Objects;
 
 public class MoveGauchosDTO {
 
-    Long matchId;
-
     Integer idOriginMuni;
 
     Integer idDestinyMuni;
 
     Integer qty;
-
-    public Long getMatchId() {
-        return matchId;
-    }
-
-    public void setMatchId(Long matchId) {
-        this.matchId = matchId;
-    }
 
     public Integer getIdOriginMuni() {
         return idOriginMuni;
@@ -49,21 +39,19 @@ public class MoveGauchosDTO {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         MoveGauchosDTO that = (MoveGauchosDTO) o;
-        return matchId.equals(that.matchId) &&
-                idOriginMuni.equals(that.idOriginMuni) &&
+        return idOriginMuni.equals(that.idOriginMuni) &&
                 idDestinyMuni.equals(that.idDestinyMuni) &&
                 qty.equals(that.qty);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(matchId, idOriginMuni, idDestinyMuni, qty);
+        return Objects.hash(idOriginMuni, idDestinyMuni, qty);
     }
 
     @Override
     public String toString() {
         return "MoveGauchosBean{" +
-                "matchId=" + matchId +
                 ", idOriginMuni=" + idOriginMuni +
                 ", idDestinyMuni=" + idDestinyMuni +
                 ", qty=" + qty +

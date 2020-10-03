@@ -57,18 +57,4 @@ public class MunicipalityController {
 	public Double getElevation(@PathVariable("LAT") String lat, @PathVariable("LON") String lon) {
 		return municipalityService.getElevation(new Centroide(lat, lon));
 	}
-
-	@PostMapping("/municipalities/gauchos")
-    public ResponseEntity<List<Municipality>> moveGauchos(@RequestBody MoveGauchosDTO dto) throws MatchException {
-        List<Municipality> municipalities = municipalityService.moveGauchos(dto);
-        return new ResponseEntity<>(municipalities, HttpStatus.OK);
-    }
-
-    //User story 3
-    @PostMapping(value = "/municipalities/attack")
-    public ResponseEntity<AttackResultDTO> attackMunicipalities(@RequestBody AttackMuniDTO attackMuniDTO) throws MatchException
-    {
-        AttackResultDTO resultDTO = municipalityService.attackMunicipality(attackMuniDTO);
-        return new ResponseEntity<>(resultDTO, HttpStatus.OK);
-    }
 }

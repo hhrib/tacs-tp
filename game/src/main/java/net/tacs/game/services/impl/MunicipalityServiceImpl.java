@@ -11,6 +11,7 @@ import net.tacs.game.model.dto.MoveGauchosDTO;
 import net.tacs.game.model.dto.UpdateMunicipalityStateDTO;
 import net.tacs.game.repositories.MatchRepository;
 import net.tacs.game.repositories.MunicipalityRepository;
+import net.tacs.game.services.MatchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +34,7 @@ public class MunicipalityServiceImpl implements MunicipalityService {
 	private Map<Centroide, Double> elevations = new HashMap<>();
 
 	@Autowired
-    private MatchRepository matchRepository;
+    private MatchService matchService;
 
 	@Autowired
     private MunicipalityRepository municipalityRepository;
@@ -51,10 +52,8 @@ public class MunicipalityServiceImpl implements MunicipalityService {
 	}
 
 	@Override
-	public AttackResultDTO attackMunicipality(AttackMuniDTO attackMuniDTO) throws MatchException {
-        Optional<Match> matchOptional = matchRepository.findById(attackMuniDTO.getMatchId());
-
-        Match match = matchOptional.orElseThrow(() -> new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(MATCH_NOT_FOUND_CODE, MATCH_NOT_FOUND_DETAIL))));
+	public AttackResultDTO attackMunicipality(String matchId, AttackMuniDTO attackMuniDTO) throws MatchException {
+        Match match = matchService.getMatchById(matchId);
 
         if(attackMuniDTO.getMuniAttackingId() == (attackMuniDTO.getMuniDefendingId()))
         {
@@ -66,6 +65,7 @@ public class MunicipalityServiceImpl implements MunicipalityService {
 
         Municipality muniAtk = null;
         Municipality muniDef = null;
+        User rival = null;
 
         int result = -2;
 
@@ -79,6 +79,7 @@ public class MunicipalityServiceImpl implements MunicipalityService {
             if(attackMuniDTO.getMuniDefendingId() == aMuni.getId())
             {
                 muniDef = aMuni;
+                rival = aMuni.getOwner();
                 bMuniDefenseFound = true;
             }
         }
@@ -88,6 +89,9 @@ public class MunicipalityServiceImpl implements MunicipalityService {
             result = muniAtk.attack(muniDef, match.getConfig(), attackMuniDTO.getGauchosQty());
 
             muniAtk.setBlocked(true);
+
+            if(result == 1) //si el rival perdio el municipio chequear si perdio la partida
+                match.checkVictory(rival);
 
             return new AttackResultDTO(result, muniAtk, muniDef);
 	    }
@@ -109,11 +113,9 @@ public class MunicipalityServiceImpl implements MunicipalityService {
 		}
 	}
 
-    public List<Municipality> moveGauchos(MoveGauchosDTO requestBean) throws MatchException {
+    public List<Municipality> moveGauchos(String matchId, MoveGauchosDTO requestBean) throws MatchException {
 
-        Optional<Match> matchOptional = matchRepository.findById(requestBean.getMatchId());
-
-        Match match = matchOptional.orElseThrow(() -> new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(MATCH_NOT_FOUND_CODE, MATCH_NOT_FOUND_DETAIL))));
+        Match match = matchService.getMatchById(matchId);
 
         if(requestBean.getIdOriginMuni().equals(requestBean.getIdDestinyMuni()))
         {
@@ -168,5 +170,4 @@ public class MunicipalityServiceImpl implements MunicipalityService {
 
         return Arrays.asList(muniOrigin, muniDestiny);
     }
-
 }

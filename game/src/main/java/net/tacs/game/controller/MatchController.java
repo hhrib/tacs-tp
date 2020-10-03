@@ -7,8 +7,10 @@ import net.tacs.game.exceptions.MatchException;
 import net.tacs.game.mapper.MatchToDTOMapper;
 import net.tacs.game.model.ApiError;
 import net.tacs.game.model.Match;
+import net.tacs.game.model.Municipality;
 import net.tacs.game.model.dto.*;
 import net.tacs.game.services.MatchService;
+import net.tacs.game.services.MunicipalityService;
 import net.tacs.game.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +35,8 @@ public class MatchController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private MunicipalityService municipalityService;
 
     @ApiOperation(value = "Buscar partidas", produces = "application/json")
     @ApiResponses(value = {
@@ -86,6 +90,20 @@ public class MatchController {
     public ResponseEntity<List<MuniStatisticsDTOResponse>> getAllStatistics(@PathVariable("id") String id) throws MatchException {
         List<MuniStatisticsDTOResponse> stats = this.matchService.getAllStatisticsForMatch(id);
         return new ResponseEntity<>(stats, HttpStatus.OK);
+    }
+
+    @PostMapping("/matches/{id}/municipalities/gauchos")
+    public ResponseEntity<List<Municipality>> moveGauchos(@PathVariable("id") String id, @RequestBody MoveGauchosDTO dto) throws MatchException {
+        List<Municipality> municipalities = municipalityService.moveGauchos(id, dto);
+        return new ResponseEntity<>(municipalities, HttpStatus.OK);
+    }
+
+    //User story 3
+    @PostMapping(value = "/matches/{id}/municipalities/attack")
+    public ResponseEntity<AttackResultDTO> attackMunicipalities(@PathVariable("id") String id, @RequestBody AttackMuniDTO attackMuniDTO) throws MatchException
+    {
+        AttackResultDTO resultDTO = municipalityService.attackMunicipality(id, attackMuniDTO);
+        return new ResponseEntity<>(resultDTO, HttpStatus.OK);
     }
 
     @PatchMapping("/matches/{matchId}/municipalities/{muniId}/")
