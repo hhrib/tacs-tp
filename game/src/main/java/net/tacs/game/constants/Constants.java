@@ -23,4 +23,10 @@ public class Constants {
 
     public static final String PLAYER_DOESNT_HAVE_TURN_CODE = "PLAYER_DOESNT_HAVE_TURN";
     public static final String PLAYER_DOESNT_HAVE_TURN_DETAIL = "The Player doesn't have the turn";
+
+    public static final String SAME_OWNER_MUNIS_CODE = "SAME_OWNER_MUNIS";
+    public static final String SAME_OWNER_MUNIS_DETAIL = "Cannot attack municipalities of the same owner";
+
+    public static final String PLAYER_DOESNT_OWN_MUNIS_CODE = "PLAYER_DOESNT_OWN_MUNIS";
+    public static final String PLAYER_DOESNT_OWN_MUNIS_DETAIL = "Player doesn't own one of the municipalities";
 }

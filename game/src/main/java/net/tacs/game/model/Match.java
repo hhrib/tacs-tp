@@ -155,4 +155,8 @@ public class Match {
             this.setState(MatchState.FINISHED);
         }
     }
+
+    public boolean playerCanAttack(User player) {
+        return player.equals(turnPlayer);
+    }
 }

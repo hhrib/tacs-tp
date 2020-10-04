@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import net.tacs.game.exceptions.MatchException;
+import net.tacs.game.exceptions.MatchNotPlayerTurnException;
 import net.tacs.game.model.*;
 import net.tacs.game.model.dto.AttackMuniDTO;
 import net.tacs.game.model.dto.AttackResultDTO;
@@ -52,7 +53,7 @@ public class MunicipalityServiceImpl implements MunicipalityService {
 	}
 
 	@Override
-	public AttackResultDTO attackMunicipality(String matchId, AttackMuniDTO attackMuniDTO) throws MatchException {
+	public AttackResultDTO attackMunicipality(String matchId, AttackMuniDTO attackMuniDTO) throws MatchException, MatchNotPlayerTurnException {
         Match match = matchService.getMatchById(matchId);
 
         if(attackMuniDTO.getMuniAttackingId() == (attackMuniDTO.getMuniDefendingId()))
@@ -86,6 +87,17 @@ public class MunicipalityServiceImpl implements MunicipalityService {
 
 	    if(bMuniAttackFound && bMuniDefenseFound)
 	    {
+            if(!match.playerCanAttack(muniAtk.getOwner()))
+                throw new MatchNotPlayerTurnException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(PLAYER_DOESNT_HAVE_TURN_CODE, PLAYER_DOESNT_HAVE_TURN_DETAIL)));
+
+            if(muniAtk.isBlocked())
+            {
+                throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(MUNICIPALITY_DESTINY_BLOCKED_CODE, MUNICIPALITY_DESTINY_BLOCKED_DETAIL)));
+            }
+
+            if(muniAtk.getOwner().equals(muniDef.getOwner()))
+                throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(SAME_OWNER_MUNIS_CODE, SAME_OWNER_MUNIS_DETAIL)));
+
             result = muniAtk.attack(muniDef, match.getConfig(), attackMuniDTO.getGauchosQty());
 
             muniAtk.setBlocked(true);
@@ -113,8 +125,7 @@ public class MunicipalityServiceImpl implements MunicipalityService {
 		}
 	}
 
-    public List<Municipality> moveGauchos(String matchId, MoveGauchosDTO requestBean) throws MatchException {
-
+    public List<Municipality> moveGauchos(String matchId, MoveGauchosDTO requestBean) throws MatchException, MatchNotPlayerTurnException {
         Match match = matchService.getMatchById(matchId);
 
         if(requestBean.getIdOriginMuni().equals(requestBean.getIdDestinyMuni()))
@@ -145,6 +156,12 @@ public class MunicipalityServiceImpl implements MunicipalityService {
 
         if(idsNotFound.isEmpty())
         {
+            if(!match.playerCanAttack(muniOrigin.getOwner()))
+                throw new MatchNotPlayerTurnException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(PLAYER_DOESNT_HAVE_TURN_CODE, PLAYER_DOESNT_HAVE_TURN_DETAIL)));
+
+            if(!muniOrigin.getOwner().equals(muniDestiny.getOwner()))
+                throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(PLAYER_DOESNT_OWN_MUNIS_CODE, PLAYER_DOESNT_OWN_MUNIS_DETAIL)));
+
             if(muniDestiny.isBlocked())
             {
                 throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(MUNICIPALITY_DESTINY_BLOCKED_CODE, MUNICIPALITY_DESTINY_BLOCKED_DETAIL)));

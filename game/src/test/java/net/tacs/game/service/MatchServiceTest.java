@@ -10,7 +10,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import net.tacs.game.exceptions.MatchNotPlayerTurnException;
 import net.tacs.game.model.*;
+import net.tacs.game.model.dto.UpdateMunicipalityStateDTO;
+import net.tacs.game.model.enums.MunicipalityState;
 import net.tacs.game.repositories.MatchRepository;
 import net.tacs.game.repositories.ProvinceRepository;
 import net.tacs.game.repositories.UserRepository;
@@ -359,7 +362,7 @@ public class MatchServiceTest {
     }
 
     @Test
-    public void passTurnPlayerLastOnTheList() throws MatchException{
+    public void passTurnPlayerLastOnTheList() throws MatchException, MatchNotPlayerTurnException {
         Match match = new Match();
         MatchConfiguration config = new MatchConfiguration();
         match.setId(123456L);
@@ -380,7 +383,7 @@ public class MatchServiceTest {
     }
 
     @Test
-    public void passTurnPlayerMiddleOnTheList() throws MatchException{
+    public void passTurnPlayerMiddleOnTheList() throws MatchException, MatchNotPlayerTurnException {
         Match match = new Match();
         MatchConfiguration config = new MatchConfiguration();
         match.setId(123456L);
@@ -404,7 +407,7 @@ public class MatchServiceTest {
     }
 
     @Test(expected = MatchException.class)
-    public void passTurnPlayerNotInMatch() throws MatchException {
+    public void passTurnPlayerNotInMatch() throws MatchException, MatchNotPlayerTurnException {
         Match match = new Match();
         MatchConfiguration config = new MatchConfiguration();
         match.setId(123456L);
@@ -425,8 +428,8 @@ public class MatchServiceTest {
         matchService.passTurn("123456", "ABC3");
     }
 
-    @Test(expected = MatchException.class)
-    public void passTurnPlayerNotInTurn() throws MatchException {
+    @Test(expected = MatchNotPlayerTurnException.class)
+    public void passTurnPlayerNotInTurn() throws MatchException, MatchNotPlayerTurnException {
         Match match = new Match();
         MatchConfiguration config = new MatchConfiguration();
         match.setId(123456L);
@@ -442,5 +445,57 @@ public class MatchServiceTest {
         Mockito.when(matchRepository.findById(123456L)).thenReturn(java.util.Optional.of(match));
 
         matchService.passTurn("123456", "ABC1");
+    }
+
+    @Test
+    public void updateMuniStateOK() throws MatchNotPlayerTurnException, MatchException {
+        Match match = new Match();
+        MatchConfiguration config = new MatchConfiguration();
+        match.setId(123456L);
+        match.setConfig(config);
+        match.setUsers(Arrays.asList(user1, user2));
+        match.setTurnPlayer(user2);
+        match.setMap(buenosAires);
+
+        buenosAires.setMunicipalities(Arrays.asList(lanus, tigre));
+
+        lanus.setId(98765);
+        lanus.setOwner(user2);
+        lanus.setState(MunicipalityState.DEFENSE);
+        tigre.setId(56789);
+
+        Mockito.when(matchRepository.findById(123456L)).thenReturn(java.util.Optional.of(match));
+
+        UpdateMunicipalityStateDTO dto = new UpdateMunicipalityStateDTO();
+        dto.setNewState(MunicipalityState.PRODUCTION);
+
+        matchService.updateMunicipalityState("123456", "98765", dto);
+
+        assertEquals(MunicipalityState.PRODUCTION, lanus.getState());
+    }
+
+    @Test (expected = MatchNotPlayerTurnException.class)
+    public void updateMuniStateNotPlayerTurn() throws MatchNotPlayerTurnException, MatchException {
+        Match match = new Match();
+        MatchConfiguration config = new MatchConfiguration();
+        match.setId(123456L);
+        match.setConfig(config);
+        match.setUsers(Arrays.asList(user1, user2));
+        match.setTurnPlayer(user1);
+        match.setMap(buenosAires);
+
+        buenosAires.setMunicipalities(Arrays.asList(lanus, tigre));
+
+        lanus.setId(98765);
+        lanus.setOwner(user2);
+        lanus.setState(MunicipalityState.DEFENSE);
+        tigre.setId(56789);
+
+        Mockito.when(matchRepository.findById(123456L)).thenReturn(java.util.Optional.of(match));
+
+        UpdateMunicipalityStateDTO dto = new UpdateMunicipalityStateDTO();
+        dto.setNewState(MunicipalityState.PRODUCTION);
+
+        matchService.updateMunicipalityState("123456", "98765", dto);
     }
 }

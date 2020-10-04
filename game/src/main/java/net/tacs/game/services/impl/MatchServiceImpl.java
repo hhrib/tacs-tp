@@ -3,6 +3,7 @@ package net.tacs.game.services.impl;
 import net.tacs.game.GameApplication;
 import net.tacs.game.controller.MatchController;
 import net.tacs.game.exceptions.MatchException;
+import net.tacs.game.exceptions.MatchNotPlayerTurnException;
 import net.tacs.game.mapper.MuniToStatsDTOMapper;
 import net.tacs.game.model.*;
 import net.tacs.game.model.dto.*;
@@ -347,7 +348,7 @@ public class MatchServiceImpl implements MatchService {
     }
 
     @Override
-    public void updateMunicipalityState(String matchIdString, String muniIdString, UpdateMunicipalityStateDTO dto) throws MatchException {
+    public void updateMunicipalityState(String matchIdString, String muniIdString, UpdateMunicipalityStateDTO dto) throws MatchException, MatchNotPlayerTurnException {
         Long matchId = validateAndGetIdLong(matchIdString, "MATCH");
         Integer muniId = validateAndGetIdLong(muniIdString, "MUNICIPALITY").intValue();
         Optional<Match> matchOptional = matchRepository.findById(matchId);
@@ -356,13 +357,16 @@ public class MatchServiceImpl implements MatchService {
         Optional<Municipality> muniOptional = match.getMap().getMunicipalities().stream().filter(muni -> muni.getId().equals(muniId)).findFirst();
         Municipality muni = muniOptional.orElseThrow(() -> new MatchException(HttpStatus.NOT_FOUND, Arrays.asList(new ApiError(MUNICIPALITY_NOT_FOUND_CODE, MUNICIPALITY_NOT_FOUND_DETAIL))));
 
+        if(!match.getTurnPlayer().equals(muni.getOwner()))
+            throw new MatchNotPlayerTurnException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(PLAYER_DOESNT_HAVE_TURN_CODE, PLAYER_DOESNT_HAVE_TURN_DETAIL)));
+
         muni.setState(dto.getNewState());
 
         matchRepository.update(match);
     }
 
     @Override
-    public void passTurn(String matchIdString, String playerId) throws MatchException {
+    public void passTurn(String matchIdString, String playerId) throws MatchException, MatchNotPlayerTurnException {
         Long matchId = validateAndGetIdLong(matchIdString, "MATCH");
         Optional<Match> matchOptional = matchRepository.findById(matchId);
         Match match = matchOptional.orElseThrow(() -> new MatchException(HttpStatus.NOT_FOUND, Arrays.asList(new ApiError(MATCH_NOT_FOUND_CODE, MATCH_NOT_FOUND_DETAIL))));
@@ -384,7 +388,7 @@ public class MatchServiceImpl implements MatchService {
         }
         else //el jugador no tiene el turno
         {
-            throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(PLAYER_DOESNT_HAVE_TURN_CODE, PLAYER_DOESNT_HAVE_TURN_DETAIL)));
+            throw new MatchNotPlayerTurnException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(PLAYER_DOESNT_HAVE_TURN_CODE, PLAYER_DOESNT_HAVE_TURN_DETAIL)));
         }
     }
 

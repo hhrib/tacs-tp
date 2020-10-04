@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import net.tacs.game.exceptions.MatchException;
+import net.tacs.game.exceptions.MatchNotPlayerTurnException;
 import net.tacs.game.mapper.MatchToDTOMapper;
 import net.tacs.game.model.ApiError;
 import net.tacs.game.model.Match;
@@ -93,27 +94,26 @@ public class MatchController {
     }
 
     @PostMapping("/matches/{id}/municipalities/gauchos")
-    public ResponseEntity<List<Municipality>> moveGauchos(@PathVariable("id") String id, @RequestBody MoveGauchosDTO dto) throws MatchException {
+    public ResponseEntity<List<Municipality>> moveGauchos(@PathVariable("id") String id, @RequestBody MoveGauchosDTO dto) throws MatchException, MatchNotPlayerTurnException {
         List<Municipality> municipalities = municipalityService.moveGauchos(id, dto);
         return new ResponseEntity<>(municipalities, HttpStatus.OK);
     }
 
     //User story 3
     @PostMapping(value = "/matches/{id}/municipalities/attack")
-    public ResponseEntity<AttackResultDTO> attackMunicipalities(@PathVariable("id") String id, @RequestBody AttackMuniDTO attackMuniDTO) throws MatchException
-    {
+    public ResponseEntity<AttackResultDTO> attackMunicipalities(@PathVariable("id") String id, @RequestBody AttackMuniDTO attackMuniDTO) throws MatchException, MatchNotPlayerTurnException {
         AttackResultDTO resultDTO = municipalityService.attackMunicipality(id, attackMuniDTO);
         return new ResponseEntity<>(resultDTO, HttpStatus.OK);
     }
 
     @PatchMapping("/matches/{matchId}/municipalities/{muniId}/")
-    public ResponseEntity updateMunicipalityState(@PathVariable("matchId") String matchId, @PathVariable("muniId") String muniId, @RequestBody UpdateMunicipalityStateDTO dto) throws MatchException {
+    public ResponseEntity updateMunicipalityState(@PathVariable("matchId") String matchId, @PathVariable("muniId") String muniId, @RequestBody UpdateMunicipalityStateDTO dto) throws MatchException, MatchNotPlayerTurnException {
         this.matchService.updateMunicipalityState(matchId, muniId, dto);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
     @PatchMapping("/matches/{matchId}/passTurn")
-    public ResponseEntity updateMatchTurn(@PathVariable("matchId") String matchId, @RequestBody PassTurnDTO passTurnDTO) throws MatchException {
+    public ResponseEntity updateMatchTurn(@PathVariable("matchId") String matchId, @RequestBody PassTurnDTO passTurnDTO) throws MatchException, MatchNotPlayerTurnException {
         this.matchService.passTurn(matchId, passTurnDTO.getUserId());
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
