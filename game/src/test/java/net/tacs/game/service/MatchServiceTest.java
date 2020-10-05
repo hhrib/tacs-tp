@@ -8,11 +8,15 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 import net.tacs.game.exceptions.MatchNotPlayerTurnException;
+import net.tacs.game.exceptions.MatchNotStartedException;
 import net.tacs.game.model.*;
+import net.tacs.game.model.dto.RetireDTO;
 import net.tacs.game.model.dto.UpdateMunicipalityStateDTO;
+import net.tacs.game.model.enums.MatchState;
 import net.tacs.game.model.enums.MunicipalityState;
 import net.tacs.game.repositories.MatchRepository;
 import net.tacs.game.repositories.ProvinceRepository;
@@ -154,29 +158,8 @@ public class MatchServiceTest {
         assertTrue(match.getMap().getMunicipalities().contains(matanza));
 
         //chequea que cada usuario tenga la misma cantidad de municipios
-        int user1Munis = 0;
-        int user2Munis = 0;
-
-        for(Municipality aMuni : match.getMap().getMunicipalities())
-        {
-            switch (aMuni.getOwner().getId())
-            {
-                case "ABC1":
-                {
-                    user1Munis++;
-                    break;
-                }
-                case "ABC2":
-                {
-                    user2Munis++;
-                    break;
-                }
-            }
-
-        }
-
-        assertEquals(3, user1Munis);
-        assertEquals(3, user2Munis);
+        assertEquals(3, user1.municipalitiesOwning(match.getMap().getMunicipalities()));
+        assertEquals(3, user2.municipalitiesOwning(match.getMap().getMunicipalities()));
     }
 
     @Test
@@ -362,10 +345,11 @@ public class MatchServiceTest {
     }
 
     @Test
-    public void passTurnPlayerLastOnTheList() throws MatchException, MatchNotPlayerTurnException {
+    public void passTurnPlayerLastOnTheList() throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException {
         Match match = new Match();
         MatchConfiguration config = new MatchConfiguration();
         match.setId(123456L);
+        match.setState(MatchState.IN_PROGRESS);
         match.setConfig(config);
         match.setUsers(Arrays.asList(user1, user2));
         match.setTurnPlayer(user2);
@@ -383,10 +367,11 @@ public class MatchServiceTest {
     }
 
     @Test
-    public void passTurnPlayerMiddleOnTheList() throws MatchException, MatchNotPlayerTurnException {
+    public void passTurnPlayerMiddleOnTheList() throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException {
         Match match = new Match();
         MatchConfiguration config = new MatchConfiguration();
         match.setId(123456L);
+        match.setState(MatchState.IN_PROGRESS);
         match.setConfig(config);
         match.setTurnPlayer(user2);
 
@@ -407,10 +392,11 @@ public class MatchServiceTest {
     }
 
     @Test(expected = MatchException.class)
-    public void passTurnPlayerNotInMatch() throws MatchException, MatchNotPlayerTurnException {
+    public void passTurnPlayerNotInMatch() throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException {
         Match match = new Match();
         MatchConfiguration config = new MatchConfiguration();
         match.setId(123456L);
+        match.setState(MatchState.IN_PROGRESS);
         match.setConfig(config);
         match.setUsers(Arrays.asList(user1, user2));
         match.setTurnPlayer(user2);
@@ -429,10 +415,11 @@ public class MatchServiceTest {
     }
 
     @Test(expected = MatchNotPlayerTurnException.class)
-    public void passTurnPlayerNotInTurn() throws MatchException, MatchNotPlayerTurnException {
+    public void passTurnPlayerNotInTurn() throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException {
         Match match = new Match();
         MatchConfiguration config = new MatchConfiguration();
         match.setId(123456L);
+        match.setState(MatchState.IN_PROGRESS);
         match.setConfig(config);
         match.setUsers(Arrays.asList(user1, user2));
         match.setTurnPlayer(user2);
@@ -447,11 +434,23 @@ public class MatchServiceTest {
         matchService.passTurn("123456", "ABC1");
     }
 
+    @Test (expected = MatchNotStartedException.class)
+    public void passTurnMatchNotStartedThrowsException() throws MatchNotPlayerTurnException, MatchException, MatchNotStartedException {
+        Match match = new Match();
+        match.setId(123456L);
+        match.setState(MatchState.CREATED);
+
+        Mockito.when(matchRepository.findById(123456L)).thenReturn(java.util.Optional.of(match));
+
+        matchService.passTurn("123456", "ABC1");
+    }
+
     @Test
-    public void updateMuniStateOK() throws MatchNotPlayerTurnException, MatchException {
+    public void updateMuniStateOK() throws MatchNotPlayerTurnException, MatchException, MatchNotStartedException {
         Match match = new Match();
         MatchConfiguration config = new MatchConfiguration();
         match.setId(123456L);
+        match.setState(MatchState.IN_PROGRESS);
         match.setConfig(config);
         match.setUsers(Arrays.asList(user1, user2));
         match.setTurnPlayer(user2);
@@ -475,10 +474,11 @@ public class MatchServiceTest {
     }
 
     @Test (expected = MatchNotPlayerTurnException.class)
-    public void updateMuniStateNotPlayerTurn() throws MatchNotPlayerTurnException, MatchException {
+    public void updateMuniStateNotPlayerTurn() throws MatchNotPlayerTurnException, MatchException, MatchNotStartedException {
         Match match = new Match();
         MatchConfiguration config = new MatchConfiguration();
         match.setId(123456L);
+        match.setState(MatchState.IN_PROGRESS);
         match.setConfig(config);
         match.setUsers(Arrays.asList(user1, user2));
         match.setTurnPlayer(user1);
@@ -497,5 +497,151 @@ public class MatchServiceTest {
         dto.setNewState(MunicipalityState.PRODUCTION);
 
         matchService.updateMunicipalityState("123456", "98765", dto);
+    }
+
+    @Test (expected = MatchNotStartedException.class)
+    public void updateMuniStateMatchNotStartedThrowsException() throws MatchNotPlayerTurnException, MatchException, MatchNotStartedException {
+        Match match = new Match();
+        match.setId(123456L);
+        match.setState(MatchState.CREATED);
+
+        Mockito.when(matchRepository.findById(123456L)).thenReturn(java.util.Optional.of(match));
+
+        UpdateMunicipalityStateDTO dto = new UpdateMunicipalityStateDTO();
+        dto.setNewState(MunicipalityState.PRODUCTION);
+
+        matchService.updateMunicipalityState("123456", "98765", dto);
+    }
+
+    @Test
+    public void retireFinishesMatch() throws MatchException {
+        Match match = new Match();
+        match.setState(MatchState.IN_PROGRESS);
+        MatchConfiguration config = new MatchConfiguration();
+        match.setId(123456L);
+        match.setConfig(config);
+        match.setUsers(Arrays.asList(user1, user2));
+        config.setPlayersTurns(new LinkedList<User>(Arrays.asList(user1, user2)));
+
+        user1.setId("ABC123");
+        user2.setId("CBA321");
+
+        RetireDTO retireDTO = new RetireDTO();
+        retireDTO.setPlayerId("ABC123");
+
+        Mockito.when(matchRepository.findById(123456L)).thenReturn(java.util.Optional.of(match));
+        Mockito.when(userRepository.findById("ABC123")).thenReturn(java.util.Optional.of(user1));
+
+        matchService.retireFromMatch("123456", retireDTO);
+
+        assertEquals(MatchState.FINISHED, match.getState());
+    }
+
+    @Test
+    public void retireCancelsMatch() throws MatchException {
+        Match match = new Match();
+        match.setState(MatchState.CREATED);
+        MatchConfiguration config = new MatchConfiguration();
+        match.setId(123456L);
+        match.setConfig(config);
+        match.setUsers(Arrays.asList(user1, user2));
+        config.setPlayersTurns(new LinkedList<User>(Arrays.asList(user1, user2)));
+
+        user1.setId("ABC123");
+        user2.setId("CBA321");
+
+        RetireDTO retireDTO = new RetireDTO();
+        retireDTO.setPlayerId("ABC123");
+
+        Mockito.when(matchRepository.findById(123456L)).thenReturn(java.util.Optional.of(match));
+        Mockito.when(userRepository.findById("ABC123")).thenReturn(java.util.Optional.of(user1));
+
+        matchService.retireFromMatch("123456", retireDTO);
+
+        assertEquals(MatchState.CANCELLED, match.getState());
+    }
+
+    @Test
+    public void retireMatchOk() throws MatchException {
+        Match match = new Match();
+        match.setState(MatchState.IN_PROGRESS);
+        MatchConfiguration config = new MatchConfiguration();
+        match.setId(123456L);
+        match.setConfig(config);
+        match.setMap(buenosAires);
+        buenosAires.setMunicipalities(Arrays.asList(lanus, avellaneda, quilmes, tigre, matanza, lomas));
+
+        User user3 = new User("Paola");
+
+        match.setUsers(Arrays.asList(user1, user2, user3));
+        config.setPlayersTurns(new LinkedList<User>(Arrays.asList(user1, user2, user3)));
+
+        user1.setId("ABC123");
+        user2.setId("CBA321");
+        user3.setId("BBB222");
+
+        lanus.setOwner(user1);
+        avellaneda.setOwner(user1);
+        quilmes.setOwner(user2);
+        tigre.setOwner(user2);
+        matanza.setOwner(user3);
+        lomas.setOwner(user3);
+
+        RetireDTO retireDTO = new RetireDTO();
+        retireDTO.setPlayerId("BBB222");
+
+        Mockito.when(matchRepository.findById(123456L)).thenReturn(java.util.Optional.of(match));
+        Mockito.when(userRepository.findById("BBB222")).thenReturn(java.util.Optional.of(user3));
+
+        matchService.retireFromMatch("123456", retireDTO);
+
+        assertEquals(3, user1.municipalitiesOwning(match.getMap().getMunicipalities()));
+        assertEquals(3, user2.municipalitiesOwning(match.getMap().getMunicipalities()));
+        assertEquals(0, user3.municipalitiesOwning(match.getMap().getMunicipalities()));
+        assertFalse(match.getConfig().getPlayersTurns().contains(user3));
+    }
+
+    @Test (expected = MatchException.class)
+    public void retirePlayerNotInMatchThrowsException() throws MatchException {
+        Match match = new Match();
+        match.setState(MatchState.IN_PROGRESS);
+        match.setId(123456L);
+        match.setUsers(Arrays.asList(user1, user2));
+
+        User user3 = new User("Paola");
+
+        user1.setId("ABC123");
+        user2.setId("CBA321");
+        user3.setId("BBB222");
+
+        RetireDTO retireDTO = new RetireDTO();
+        retireDTO.setPlayerId("BBB222");
+
+        Mockito.when(matchRepository.findById(123456L)).thenReturn(java.util.Optional.of(match));
+        Mockito.when(userRepository.findById("BBB222")).thenReturn(java.util.Optional.of(user3));
+
+        matchService.retireFromMatch("123456", retireDTO);
+    }
+
+    @Test (expected = MatchException.class)
+    public void retireFinishedMatchThrowsException() throws MatchException {
+        Match match = new Match();
+        match.setState(MatchState.FINISHED);
+        MatchConfiguration config = new MatchConfiguration();
+        match.setId(123456L);
+        match.setConfig(config);
+        match.setUsers(Arrays.asList(user1, user2));
+        config.setPlayersTurns(new LinkedList<User>(Arrays.asList(user1, user2)));
+
+        user1.setId("ABC123");
+        user2.setId("CBA321");
+
+        RetireDTO retireDTO = new RetireDTO();
+        retireDTO.setPlayerId("ABC123");
+
+        Mockito.when(matchRepository.findById(123456L)).thenReturn(java.util.Optional.of(match));
+        Mockito.when(userRepository.findById("ABC123")).thenReturn(java.util.Optional.of(user1));
+
+        matchService.retireFromMatch("123456", retireDTO);
     }
 }

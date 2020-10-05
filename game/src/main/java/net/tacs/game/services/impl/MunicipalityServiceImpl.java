@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import net.tacs.game.exceptions.MatchException;
 import net.tacs.game.exceptions.MatchNotPlayerTurnException;
+import net.tacs.game.exceptions.MatchNotStartedException;
 import net.tacs.game.model.*;
 import net.tacs.game.model.dto.AttackMuniDTO;
 import net.tacs.game.model.dto.AttackResultDTO;
@@ -53,8 +54,10 @@ public class MunicipalityServiceImpl implements MunicipalityService {
 	}
 
 	@Override
-	public AttackResultDTO attackMunicipality(String matchId, AttackMuniDTO attackMuniDTO) throws MatchException, MatchNotPlayerTurnException {
+	public AttackResultDTO attackMunicipality(String matchId, AttackMuniDTO attackMuniDTO) throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException {
         Match match = matchService.getMatchById(matchId);
+
+        matchService.CheckMatchNotStarted(match);
 
         if(attackMuniDTO.getMuniAttackingId() == (attackMuniDTO.getMuniDefendingId()))
         {
@@ -125,8 +128,10 @@ public class MunicipalityServiceImpl implements MunicipalityService {
 		}
 	}
 
-    public List<Municipality> moveGauchos(String matchId, MoveGauchosDTO requestBean) throws MatchException, MatchNotPlayerTurnException {
+    public List<Municipality> moveGauchos(String matchId, MoveGauchosDTO requestBean) throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException {
         Match match = matchService.getMatchById(matchId);
+
+        matchService.CheckMatchNotStarted(match);
 
         if(requestBean.getIdOriginMuni().equals(requestBean.getIdDestinyMuni()))
         {

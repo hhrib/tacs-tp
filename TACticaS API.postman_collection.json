@@ -33,6 +33,26 @@
 			"response": []
 		},
 		{
+			"name": "Empezar Partida",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/matches/0/start",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"matches",
+						"0",
+						"start"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "All Matches",
 			"request": {
 				"method": "GET",

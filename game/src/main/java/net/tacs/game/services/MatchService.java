@@ -2,6 +2,7 @@ package net.tacs.game.services;
 
 import net.tacs.game.exceptions.MatchException;
 import net.tacs.game.exceptions.MatchNotPlayerTurnException;
+import net.tacs.game.exceptions.MatchNotStartedException;
 import net.tacs.game.model.Match;
 import net.tacs.game.model.dto.*;
 
@@ -23,7 +24,13 @@ public interface MatchService {
 
     public void calculateConfigVariables(Match match);
 
-    public void updateMunicipalityState(String matchId, String muniId, UpdateMunicipalityStateDTO dto) throws MatchException, MatchNotPlayerTurnException;
+    public void start(String matchStringId) throws MatchException;
 
-    public void passTurn(String matchId, String playerId) throws MatchException, MatchNotPlayerTurnException;
+    public void updateMunicipalityState(String matchId, String muniId, UpdateMunicipalityStateDTO dto) throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException;
+
+    public void passTurn(String matchId, String playerId) throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException;
+
+    public void retireFromMatch(String matchId, RetireDTO retireDTO) throws MatchException;
+
+    public void CheckMatchNotStarted(Match match) throws MatchNotStartedException;
 }

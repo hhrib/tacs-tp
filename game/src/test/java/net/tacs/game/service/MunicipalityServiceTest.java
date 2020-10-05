@@ -3,6 +3,7 @@ package net.tacs.game.service;
 import net.tacs.game.GameApplication;
 import net.tacs.game.exceptions.MatchException;
 import net.tacs.game.exceptions.MatchNotPlayerTurnException;
+import net.tacs.game.exceptions.MatchNotStartedException;
 import net.tacs.game.model.*;
 import net.tacs.game.model.dto.AttackMuniDTO;
 import net.tacs.game.model.dto.AttackResultDTO;
@@ -66,9 +67,10 @@ public class MunicipalityServiceTest {
     }
 
     @Test
-    public void attackSuccessfullMunicipality() throws MatchException, MatchNotPlayerTurnException {
+    public void attackSuccessfullMunicipality() throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException {
         Match match = new Match();
         match.setId(111111L);
+        match.setState(MatchState.IN_PROGRESS);
         match.setMap(buenosAires);
         match.getMap().setMunicipalities(Arrays.asList(Lanus, Avellaneda, Quilmes));
 
@@ -117,9 +119,10 @@ public class MunicipalityServiceTest {
     }
 
     @Test
-    public void attackRepelledMunicipality() throws MatchException, MatchNotPlayerTurnException {
+    public void attackRepelledMunicipality() throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException {
         Match match = new Match();
         match.setId(111111L);
+        match.setState(MatchState.IN_PROGRESS);
         match.setMap(buenosAires);
         match.getMap().setMunicipalities(Arrays.asList(Lanus, Avellaneda));
 
@@ -198,9 +201,10 @@ public class MunicipalityServiceTest {
     }
 
     @Test
-    public void municipalityMoveGauchosOK() throws MatchException, MatchNotPlayerTurnException {
+    public void municipalityMoveGauchosOK() throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException {
         Match match = new Match();
         match.setId(1235L);
+        match.setState(MatchState.IN_PROGRESS);
         match.setMap(buenosAires);
         match.setConfig(configuration);
         match.setTurnPlayer(user2);
@@ -234,9 +238,10 @@ public class MunicipalityServiceTest {
     }
 
     @Test (expected = MatchException.class)
-    public void municipalityMoveGauchosBlocked() throws MatchException, MatchNotPlayerTurnException {
+    public void municipalityMoveGauchosBlocked() throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException {
         Match match = new Match();
         match.setId(1235L);
+        match.setState(MatchState.IN_PROGRESS);
         match.setMap(buenosAires);
         match.setConfig(configuration);
         match.setTurnPlayer(user2);
@@ -263,9 +268,10 @@ public class MunicipalityServiceTest {
     }
 
     @Test (expected = MatchException.class)
-    public void municipalityMoveGauchosDifferentOwnersThrowsException() throws MatchException, MatchNotPlayerTurnException {
+    public void municipalityMoveGauchosDifferentOwnersThrowsException() throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException {
         Match match = new Match();
         match.setId(1235L);
+        match.setState(MatchState.IN_PROGRESS);
         match.setMap(buenosAires);
         match.setConfig(configuration);
         match.setTurnPlayer(user2);
@@ -290,9 +296,10 @@ public class MunicipalityServiceTest {
     }
 
     @Test (expected = MatchNotPlayerTurnException.class)
-    public void municipalityMoveGauchosNotPlayerTurnThrowsException() throws MatchException, MatchNotPlayerTurnException {
+    public void municipalityMoveGauchosNotPlayerTurnThrowsException() throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException {
         Match match = new Match();
         match.setId(1235L);
+        match.setState(MatchState.IN_PROGRESS);
         match.setMap(buenosAires);
         match.setConfig(configuration);
         match.setTurnPlayer(user1);
@@ -321,6 +328,7 @@ public class MunicipalityServiceTest {
     {
         Match match = new Match();
         match.setId(1235L);
+        match.setState(MatchState.IN_PROGRESS);
         match.setMap(buenosAires);
         match.setConfig(configuration);
         buenosAires.setMunicipalities(Arrays.asList(Lanus, Avellaneda, Quilmes, Tigre, Matanza, Lomas));
@@ -369,9 +377,10 @@ public class MunicipalityServiceTest {
     }
 
     @Test
-    public void attackFinishedMatch() throws MatchException, MatchNotPlayerTurnException {
+    public void attackFinishedMatch() throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException {
         Match match = new Match();
         match.setId(111111L);
+        match.setState(MatchState.IN_PROGRESS);
         match.setMap(buenosAires);
         match.getMap().setMunicipalities(Arrays.asList(Lanus, Avellaneda));
 
@@ -419,9 +428,10 @@ public class MunicipalityServiceTest {
     }
 
     @Test(expected = MatchException.class)
-    public void attackSameOwnerMunicipalitiesThrowsException() throws MatchException, MatchNotPlayerTurnException {
+    public void attackSameOwnerMunicipalitiesThrowsException() throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException {
         Match match = new Match();
         match.setId(111111L);
+        match.setState(MatchState.IN_PROGRESS);
         match.setMap(buenosAires);
         match.getMap().setMunicipalities(Arrays.asList(Lanus, Avellaneda));
         match.setTurnPlayer(user1);
@@ -443,9 +453,10 @@ public class MunicipalityServiceTest {
     }
 
     @Test(expected = MatchException.class)
-    public void attackBlockedMunicipalityThrowsException() throws MatchException, MatchNotPlayerTurnException {
+    public void attackBlockedMunicipalityThrowsException() throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException {
         Match match = new Match();
         match.setId(111111L);
+        match.setState(MatchState.IN_PROGRESS);
         match.setMap(buenosAires);
         match.getMap().setMunicipalities(Arrays.asList(Lanus, Avellaneda));
         match.setTurnPlayer(user1);
