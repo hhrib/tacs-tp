@@ -5,6 +5,7 @@ import net.tacs.game.model.Match;
 import net.tacs.game.model.dto.CreateMatchDTO;
 import net.tacs.game.model.dto.MuniStatisticsDTOResponse;
 import net.tacs.game.model.dto.UpdateMunicipalityStateDTO;
+import net.tacs.game.model.websocket.ChatMessage;
 
 import java.util.List;
 
@@ -25,4 +26,6 @@ public interface MatchService {
     public void calculateConfigVariables(Match match);
 
     public void updateMunicipalityState(String matchId, String muniId, UpdateMunicipalityStateDTO dto) throws MatchException;
+
+    public void endTurn(ChatMessage endTurnMessage);
 }

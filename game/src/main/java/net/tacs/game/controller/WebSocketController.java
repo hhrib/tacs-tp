@@ -1,23 +1,22 @@
 package net.tacs.game.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import net.tacs.game.model.websocket.ChatMessage;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 
 @Controller
 public class WebSocketController {
 
-    private final SimpMessagingTemplate template;
-
-    @Autowired
-    WebSocketController(SimpMessagingTemplate template){
-        this.template = template;
-    }
-
-    @MessageMapping("/send/message")
-    public void sendMessage(String message){
-        System.out.println(message);
-        this.template.convertAndSend("/message",  message);
+    /**
+     * Mapea mensajes que llegan desde el cliente (frontend) a la ruta
+     * '/app/send' donde '/app' es el prefijo definido en WebSocketConfig.java
+     * @param message ChatMessage enviado por el cliente Stomp
+     * @return
+     */
+    @MessageMapping("/send")
+    @SendTo("/topic/turn_end")
+    public ChatMessage sendMessage(ChatMessage message) {
+        return message;
     }
 }

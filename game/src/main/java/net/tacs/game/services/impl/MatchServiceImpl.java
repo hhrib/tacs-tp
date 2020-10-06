@@ -10,6 +10,7 @@ import net.tacs.game.model.dto.MuniStatisticsDTOResponse;
 import net.tacs.game.model.dto.UpdateMunicipalityStateDTO;
 import net.tacs.game.model.enums.MatchState;
 import net.tacs.game.model.enums.MunicipalityState;
+import net.tacs.game.model.websocket.ChatMessage;
 import net.tacs.game.repositories.MatchRepository;
 import net.tacs.game.repositories.ProvinceRepository;
 import net.tacs.game.repositories.UserRepository;
@@ -20,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -53,6 +55,9 @@ public class MatchServiceImpl implements MatchService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private SimpMessagingTemplate template;
 
     @Override
     public List<Match> findAll() {
@@ -358,6 +363,11 @@ public class MatchServiceImpl implements MatchService {
         muni.setState(dto.getNewState());
 
         matchRepository.update(match);
+    }
+
+    @Override
+    public void endTurn(ChatMessage endTurnMessage) {
+        template.convertAndSend("/topic/turn_end", endTurnMessage);
     }
 
     private List<LocalDateTime> validateDatesToSearch(String isoDateFrom, String isoDateTo) throws MatchException {

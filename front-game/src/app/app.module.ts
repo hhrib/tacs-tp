@@ -43,7 +43,6 @@ import { InterceptorService } from './services/interceptor.service';
     MatchCreateDialogComponent,
     MatchSearchComponent,
     SocketComponent
-
   ],
   imports: [
     BrowserModule,

@@ -12,6 +12,7 @@ import net.tacs.game.model.dto.MatchDTOResponse;
 import net.tacs.game.model.dto.MuniStatisticsDTOResponse;
 import net.tacs.game.model.dto.UpdateMunicipalityStateDTO;
 import net.tacs.game.model.enums.MunicipalityState;
+import net.tacs.game.model.websocket.ChatMessage;
 import net.tacs.game.services.MatchService;
 import net.tacs.game.services.UserService;
 import org.slf4j.Logger;
@@ -95,6 +96,12 @@ public class MatchController {
     @PatchMapping("/matches/{matchId}/municipalities/{muniId}/")
     public ResponseEntity updateMunicipalityState(@PathVariable("matchId") String matchId, @PathVariable("muniId") String muniId, @RequestBody UpdateMunicipalityStateDTO dto) throws MatchException {
         this.matchService.updateMunicipalityState(matchId, muniId, dto);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
+    }
+
+    @PostMapping("matches/{matchId}/turn_end")
+    public ResponseEntity turnEnd(@PathVariable("matchId") String matchId, @RequestBody ChatMessage endTurnMessage) {
+        this.matchService.endTurn(endTurnMessage);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
