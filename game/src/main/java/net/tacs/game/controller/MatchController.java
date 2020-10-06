@@ -139,12 +139,16 @@ public class MatchController {
      */
     @ExceptionHandler(MatchException.class)
     public ResponseEntity<List<ApiError>> handleException(MatchException ex) {
-        //Agregar lógica si fuese necesario
-        LOGGER.error("Error con ale", ex);
-        LOGGER.error("Errors: " );
         return new ResponseEntity<>(ex.getApiErrors(), ex.getHttpStatus());
     }
-    
-    
 
+    @ExceptionHandler(MatchNotStartedException.class)
+    public ResponseEntity<List<ApiError>> handleException(MatchNotStartedException ex) {
+        return new ResponseEntity<>(ex.getApiErrors(), ex.getHttpStatus());
+    }
+
+    @ExceptionHandler(MatchNotPlayerTurnException.class)
+    public ResponseEntity<List<ApiError>> handleException(MatchNotPlayerTurnException ex) {
+        return new ResponseEntity<>(ex.getApiErrors(), ex.getHttpStatus());
+    }
 }

@@ -140,7 +140,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"idDestinyMuni\": 0,\r\n  \"idOriginMuni\": 1,\r\n  \"qty\": 50\r\n}",
+					"raw": "{\r\n  \"idDestinyMuni\": 138,\r\n  \"idOriginMuni\": 142,\r\n  \"qty\": 108\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -166,7 +166,7 @@
 		{
 			"name": "Change Municipality State",
 			"request": {
-				"method": "POST",
+				"method": "PATCH",
 				"header": [
 					{
 						"key": "",
@@ -185,7 +185,7 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:8080/matches/0/municipalities/135/",
+					"raw": "localhost:8080/matches/0/municipalities/138/",
 					"host": [
 						"localhost"
 					],
@@ -194,7 +194,7 @@
 						"matches",
 						"0",
 						"municipalities",
-						"135",
+						"138",
 						""
 					],
 					"query": [
@@ -215,7 +215,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"muniAttackingId\" : 68,\r\n    \"muniDefendingId\" : 69,\r\n    \"gauchosQty\" : 2500\r\n}",
+					"raw": "{\r\n    \"muniAttackingId\" : 136,\r\n    \"muniDefendingId\" : 135,\r\n    \"gauchosQty\" : 30\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -252,7 +252,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"userId\" : \"google-oauth2|108109799605958418950\"\r\n}",
+					"raw": "{\r\n    \"userId\" : \"google-oauth2|108732799064472479077\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -280,10 +280,32 @@
 		"bearer": [
 			{
 				"key": "token",
-				"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IndsTS0wd2pfaVBmMWpMZmU3SnYtMyJ9.eyJpc3MiOiJodHRwczovL3RhY3RpY2FzLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJZTTNxSlV4T0ZaSjQzT0oya0MyRFM4WE16OEpIS3RnbEBjbGllbnRzIiwiYXVkIjoiaHR0cHM6Ly90YWNzLmdhbWUvYXBpIiwiaWF0IjoxNjAxNTk2MDM5LCJleHAiOjE2MDE2ODI0MzksImF6cCI6IllNM3FKVXhPRlpKNDNPSjJrQzJEUzhYTXo4SkhLdGdsIiwiZ3R5IjoiY2xpZW50LWNyZWRlbnRpYWxzIn0.vbcOTsVY7NE7D2xsWFXiedbaGFDbQX5xDKn2m-G14sruoZN3F5HD15ngV22wxS1JrLJ9tYP1RitEfGeVwS--EMl2Qz3wZZ2i57O_3gOxQb9qd1r8MXQpqahA6qhGJdXI5it3ziJ03-4PvoMzYHsiWvB6WNjoLXYzE8MdLNoA4x4G2KN7u9QpWLw-j-nOnrYkArUGgk27VZH_AnCcanE47ZWpWm9r1LJ-2CuVReqFVg3vm976lfdc3pLL_EAGQ9jdhLT0wfany9I4U0RU4QT_xQC5xv1yBMU9Rr1DH_HiY0uw9W5nCiRL3Y9Sl3jPF6PMCC-l4w83xRMImcGP5_-wTA",
+				"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IndsTS0wd2pfaVBmMWpMZmU3SnYtMyJ9.eyJpc3MiOiJodHRwczovL3RhY3RpY2FzLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJZTTNxSlV4T0ZaSjQzT0oya0MyRFM4WE16OEpIS3RnbEBjbGllbnRzIiwiYXVkIjoiaHR0cHM6Ly90YWNzLmdhbWUvYXBpIiwiaWF0IjoxNjAyMDAyNDIwLCJleHAiOjE2MDIwODg4MjAsImF6cCI6IllNM3FKVXhPRlpKNDNPSjJrQzJEUzhYTXo4SkhLdGdsIiwiZ3R5IjoiY2xpZW50LWNyZWRlbnRpYWxzIn0.DyZqzvlxyanjO0daRDCx5ccXVEg26YbRv-SNCnki9OQeNUJmR29v4tqcRpgOOzrrNlbX53tI_qlRpJSG77s3oJBHYcse8K3GQNk6Ddh1I4BuBr3tF3P8F5JUex9HKG4tFqWkR3Cff4JkTCld37QX215HEXNY6lY_sg9eUR-kOAt4A0oXFFMPz3hAlpNHxifuAJRXNQxlQuXj-uQBN_d6xw__Q6fHVMF0gSHVMXxiwPqUchpOimDbC3dJcejvzZhfoEH9r50EmofRrqY1V5tFKt8_fdnIfh5nr2_Vvw9OP5on97ojnv1LsonwUO0-hK3IDZUJu6qO7z5A2NgFwsZEew",
 				"type": "string"
 			}
 		]
 	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "bd5957de-4964-45ba-a2b2-81107ed27ef1",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "e3340645-1034-4daa-924c-97823ed9319a",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
 	"protocolProfileBehavior": {}
 }

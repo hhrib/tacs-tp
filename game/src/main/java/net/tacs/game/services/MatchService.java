@@ -33,4 +33,6 @@ public interface MatchService {
     public void retireFromMatch(String matchId, RetireDTO retireDTO) throws MatchException;
 
     public void CheckMatchNotStarted(Match match) throws MatchNotStartedException;
+
+    public void CheckMatchFinished(Match match) throws MatchException;
 }

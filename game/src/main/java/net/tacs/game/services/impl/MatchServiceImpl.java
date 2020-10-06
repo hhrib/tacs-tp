@@ -354,6 +354,8 @@ public class MatchServiceImpl implements MatchService {
         Optional<Match> matchOptional = matchRepository.findById(matchId);
         Match match = matchOptional.orElseThrow(() -> new MatchException(HttpStatus.NOT_FOUND, Arrays.asList(new ApiError(MATCH_NOT_FOUND_CODE, MATCH_NOT_FOUND_DETAIL))));
 
+        CheckMatchFinished(match);
+
         match.setState(MatchState.IN_PROGRESS);
     }
 
@@ -365,12 +367,16 @@ public class MatchServiceImpl implements MatchService {
         Match match = matchOptional.orElseThrow(() -> new MatchException(HttpStatus.NOT_FOUND, Arrays.asList(new ApiError(MATCH_NOT_FOUND_CODE, MATCH_NOT_FOUND_DETAIL))));
 
         CheckMatchNotStarted(match);
+        CheckMatchFinished(match);
 
         Optional<Municipality> muniOptional = match.getMap().getMunicipalities().stream().filter(muni -> muni.getId().equals(muniId)).findFirst();
         Municipality muni = muniOptional.orElseThrow(() -> new MatchException(HttpStatus.NOT_FOUND, Arrays.asList(new ApiError(MUNICIPALITY_NOT_FOUND_CODE, MUNICIPALITY_NOT_FOUND_DETAIL))));
 
         if(!match.getTurnPlayer().equals(muni.getOwner()))
             throw new MatchNotPlayerTurnException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(PLAYER_DOESNT_HAVE_TURN_CODE, PLAYER_DOESNT_HAVE_TURN_DETAIL)));
+
+        if(muni.isBlocked())
+            throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(MUNICIPALITY_DESTINY_BLOCKED_CODE, MUNICIPALITY_DESTINY_BLOCKED_DETAIL)));
 
         muni.setState(dto.getNewState());
 
@@ -384,6 +390,7 @@ public class MatchServiceImpl implements MatchService {
         Match match = matchOptional.orElseThrow(() -> new MatchException(HttpStatus.NOT_FOUND, Arrays.asList(new ApiError(MATCH_NOT_FOUND_CODE, MATCH_NOT_FOUND_DETAIL))));
 
         CheckMatchNotStarted(match);
+        CheckMatchFinished(match);
 
         //si el jugador pertence a la partida
         if(!match.userIsInMatch(playerId))
@@ -518,5 +525,10 @@ public class MatchServiceImpl implements MatchService {
     public void CheckMatchNotStarted(Match match) throws MatchNotStartedException {
         if(match.getState().equals(MatchState.CREATED))
             throw new MatchNotStartedException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(MATCH_NOT_STARTED_CODE, MATCH_NOT_STARTED_DETAIL)));
+    }
+
+    public void CheckMatchFinished(Match match) throws MatchException {
+        if(match.getState().equals(MatchState.FINISHED) || match.getState().equals(MatchState.CANCELLED))
+            throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(MATCH_FINISHED_CODE, MATCH_FINISHED_DETAIL)));
     }
 }

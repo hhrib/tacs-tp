@@ -58,6 +58,7 @@ public class MunicipalityServiceImpl implements MunicipalityService {
         Match match = matchService.getMatchById(matchId);
 
         matchService.CheckMatchNotStarted(match);
+        matchService.CheckMatchFinished(match);
 
         if(attackMuniDTO.getMuniAttackingId() == (attackMuniDTO.getMuniDefendingId()))
         {
@@ -132,6 +133,7 @@ public class MunicipalityServiceImpl implements MunicipalityService {
         Match match = matchService.getMatchById(matchId);
 
         matchService.CheckMatchNotStarted(match);
+        matchService.CheckMatchFinished(match);
 
         if(requestBean.getIdOriginMuni().equals(requestBean.getIdDestinyMuni()))
         {
