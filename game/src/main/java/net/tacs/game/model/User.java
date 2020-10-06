@@ -6,6 +6,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
@@ -79,5 +81,29 @@ public class User {
                 .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
                 .toString();
         return generatedString;
+    }
+
+    public int municipalitiesOwning(List<Municipality> munisInMatch)
+    {
+        int munisOwned = 0;
+
+        for (Municipality aMuni : munisInMatch) {
+            if(aMuni.getOwner().equals(this))
+                munisOwned++;
+        }
+
+        return munisOwned;
+    }
+
+    public List<Municipality> getMunicipalitiesOwning(List<Municipality> munisInMatch)
+    {
+        List<Municipality> owningMunis = new ArrayList<>();
+
+        for (Municipality aMuni : munisInMatch) {
+            if(aMuni.getOwner().equals(this))
+                owningMunis.add(aMuni);
+        }
+
+        return owningMunis;
     }
 }

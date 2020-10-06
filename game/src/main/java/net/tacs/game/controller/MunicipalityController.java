@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.tacs.game.exceptions.MatchException;
+import net.tacs.game.model.dto.AttackMuniDTO;
+import net.tacs.game.model.dto.AttackResultDTO;
 import net.tacs.game.model.dto.MoveGauchosDTO;
 import net.tacs.game.model.dto.UpdateMunicipalityStateDTO;
 import org.slf4j.Logger;
@@ -55,12 +57,4 @@ public class MunicipalityController {
 	public Double getElevation(@PathVariable("LAT") String lat, @PathVariable("LON") String lon) {
 		return municipalityService.getElevation(new Centroide(lat, lon));
 	}
-
-	@PostMapping("/municipalities/gauchos")
-    public ResponseEntity<List<Municipality>> moveGauchos(@RequestBody MoveGauchosDTO dto) throws MatchException {
-        List<Municipality> municipalities = municipalityService.moveGauchos(dto);
-        return new ResponseEntity<>(municipalities, HttpStatus.OK);
-    }
-
-
 }

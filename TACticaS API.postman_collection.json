@@ -1,0 +1,311 @@
+{
+	"info": {
+		"_postman_id": "31ecf97c-9242-4a6f-90c0-bd498b11a32c",
+		"name": "TACticaS API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create Match",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"configs\": [\r\n    12,\r\n    8,\r\n    1,\r\n    1,\r\n    1.25,\r\n    30\r\n  ],\r\n  \"municipalitiesQty\": 10,\r\n  \"provinceId\": 6,\r\n  \"userIds\": [\r\n    \"google-oauth2|108109799605958418950\",\r\n    \"google-oauth2|108732799064472479077\"\r\n  ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/matches",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"matches"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Empezar Partida",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/matches/0/start",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"matches",
+						"0",
+						"start"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "All Matches",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/matches",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"matches"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "One Match",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/matches/0",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"matches",
+						"0"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "All Provinces",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/provinces",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"provinces"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "All Municipalities for a Province",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/provinces/6/municipalities?qty=426",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"provinces",
+						"6",
+						"municipalities"
+					],
+					"query": [
+						{
+							"key": "qty",
+							"value": "426"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Move Gauchos",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"idDestinyMuni\": 138,\r\n  \"idOriginMuni\": 142,\r\n  \"qty\": 108\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/matches/0/municipalities/gauchos",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"matches",
+						"0",
+						"municipalities",
+						"gauchos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Change Municipality State",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"newState\": \"PRODUCTION\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/matches/0/municipalities/138/",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"matches",
+						"0",
+						"municipalities",
+						"138",
+						""
+					],
+					"query": [
+						{
+							"key": "",
+							"value": null,
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Attack a Municipality",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"muniAttackingId\" : 136,\r\n    \"muniDefendingId\" : 135,\r\n    \"gauchosQty\" : 30\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/matches/0/municipalities/attack",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"matches",
+						"0",
+						"municipalities",
+						"attack"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Pass Player Turn",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "matchId",
+						"value": "0",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userId\" : \"google-oauth2|108732799064472479077\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/matches/0/passTurn",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"matches",
+						"0",
+						"passTurn"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IndsTS0wd2pfaVBmMWpMZmU3SnYtMyJ9.eyJpc3MiOiJodHRwczovL3RhY3RpY2FzLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJZTTNxSlV4T0ZaSjQzT0oya0MyRFM4WE16OEpIS3RnbEBjbGllbnRzIiwiYXVkIjoiaHR0cHM6Ly90YWNzLmdhbWUvYXBpIiwiaWF0IjoxNjAyMDAyNDIwLCJleHAiOjE2MDIwODg4MjAsImF6cCI6IllNM3FKVXhPRlpKNDNPSjJrQzJEUzhYTXo4SkhLdGdsIiwiZ3R5IjoiY2xpZW50LWNyZWRlbnRpYWxzIn0.DyZqzvlxyanjO0daRDCx5ccXVEg26YbRv-SNCnki9OQeNUJmR29v4tqcRpgOOzrrNlbX53tI_qlRpJSG77s3oJBHYcse8K3GQNk6Ddh1I4BuBr3tF3P8F5JUex9HKG4tFqWkR3Cff4JkTCld37QX215HEXNY6lY_sg9eUR-kOAt4A0oXFFMPz3hAlpNHxifuAJRXNQxlQuXj-uQBN_d6xw__Q6fHVMF0gSHVMXxiwPqUchpOimDbC3dJcejvzZhfoEH9r50EmofRrqY1V5tFKt8_fdnIfh5nr2_Vvw9OP5on97ojnv1LsonwUO0-hK3IDZUJu6qO7z5A2NgFwsZEew",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "bd5957de-4964-45ba-a2b2-81107ed27ef1",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "e3340645-1034-4daa-924c-97823ed9319a",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"protocolProfileBehavior": {}
+}

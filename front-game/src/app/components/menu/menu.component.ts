@@ -33,7 +33,7 @@ export class MenuComponent implements OnInit {
 
     //this.matchService.createMatch(match);
     const dialogRef = this.dialog.open(MatchCreateDialogComponent, {
-      height: '400px',
+      height: '450px',
       width: '300px',
     });
 

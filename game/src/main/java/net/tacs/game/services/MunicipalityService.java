@@ -1,7 +1,11 @@
 package net.tacs.game.services;
 
 import net.tacs.game.exceptions.MatchException;
+import net.tacs.game.exceptions.MatchNotPlayerTurnException;
+import net.tacs.game.exceptions.MatchNotStartedException;
 import net.tacs.game.model.*;
+import net.tacs.game.model.dto.AttackMuniDTO;
+import net.tacs.game.model.dto.AttackResultDTO;
 import net.tacs.game.model.dto.MoveGauchosDTO;
 import net.tacs.game.model.dto.UpdateMunicipalityStateDTO;
 
@@ -24,10 +28,10 @@ public interface MunicipalityService {
 	 * @return attackResult
 	 * @description return the result of the attack between municipalities
 	 */
-	public int attackMunicipality(Municipality myMunicipality, Municipality enemyMunicipality, MatchConfiguration config, int gauchosAttacking);
+	public AttackResultDTO attackMunicipality(String matchId, AttackMuniDTO attackMuniDTO) throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException;
 
 	public void produceGauchos(Match match, User user);
 
-	public List<Municipality> moveGauchos(MoveGauchosDTO requestBean) throws MatchException;
+	public List<Municipality> moveGauchos(String matchId, MoveGauchosDTO requestBean) throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException;
 
 }

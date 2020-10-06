@@ -104,4 +104,30 @@ public class MatchConfiguration {
     public void setPlayersTurns(List<User> playerTurns) {
         this.playersTurns = playerTurns;
     }
+
+    public User setNextPlayerTurn(String playerId) {
+        for(User aUser : playersTurns)
+        {
+            if(aUser.getId().equals(playerId))
+            {
+                int index = playersTurns.indexOf(aUser);
+
+                //es el ultimo de la lista?
+                if(index == (playersTurns.size() - 1))
+                {
+                    return playersTurns.get(0);
+                }
+                else
+                {
+                    return playersTurns.get(index + 1);
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public void removePlayer(User player) {
+        playersTurns.remove(player);
+    }
 }
