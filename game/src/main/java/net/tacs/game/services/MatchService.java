@@ -11,6 +11,7 @@ import net.tacs.game.model.websocket.ChatMessage;
 import net.tacs.game.model.dto.*;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface MatchService {
 
@@ -38,8 +39,10 @@ public interface MatchService {
 
     public void retireFromMatch(String matchId, RetireDTO retireDTO) throws MatchException;
 
-    public void CheckMatchNotStarted(Match match) throws MatchNotStartedException;
+    public void checkMatchNotStarted(Match match) throws MatchNotStartedException;
 
-    public void CheckMatchFinished(Match match) throws MatchException;
+    public void checkMatchFinished(Match match) throws MatchException;
+
+    public Optional<Match> getMatchForUserId(String userId);
 
 }

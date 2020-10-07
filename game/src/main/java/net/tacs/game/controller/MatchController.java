@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 @RestController
@@ -141,6 +142,12 @@ public class MatchController {
     public ResponseEntity abandonMatch(@PathVariable("matchId") String matchId, @RequestBody RetireDTO retireDTO) throws MatchException {
         this.matchService.retireFromMatch(matchId, retireDTO);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping("/matches/users/{userId}")
+    public ResponseEntity<String> getMatchForUser(@PathVariable("userId") String userId) {
+        Optional<Match> match = this.matchService.getMatchForUserId(userId);
+        return new ResponseEntity<>(match.map(m -> m.getId().toString()).orElse("0"), HttpStatus.OK);
     }
 
     /**
