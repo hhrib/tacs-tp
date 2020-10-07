@@ -543,7 +543,11 @@ public class MatchServiceImpl implements MatchService {
     }
 
     @Override
-    public Optional<Match> getMatchForUserId(String userId) {
-        return matchRepository.findForUserId(userId);
+    public Match getMatchForUserId(String userId) throws MatchException {
+        Optional<Match> optionalMatch = matchRepository.findForUserId(userId);
+        if (!optionalMatch.isPresent()) {
+            throw new MatchException(HttpStatus.NOT_FOUND, Arrays.asList(new ApiError(MATCH_NOT_FOUND_FOR_USER_CODE, MATCH_NOT_FOUND_FOR_USER_DETAIL)));
+        }
+        return optionalMatch.get();
     }
 }

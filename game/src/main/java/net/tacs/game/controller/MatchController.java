@@ -145,9 +145,11 @@ public class MatchController {
     }
 
     @GetMapping("/matches/users/{userId}")
-    public ResponseEntity<String> getMatchForUser(@PathVariable("userId") String userId) {
-        Optional<Match> match = this.matchService.getMatchForUserId(userId);
-        return new ResponseEntity<>(match.map(m -> m.getId().toString()).orElse("0"), HttpStatus.OK);
+    public ResponseEntity<MatchIdDTO> getMatchForUser(@PathVariable("userId") String userId) throws MatchException {
+        Match match = this.matchService.getMatchForUserId(userId);
+        MatchIdDTO matchIdDTO = new MatchIdDTO();
+        matchIdDTO.setMatchId(match.getId());
+        return new ResponseEntity<>(matchIdDTO, HttpStatus.OK);
     }
 
     /**

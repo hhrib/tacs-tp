@@ -11,7 +11,6 @@ import net.tacs.game.model.websocket.ChatMessage;
 import net.tacs.game.model.dto.*;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface MatchService {
 
@@ -43,6 +42,6 @@ public interface MatchService {
 
     public void checkMatchFinished(Match match) throws MatchException;
 
-    public Optional<Match> getMatchForUserId(String userId);
+    public Match getMatchForUserId(String userId) throws MatchException;
 
 }

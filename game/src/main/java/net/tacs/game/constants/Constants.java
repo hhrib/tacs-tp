@@ -41,4 +41,8 @@ public class Constants {
 
     public static final String PLAYER_DOESNT_OWN_MUNIS_CODE = "PLAYER_DOESNT_OWN_MUNIS";
     public static final String PLAYER_DOESNT_OWN_MUNIS_DETAIL = "Player doesn't own one of the municipalities";
+
+    public static final String MATCH_NOT_FOUND_FOR_USER_CODE = "MATCH_NOT_FOUND_FOR_USER";
+    public static final String MATCH_NOT_FOUND_FOR_USER_DETAIL = "User provided is not in any match";
+
 }
