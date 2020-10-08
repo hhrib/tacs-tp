@@ -98,7 +98,7 @@ public class Match {
     }
 
     public Match(){
-        id = idCounter++;
+        id = ++idCounter;
     }
 
     @Override
