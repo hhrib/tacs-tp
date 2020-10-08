@@ -1,4 +1,4 @@
-import { ChatModel } from './../models/chat.model';
+import { EndTurnModel } from '../models/endTurnModel';
 import { Injectable } from '@angular/core';
 import * as SockJS from 'sockjs-client';
 import * as Stomp from 'stompjs';
@@ -10,7 +10,7 @@ export class MessageService {
   socket: any;
   stompClient: any;
 
-  chats: ChatModel[] = [];
+  endTurns: EndTurnModel[] = [];
 
   connect() {
     this.socket = new SockJS('http://localhost:8080/socket');
@@ -34,12 +34,16 @@ export class MessageService {
   }
 
   private onConnectCallback() {
-    this.stompClient.subscribe('/topic/turn_end', (frame) => {
+    this.stompClient.subscribe('/topic/0/turn_end', (frame) => {
+      // if (frame.body) {
+      //   let chat = JSON.parse(frame.body);
+      //   this.chats.push(new EndTurnModel(chat.sender, chat.message));
+      //   console.log(this.chats);
+      // }
       if (frame.body) {
-        let chat = JSON.parse(frame.body);
-        this.chats.push(new ChatModel(chat.sender, chat.message));
-        console.log("Nuevo chat. Chats ahora:");
-        console.log(this.chats);
+        let endTurn = JSON.parse(frame.body);
+        this.endTurns.push(new EndTurnModel(endTurn.userId));
+        console.log(this.endTurns);
       }
     });
   }

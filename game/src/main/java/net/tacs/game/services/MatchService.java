@@ -28,8 +28,6 @@ public interface MatchService {
 
     public void calculateConfigVariables(Match match);
 
-    public void endTurn(ChatMessage endTurnMessage);
-
     public void start(String matchStringId) throws MatchException;
 
     public void updateMunicipalityState(String matchId, String muniId, UpdateMunicipalityStateDTO dto) throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException;

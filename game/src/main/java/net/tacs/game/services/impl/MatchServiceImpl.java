@@ -388,10 +388,6 @@ public class MatchServiceImpl implements MatchService {
     }
 
     @Override
-    public void endTurn(ChatMessage endTurnMessage) {
-        template.convertAndSend("/topic/turn_end", endTurnMessage);
-    }
-    @Override
     public void passTurn(String matchIdString, String playerId) throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException {
         Long matchId = validateAndGetIdLong(matchIdString, "MATCH");
         Optional<Match> matchOptional = matchRepository.findById(matchId);
@@ -414,6 +410,9 @@ public class MatchServiceImpl implements MatchService {
             User nextPlayer = match.getConfig().setNextPlayerTurn(playerId);
             match.setTurnPlayer(nextPlayer);
             municipalityService.produceGauchos(match, nextPlayer);
+            NextUserTurnDTO endTurnSocketMessage = new NextUserTurnDTO();
+            endTurnSocketMessage.setUserId(nextPlayer.getId());
+            template.convertAndSend("/topic/" + matchIdString +"/turn_end", endTurnSocketMessage);
         }
         else //el jugador no tiene el turno
         {

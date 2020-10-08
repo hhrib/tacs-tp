@@ -1,4 +1,4 @@
-import { ChatModel } from './../../models/chat.model';
+import { EndTurnModel } from '../../models/endTurnModel';
 import { MessageService } from './../../services/message.service';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
@@ -12,7 +12,7 @@ export class SocketComponent implements OnInit, OnDestroy {
   title = 'websocket-client';
 
   form: FormGroup;
-  chats: ChatModel[];
+  endTurns: EndTurnModel[];
 
   constructor(fb: FormBuilder, private service: MessageService) {
     this.form = fb.group({
@@ -20,7 +20,7 @@ export class SocketComponent implements OnInit, OnDestroy {
       message: ['', Validators.required]
     });
 
-    this.chats = service.chats;
+    this.endTurns = service.endTurns;
   }
 
   ngOnInit() {

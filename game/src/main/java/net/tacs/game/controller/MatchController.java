@@ -126,12 +126,6 @@ public class MatchController {
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
-    @PostMapping("matches/{matchId}/turn_end")
-    public ResponseEntity turnEnd(@PathVariable("matchId") String matchId, @RequestBody ChatMessage endTurnMessage) {
-        this.matchService.endTurn(endTurnMessage);
-        return new ResponseEntity(HttpStatus.NO_CONTENT);
-    }
-
     @PatchMapping("/matches/{matchId}/passTurn")
     public ResponseEntity updateMatchTurn(@PathVariable("matchId") String matchId, @RequestBody PassTurnDTO passTurnDTO) throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException {
         this.matchService.passTurn(matchId, passTurnDTO.getUserId());

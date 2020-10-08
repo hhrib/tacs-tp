@@ -2,9 +2,8 @@
   <ul class="list-group mt-5">
     <li class="list-group-item text-white bg-success">Chat App</li>
 
-    <li class="list-group-item" *ngFor="let chat of chats">
-      <span class="font-weight-bolder mr-2">{{ chat.sender }} :</span>
-      <span>{{ chat.message }}</span>
+    <li class="list-group-item" *ngFor="let endTurn of endTurns">
+      <span class="font-weight-bolder mr-2">Terminó el turno. El próximo será: {{ endTurn.userId }}</span>
     </li>
 
   </ul>
