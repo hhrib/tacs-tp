@@ -1,6 +1,7 @@
 package net.tacs.game.service;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.doNothing;
 
 
 import java.time.LocalDate;
@@ -23,6 +24,8 @@ import net.tacs.game.repositories.ProvinceRepository;
 import net.tacs.game.repositories.UserRepository;
 import net.tacs.game.services.MunicipalityService;
 import net.tacs.game.GameApplication;
+import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import net.tacs.game.services.SecurityProviderService;
 import org.junit.Before;
@@ -113,13 +116,6 @@ public class MatchServiceTest {
         user1.setId("ABC1");
         user2.setId("ABC2");
 
-        lanus.setGauchosQty(300);
-        avellaneda.setGauchosQty(300);
-        quilmes.setGauchosQty(300);
-        tigre.setGauchosQty(300);
-        lomas.setGauchosQty(300);
-        matanza.setGauchosQty(300);
-
         lanus.setCentroide(new Centroide("0", "0"));
         avellaneda.setCentroide(new Centroide("1", "1"));
         quilmes.setCentroide(new Centroide("2", "2"));
@@ -127,22 +123,12 @@ public class MatchServiceTest {
         lomas.setCentroide(new Centroide("4", "4"));
         matanza.setCentroide(new Centroide("5", "5"));
 
-        lanus.setElevation(1D);
-        avellaneda.setElevation(2D);
-        quilmes.setElevation(3D);
-        tigre.setElevation(4D);
-        lomas.setElevation(5D);
-        matanza.setElevation(6D);
+        Double[] elevations = {1D, 2D, 3D, 4D, 5D, 6D};
 
         Mockito.when(userRepository.findById("ABC1")).thenReturn(java.util.Optional.ofNullable(user1));
         Mockito.when(userRepository.findById("ABC2")).thenReturn(java.util.Optional.ofNullable(user2));
         Mockito.when(provinceRepository.findById(99999997L)).thenReturn(java.util.Optional.ofNullable(buenosAires));
-        Mockito.when(municipalityService.getElevation(lanus.getCentroide())).thenReturn(3000D);
-        Mockito.when(municipalityService.getElevation(avellaneda.getCentroide())).thenReturn(3100D);
-        Mockito.when(municipalityService.getElevation(quilmes.getCentroide())).thenReturn(3200D);
-        Mockito.when(municipalityService.getElevation(tigre.getCentroide())).thenReturn(3300D);
-        Mockito.when(municipalityService.getElevation(lomas.getCentroide())).thenReturn(3400D);
-        Mockito.when(municipalityService.getElevation(matanza.getCentroide())).thenReturn(3500D);
+        Mockito.when(municipalityService.getElevations(ArgumentMatchers.anyList())).thenReturn(elevations);
 
         Match match = matchService.createMatch(dto);
 

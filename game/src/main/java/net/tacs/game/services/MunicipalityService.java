@@ -19,6 +19,8 @@ public interface MunicipalityService {
 	 */
 	public Double getElevation(Centroide location);
 
+	public Double[] getElevations(List<Municipality> municipalities);
+
 	/**
 	 * @method attackMunicipality
 	 * @param myMunicipality
