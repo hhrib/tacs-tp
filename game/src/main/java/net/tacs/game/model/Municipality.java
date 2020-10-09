@@ -27,7 +27,7 @@ public class Municipality {
 
 	public Municipality() {
 		super();
-		id = idCounter++;
+		id = ++idCounter;
 	}
 
 	public Municipality(String nombre) {

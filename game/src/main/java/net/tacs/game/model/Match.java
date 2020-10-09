@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import net.tacs.game.model.dto.AttackMuniDTO;
+import net.tacs.game.model.dto.AttackResultDTO;
 import net.tacs.game.model.enums.MatchState;
 
 import java.time.LocalDateTime;
@@ -96,7 +98,7 @@ public class Match {
     }
 
     public Match(){
-        id = idCounter++;
+        id = ++idCounter;
     }
 
     @Override
@@ -137,5 +139,24 @@ public class Match {
         }
 
         return false;
+    }
+
+    public void checkVictory(User player) {
+        int playerMunis = player.municipalitiesOwning(this.getMap().getMunicipalities());
+
+        if(playerMunis == 0)
+        {
+            this.getConfig().removePlayer(player);
+        }
+
+        if(getConfig().getPlayersTurns().size() == 1) //solo quedo un jugador
+        {
+            this.winner = this.getConfig().getPlayersTurns().get(0);
+            this.setState(MatchState.FINISHED);
+        }
+    }
+
+    public boolean playerCanAttack(User player) {
+        return player.equals(turnPlayer);
     }
 }

@@ -4,6 +4,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import net.tacs.game.exceptions.MatchException;
+import net.tacs.game.exceptions.MatchNotPlayerTurnException;
+import net.tacs.game.exceptions.MatchNotStartedException;
 import net.tacs.game.model.*;
 import net.tacs.game.model.dto.AttackMuniDTO;
 import net.tacs.game.model.dto.AttackResultDTO;
@@ -11,6 +13,7 @@ import net.tacs.game.model.dto.MoveGauchosDTO;
 import net.tacs.game.model.dto.UpdateMunicipalityStateDTO;
 import net.tacs.game.repositories.MatchRepository;
 import net.tacs.game.repositories.MunicipalityRepository;
+import net.tacs.game.services.MatchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +36,7 @@ public class MunicipalityServiceImpl implements MunicipalityService {
 	private Map<Centroide, Double> elevations = new HashMap<>();
 
 	@Autowired
-    private MatchRepository matchRepository;
+    private MatchService matchService;
 
 	@Autowired
     private MunicipalityRepository municipalityRepository;
@@ -50,11 +53,45 @@ public class MunicipalityServiceImpl implements MunicipalityService {
 		return elevation;
 	}
 
-	@Override
-	public AttackResultDTO attackMunicipality(AttackMuniDTO attackMuniDTO) throws MatchException {
-        Optional<Match> matchOptional = matchRepository.findById(attackMuniDTO.getMatchId());
+    public synchronized Double[] getElevations(List<Municipality> municipalities) {
+	    Double[] elevationsResponse = new Double[municipalities.size()];
+	    List<Municipality> munisWithoutElevation = new ArrayList<>();
+	    String elevationsQuery = "";
 
-        Match match = matchOptional.orElseThrow(() -> new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(MATCH_NOT_FOUND_CODE, MATCH_NOT_FOUND_DETAIL))));
+        for(Municipality aMuni : municipalities)
+        {
+            Double elevation = elevations.get(aMuni.getCentroide());
+
+            if (elevation == null)
+            {
+                munisWithoutElevation.add(aMuni);
+                elevationsQuery = elevationsQuery.concat(aMuni.getCentroide().toString() + "|");
+            } else {
+                elevationsResponse[municipalities.indexOf(aMuni)] = elevation;
+            }
+        }
+
+        if(elevationsQuery.equals(""))
+            return elevationsResponse;
+
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<ElevationResponse> response = restTemplate.getForEntity(
+                URL_ELEVATION.concat(elevationsQuery).concat("&interpolation=cubic"), ElevationResponse.class);
+
+        for(int i = 0; i < munisWithoutElevation.size(); i++)
+        {
+            elevationsResponse[municipalities.indexOf(munisWithoutElevation.get(i))] = response.getBody().getResults()[i].getElevation();
+        }
+
+        return elevationsResponse;
+    }
+
+	@Override
+	public AttackResultDTO attackMunicipality(String matchId, AttackMuniDTO attackMuniDTO) throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException {
+        Match match = matchService.getMatchById(matchId);
+
+        matchService.CheckMatchNotStarted(match);
+        matchService.CheckMatchFinished(match);
 
         if(attackMuniDTO.getMuniAttackingId() == (attackMuniDTO.getMuniDefendingId()))
         {
@@ -66,6 +103,7 @@ public class MunicipalityServiceImpl implements MunicipalityService {
 
         Municipality muniAtk = null;
         Municipality muniDef = null;
+        User rival = null;
 
         int result = -2;
 
@@ -79,15 +117,30 @@ public class MunicipalityServiceImpl implements MunicipalityService {
             if(attackMuniDTO.getMuniDefendingId() == aMuni.getId())
             {
                 muniDef = aMuni;
+                rival = aMuni.getOwner();
                 bMuniDefenseFound = true;
             }
         }
 
 	    if(bMuniAttackFound && bMuniDefenseFound)
 	    {
+            if(!match.playerCanAttack(muniAtk.getOwner()))
+                throw new MatchNotPlayerTurnException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(PLAYER_DOESNT_HAVE_TURN_CODE, PLAYER_DOESNT_HAVE_TURN_DETAIL)));
+
+            if(muniAtk.isBlocked())
+            {
+                throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(MUNICIPALITY_DESTINY_BLOCKED_CODE, MUNICIPALITY_DESTINY_BLOCKED_DETAIL)));
+            }
+
+            if(muniAtk.getOwner().equals(muniDef.getOwner()))
+                throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(SAME_OWNER_MUNIS_CODE, SAME_OWNER_MUNIS_DETAIL)));
+
             result = muniAtk.attack(muniDef, match.getConfig(), attackMuniDTO.getGauchosQty());
 
             muniAtk.setBlocked(true);
+
+            if(result == 1) //si el rival perdio el municipio chequear si perdio la partida
+                match.checkVictory(rival);
 
             return new AttackResultDTO(result, muniAtk, muniDef);
 	    }
@@ -109,11 +162,11 @@ public class MunicipalityServiceImpl implements MunicipalityService {
 		}
 	}
 
-    public List<Municipality> moveGauchos(MoveGauchosDTO requestBean) throws MatchException {
+    public List<Municipality> moveGauchos(String matchId, MoveGauchosDTO requestBean) throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException {
+        Match match = matchService.getMatchById(matchId);
 
-        Optional<Match> matchOptional = matchRepository.findById(requestBean.getMatchId());
-
-        Match match = matchOptional.orElseThrow(() -> new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(MATCH_NOT_FOUND_CODE, MATCH_NOT_FOUND_DETAIL))));
+        matchService.CheckMatchNotStarted(match);
+        matchService.CheckMatchFinished(match);
 
         if(requestBean.getIdOriginMuni().equals(requestBean.getIdDestinyMuni()))
         {
@@ -143,6 +196,12 @@ public class MunicipalityServiceImpl implements MunicipalityService {
 
         if(idsNotFound.isEmpty())
         {
+            if(!match.playerCanAttack(muniOrigin.getOwner()))
+                throw new MatchNotPlayerTurnException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(PLAYER_DOESNT_HAVE_TURN_CODE, PLAYER_DOESNT_HAVE_TURN_DETAIL)));
+
+            if(!muniOrigin.getOwner().equals(muniDestiny.getOwner()))
+                throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(PLAYER_DOESNT_OWN_MUNIS_CODE, PLAYER_DOESNT_OWN_MUNIS_DETAIL)));
+
             if(muniDestiny.isBlocked())
             {
                 throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(MUNICIPALITY_DESTINY_BLOCKED_CODE, MUNICIPALITY_DESTINY_BLOCKED_DETAIL)));
@@ -168,5 +227,4 @@ public class MunicipalityServiceImpl implements MunicipalityService {
 
         return Arrays.asList(muniOrigin, muniDestiny);
     }
-
 }

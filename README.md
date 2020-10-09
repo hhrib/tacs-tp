@@ -32,6 +32,7 @@ Para ejecuacion
 3. Si un jugador abandona la partida, esta sigue en curso con el resto y los municipios que tenia se redistribuyen entre los demas jugadores.
 4. Solo el municipio destino se bloquea al mover gauchos.
 5. No se puede cambiar la configuracion de la partida una vez creada.
+6. Si un jugador abandona ANTES de que empieze la partida, esta se considera cancelada, de lo contrario, la partida continua con los jugadores restantes.
 
 -----
 # CI/CD:

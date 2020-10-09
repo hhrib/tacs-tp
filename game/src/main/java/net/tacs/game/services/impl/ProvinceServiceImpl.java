@@ -44,15 +44,18 @@ public class ProvinceServiceImpl implements ProvinceService {
 	public List<Municipality> findMunicipios(int provinceId, Integer qty) {
 		RestTemplate restTemplate = new RestTemplate();
 
-		//la api trae por defecto solo 10 municipios
+		//la api trae por defecto solo 10 municipios,
+		//Cordoba tiene 426 municipios
+		//Tierra del fuego tiene 3 municipios
+		//TODO provincias que no tienen municipios: Entre Rios (id: 30), Santa Cruz (id: 78),
+		//TODO                                     Santiago del Estero(id: 86), Ciudad Autónoma de Buenos Aires(id: 02)
 		String url = String.format(URL_MUNICIPIOS, provinceId, qty);
 		if (qty != null)
 			url += "&max=" + qty;
 		else
-			url += "&max=200";
+			url += "&max=426";
 		ResponseEntity<GeoRefMunicipioAPIResponse> response = restTemplate.getForEntity(url,
 				GeoRefMunicipioAPIResponse.class);
 		return Arrays.asList(response.getBody().getMunicipios());
 	}
-
 }
