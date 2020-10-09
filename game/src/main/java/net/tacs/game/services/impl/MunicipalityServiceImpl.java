@@ -51,6 +51,39 @@ public class MunicipalityServiceImpl implements MunicipalityService {
 		return elevation;
 	}
 
+    public synchronized Double[] getElevations(List<Municipality> municipalities) {
+	    Double[] elevationsResponse = new Double[municipalities.size()];
+	    List<Municipality> munisWithoutElevation = new ArrayList<>();
+	    String elevationsQuery = "";
+
+        for(Municipality aMuni : municipalities)
+        {
+            Double elevation = elevations.get(aMuni.getCentroide());
+
+            if (elevation == null)
+            {
+                munisWithoutElevation.add(aMuni);
+                elevationsQuery = elevationsQuery.concat(aMuni.getCentroide().toString() + "|");
+            } else {
+                elevationsResponse[municipalities.indexOf(aMuni)] = elevation;
+            }
+        }
+
+        if(elevationsQuery.equals(""))
+            return elevationsResponse;
+
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<ElevationResponse> response = restTemplate.getForEntity(
+                URL_ELEVATION.concat(elevationsQuery).concat("&interpolation=cubic"), ElevationResponse.class);
+
+        for(int i = 0; i < munisWithoutElevation.size(); i++)
+        {
+            elevationsResponse[municipalities.indexOf(munisWithoutElevation.get(i))] = response.getBody().getResults()[i].getElevation();
+        }
+
+        return elevationsResponse;
+    }
+
 	@Override
 	public AttackResultDTO attackMunicipality(String matchId, AttackMuniDTO attackMuniDTO) throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException {
         Match match = matchService.getMatchById(matchId);

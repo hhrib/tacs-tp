@@ -222,11 +222,6 @@ public class MatchServiceImpl implements MatchService {
 
                 muni.setCentroide(tempMunicipalities.get(selectedMuniIndex).getCentroide());
 
-                muni.setElevation(municipalityService.getElevation(muni.getCentroide()));
-
-                //TODO: LA API SOLO ME DEJA HACER 1 REQUEST POR SEGUNDO
-                TimeUnit.SECONDS.sleep(1);
-
                 muni.setGauchosQty(newMatch.getConfig().getInitialGauchos());
 
                 //Por defecto se pone en defensa
@@ -236,6 +231,16 @@ public class MatchServiceImpl implements MatchService {
             }
 
             newMatch.setMap(newProvince);
+
+            //buscar elevaciones de municipios
+            Double[] elevations = municipalityService.getElevations(newMatch.getMap().getMunicipalities());
+            for(int i = 0; i < elevations.length; i++)
+            {
+                newMatch.getMap().getMunicipalities().get(i).setElevation(elevations[i]);
+            }
+
+            //TODO: LA API SOLO ME DEJA HACER 1 REQUEST POR SEGUNDO
+            //TimeUnit.SECONDS.sleep(1);
 
             //asignar municipalidades a usuarios
             assignMunicipalities(newMatch.getMap().getMunicipalities(), newMatch.getUsers());
