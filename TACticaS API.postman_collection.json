@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "31ecf97c-9242-4a6f-90c0-bd498b11a32c",
+		"_postman_id": "4e452f8d-341f-4faf-8506-5a9d33a104c5",
 		"name": "TACticaS API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -8,6 +8,16 @@
 		{
 			"name": "Create Match",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
 				"header": [],
 				"body": {
@@ -35,17 +45,27 @@
 		{
 			"name": "Empezar Partida",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
 				"method": "PATCH",
 				"header": [],
 				"url": {
-					"raw": "localhost:8080/matches/0/start",
+					"raw": "localhost:8080/matches/1/start",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
 						"matches",
-						"0",
+						"1",
 						"start"
 					]
 				}
@@ -55,6 +75,16 @@
 		{
 			"name": "All Matches",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
 				"method": "GET",
 				"header": [],
 				"url": {
@@ -73,17 +103,27 @@
 		{
 			"name": "One Match",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:8080/matches/0",
+					"raw": "localhost:8080/matches/1",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
 						"matches",
-						"0"
+						"1"
 					]
 				}
 			},
@@ -92,6 +132,16 @@
 		{
 			"name": "All Provinces",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
 				"method": "GET",
 				"header": [],
 				"url": {
@@ -110,6 +160,16 @@
 		{
 			"name": "All Municipalities for a Province",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
 				"method": "GET",
 				"header": [],
 				"url": {
@@ -136,6 +196,16 @@
 		{
 			"name": "Move Gauchos",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
 				"header": [],
 				"body": {
@@ -148,14 +218,14 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:8080/matches/0/municipalities/gauchos",
+					"raw": "localhost:8080/matches/1/municipalities/gauchos",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
 						"matches",
-						"0",
+						"1",
 						"municipalities",
 						"gauchos"
 					]
@@ -166,6 +236,16 @@
 		{
 			"name": "Change Municipality State",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
 				"method": "PATCH",
 				"header": [
 					{
@@ -185,14 +265,14 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:8080/matches/0/municipalities/138/",
+					"raw": "localhost:8080/matches/1/municipalities/138/",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
 						"matches",
-						"0",
+						"1",
 						"municipalities",
 						"138",
 						""
@@ -211,6 +291,16 @@
 		{
 			"name": "Attack a Municipality",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
 				"header": [],
 				"body": {
@@ -223,14 +313,14 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:8080/matches/0/municipalities/attack",
+					"raw": "localhost:8080/matches/1/municipalities/attack",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
 						"matches",
-						"0",
+						"1",
 						"municipalities",
 						"attack"
 					]
@@ -241,6 +331,16 @@
 		{
 			"name": "Pass Player Turn",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
 				"method": "PATCH",
 				"header": [
 					{
@@ -260,17 +360,68 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:8080/matches/0/passTurn",
+					"raw": "localhost:8080/matches/1/passTurn",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
 						"matches",
-						"0",
+						"1",
 						"passTurn"
 					]
 				}
+			},
+			"response": []
+		},
+		{
+			"name": "Token request",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "f497938d-d18f-4a77-ac5f-5343fe0b48a2",
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);\r",
+							"postman.setGlobalVariable(\"accessToken\",jsonData.access_token);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "content-type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"client_id\":\"YM3qJUxOFZJ43OJ2kC2DS8XMz8JHKtgl\",\r\n    \"client_secret\":\"oyXb5lySL0Xsb_QN0T-aCYgfxvrMfxE1wjEwCdvTroHYSykmS32OvxSxSkpkSJdN\",\r\n    \"audience\":\"https://tacs.game/api\",\r\n    \"grant_type\":\"client_credentials\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://tacticas.us.auth0.com/oauth/token",
+					"protocol": "https",
+					"host": [
+						"tacticas",
+						"us",
+						"auth0",
+						"com"
+					],
+					"path": [
+						"oauth",
+						"token"
+					]
+				},
+				"description": "Pide un token en auth0 para probar la API"
 			},
 			"response": []
 		}
@@ -289,7 +440,7 @@
 		{
 			"listen": "prerequest",
 			"script": {
-				"id": "bd5957de-4964-45ba-a2b2-81107ed27ef1",
+				"id": "8e1d0706-74cf-4aae-a320-e2bbce3eb89f",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -299,7 +450,7 @@
 		{
 			"listen": "test",
 			"script": {
-				"id": "e3340645-1034-4daa-924c-97823ed9319a",
+				"id": "a89b7b86-6389-4ade-9b71-a5b0fd3fe74e",
 				"type": "text/javascript",
 				"exec": [
 					""
