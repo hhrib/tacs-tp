@@ -1,0 +1,25 @@
+<div class="container" style="text-align: center;">
+    <form #matchCreation="ngForm" (ngSubmit)="onSubmit(matchCreation)">
+    <h1 mat-dialog-title style="text-align: center;">Change State of Municipality</h1>
+    <div mat-dialog-content style="overflow: hidden;">
+        <mat-form-field>
+            <mat-label>Municipality</mat-label>
+                <mat-select name="municipality" ngModel [disabled]="clicked">
+                    <mat-option *ngFor="let municipality of municipalityList" [value]="municipality.id">{{municipality.name}}</mat-option>
+                </mat-select>
+        </mat-form-field>
+        
+        <mat-form-field>
+            <mat-label>State</mat-label>
+            <mat-select multiple name="state" ngModel [disabled]="clicked">
+                <mat-option *ngFor="let state of stateList" [value]="state.id">{{state.name}}</mat-option> 
+            </mat-select>
+        </mat-form-field>
+
+        <div mat-dialog-actions style="display: block;">
+            <button mat-button (click)="onNoClick()" [disabled]="clicked">Cancel</button>
+            <button mat-button type="submit" [disabled]="clicked">Ok</button>
+        </div>
+    </div>
+</form>
+</div>

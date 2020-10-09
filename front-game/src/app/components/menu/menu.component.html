@@ -24,6 +24,11 @@
     <button mat-menu-item (click)="openDialogCreateMatch()">New game</button>
     <button routerLink="/searchMatches" routerLinkActive="active" mat-menu-item styles="text-decoration: none">Search matches</button>
     <!-- <button routerLink="/mapMatch" routerLinkActive="active" mat-menu-item styles="text-decoration: none">Map</button> -->
+    <button mat-menu-item (click)="openMap()" *ngIf="matchOutput.id">Map</button>
+    <button mat-menu-item (click)="openDialogAtackMatch()" *ngIf="matchOutput.id">Atack</button>
+    <button mat-menu-item (click)="openDialogMoveMatch()" *ngIf="matchOutput.id">Move</button>
+    <button mat-menu-item (click)="openDialogStateMatch()" *ngIf="matchOutput.id">State</button>
+    <button mat-menu-item (click)="openDialogEndshiftMatch()" *ngIf="matchOutput.id">End shift</button>
     <button mat-menu-item (click)="auth.logout()" *ngIf="auth.loggedIn" style="margin-top: 5px;">Log Out</button>
   </mat-menu>
 </p>

@@ -13,6 +13,10 @@ import { ProvincesService } from 'src/app/services/provinces.service';
 import { windowWhen } from 'rxjs/operators';
 import { MatchDTO } from 'src/app/models/match.dto';
 import { MatchResponse } from 'src/app/models/match.response';
+import { MatchAtackDialogComponent } from '../match/match-atack-dialog/match-atack-dialog.component';
+import { MatchMoveDialogComponent } from '../match/match-move-dialog/match-move-dialog.component';
+import { MatchStateDialogComponent } from '../match/match-state-dialog/match-state-dialog.component';
+import { MatchEndshiftDialogComponent } from '../match/match-endshift-dialog/match-endshift-dialog.component';
 
 @Component({
   selector: 'app-menu',
@@ -49,6 +53,54 @@ export class MenuComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       console.log('The dialog was closed');
       console.log(result);
+    });
+  }
+
+  openMap(): void{
+    this.router.navigate(['/mapMatch/'+this.matchOutput.id]);
+  }
+
+  openDialogAtackMatch(): void{
+    const dialogRef = this.dialog.open(MatchAtackDialogComponent, {
+      height: '350px',
+      width: '300px',
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+    });
+  }
+
+  openDialogMoveMatch(): void{
+    const dialogRef = this.dialog.open(MatchMoveDialogComponent, {
+      height: '350px',
+      width: '300px',
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+    });
+  }
+
+  openDialogStateMatch(): void{
+    const dialogRef = this.dialog.open(MatchStateDialogComponent, {
+      height: '300px',
+      width: '300px',
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+    });
+  }
+
+  openDialogEndshiftMatch(): void{
+    const dialogRef = this.dialog.open(MatchEndshiftDialogComponent, {
+      height: '150px',
+      width: '300px',
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
     });
   }
 }

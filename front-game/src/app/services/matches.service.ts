@@ -24,7 +24,7 @@ export class MatchService {
         return this.http.get<any>(`${MATCH_URL}`)
     }
 
-    public getById(matchId: any): Observable<any> {
+    public getById(matchId: any): Observable<MatchResponse> {
         //return this.http.get<MatchResponse>(`${MATCH_URL}/${matchId}`);
         return this.http.get<any>(`${MATCH_URL}/${matchId}`);
     }
@@ -32,7 +32,7 @@ export class MatchService {
     public createMatch(match: MatchDTO): Observable<MatchResponse> {
         //return this.http.post<MatchResponse>(`${MATCH_URL}/`, match);
         let matchJSON = JSON.stringify(match);
-        console.log(matchJSON);
+        //console.log(matchJSON);
         return this.http.post<any>(`${MATCH_URL}/`, matchJSON, httpOptions);
     }
 

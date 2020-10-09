@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { MatchComponent } from './match.component';
+import { MatchStateDialogComponent } from './match-state-dialog.component';
 
-describe('MatchComponent', () => {
-  let component: MatchComponent;
-  let fixture: ComponentFixture<MatchComponent>;
+describe('MatchStateDialogComponent', () => {
+  let component: MatchStateDialogComponent;
+  let fixture: ComponentFixture<MatchStateDialogComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ MatchComponent ]
+      declarations: [ MatchStateDialogComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(MatchComponent);
+    fixture = TestBed.createComponent(MatchStateDialogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

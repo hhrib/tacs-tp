@@ -3,15 +3,15 @@ import { Routes, RouterModule } from '@angular/router';
 import { HomeComponent } from './components/home/home.component';
 import { MatchSearchComponent } from './components/match/match-search/match-search.component';
 import { StatisticsPanelComponent } from './components/match/statistics-panel/statistics-panel.component';
-import { MatchComponent } from './components/match/match/match.component';
 import { AuthGuard } from './services/auth.guard';
+import { MatchMapComponent } from './components/match/match-map/match-map.component';
 
 
 const appRoutes: Routes = [
     //Ejemplo: { path: 'home', component: HomeComponent}
     { path: 'home', component: HomeComponent },
     { path:'searchMatches', component: MatchSearchComponent, canActivate: [AuthGuard]},
-    { path:'mapMatch/:id', component: MatchComponent, canActivate: [AuthGuard]},
+    { path:'mapMatch/:id', component: MatchMapComponent, canActivate: [AuthGuard]},
     { path: '**', redirectTo: 'home' },
     { path:'getStatistics', component: StatisticsPanelComponent, canActivate: [AuthGuard]},
 ];

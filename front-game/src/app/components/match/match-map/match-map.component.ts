@@ -43,9 +43,15 @@ export class MatchMapComponent implements OnInit {
       this.idMatch = params.get('id');
       this.matchService.getById(this.idMatch).subscribe(
         response => {
-          this.match = response;
           console.log("Match-Map");
+          this.match.id = response.id;
+          this.match.date = response.date;
+          this.match.config = response.config;
+          this.match.map = response.map;
+          this.match.state = response.state;
+          this.match.users = response.users;
           console.log(this.match);
+          console.log("Fin Match-Map");
           this.initMap(this.match.map?.centroide?.lat,this.match.map?.centroide?.lon);
           this.markerService.makeMunicipalitiesMarkers(this.map);
         },

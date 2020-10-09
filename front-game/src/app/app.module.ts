@@ -36,12 +36,15 @@ import { StatisticsPanelComponent } from './components/match/statistics-panel/st
 import {WebSocketService} from "./services/web-socket.service";
 
 import { MatchMapComponent } from './components/match/match-map/match-map.component';
-import { MatchComponent } from './components/match/match/match.component';
 import { MarkerService } from './services/marker.service';
 import { PopUpService } from './services/pop-up.service';
 
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import { MatchResponse } from './models/match.response';
+import { MatchAtackDialogComponent } from './components/match/match-atack-dialog/match-atack-dialog.component';
+import { MatchMoveDialogComponent } from './components/match/match-move-dialog/match-move-dialog.component';
+import { MatchStateDialogComponent } from './components/match/match-state-dialog/match-state-dialog.component';
+import { MatchEndshiftDialogComponent } from './components/match/match-endshift-dialog/match-endshift-dialog.component';
 
 
 @NgModule({
@@ -53,8 +56,10 @@ import { MatchResponse } from './models/match.response';
     MatchSearchComponent,
     StatisticsPanelComponent,
     MatchMapComponent,
-    MatchComponent
-   
+    MatchAtackDialogComponent,
+    MatchMoveDialogComponent,
+    MatchStateDialogComponent,
+    MatchEndshiftDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -81,7 +86,13 @@ import { MatchResponse } from './models/match.response';
   ],
   entryComponents: [
     MatchCreateDialogComponent,
-    MatchSearchComponent
+    MatchSearchComponent,
+    StatisticsPanelComponent,
+    MatchMapComponent,
+    MatchAtackDialogComponent,
+    MatchMoveDialogComponent,
+    MatchStateDialogComponent,
+    MatchEndshiftDialogComponent
   ],
   providers: [MatchDTO, MatchResponse, FindMatchDTO, MatchService, MarkerService, PopUpService, WebSocketService,
     { provide: HTTP_INTERCEPTORS, useClass: InterceptorService, multi: true }],

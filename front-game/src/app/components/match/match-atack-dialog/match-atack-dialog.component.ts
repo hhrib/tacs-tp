@@ -14,15 +14,15 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatchResponse } from 'src/app/models/match.response';
 
 @Component({
-  selector: 'app-match-create-dialog',
-  templateUrl: './match-create-dialog.component.html',
-  styleUrls: ['./match-create-dialog.component.css']
+  selector: 'app-match-atack-dialog',
+  templateUrl: './match-atack-dialog.component.html',
+  styleUrls: ['./match-atack-dialog.component.css']
 })
-export class MatchCreateDialogComponent implements OnInit {
+export class MatchAtackDialogComponent implements OnInit {
 
   //#region Configuración de números de lógica. Posiblemente luego se traigan del back.
-  fortress = new ModesDTO("Fortress", [12,8,1,1,1.25]);
-  rebelion = new ModesDTO("Rebelion", [15,10,2,2,1.25]);
+  from = new ModesDTO("Fortress", [12,8,1,1,1.25]);
+  to = new ModesDTO("Rebelion", [15,10,2,2,1.25]);
   war = new ModesDTO("War", [16,9,2,2,1.10]);
   //#endregion
 
@@ -30,7 +30,7 @@ export class MatchCreateDialogComponent implements OnInit {
   playersList : UserDTO[] = null;
   provinceList: ProvinceDTO[] = null;
   quantityList: number[] = [10,15,20];
-  modeList: ModesDTO[] = [this.fortress,this.rebelion,this.war];
+  modeList: ModesDTO[] = [this.from,this.to,this.war];
   gauchosQtyList: number[] = [10,20,30,40,50];
 
   ngOnInit(): void {
@@ -41,7 +41,7 @@ export class MatchCreateDialogComponent implements OnInit {
   constructor(
     public provinceService: ProvincesService,
     public userService: UsersService,
-    public dialogRef: MatDialogRef<MatchCreateDialogComponent>,
+    public dialogRef: MatDialogRef<MatchAtackDialogComponent>,
     public matchInput: MatchDTO,
     public matchOutput: MatchResponse,
     public matchService: MatchService,
@@ -70,7 +70,7 @@ export class MatchCreateDialogComponent implements OnInit {
     this.matchInput.configs = form.value.mode;
     this.matchInput.configs.push(form.value.gauchosQty);
     //this.matchInput.configs = allConf;
-    this.matchService.createMatch(this.matchInput).subscribe(
+    /*this.matchService.createMatch(this.matchInput).subscribe(
       response => {
         console.log("CreateMatch");
         this.matchOutput.id = response.id;
@@ -85,7 +85,7 @@ export class MatchCreateDialogComponent implements OnInit {
         this.dialogRef.close(this.matchInput);
       },
       err => {console.log(err)}
-    );
+    );*/
     
   }
 }

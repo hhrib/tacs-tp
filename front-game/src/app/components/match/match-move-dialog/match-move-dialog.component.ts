@@ -14,11 +14,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatchResponse } from 'src/app/models/match.response';
 
 @Component({
-  selector: 'app-match-create-dialog',
-  templateUrl: './match-create-dialog.component.html',
-  styleUrls: ['./match-create-dialog.component.css']
+  selector: 'app-match-move-dialog',
+  templateUrl: './match-move-dialog.component.html',
+  styleUrls: ['./match-move-dialog.component.css']
 })
-export class MatchCreateDialogComponent implements OnInit {
+export class MatchMoveDialogComponent implements OnInit {
 
   //#region Configuración de números de lógica. Posiblemente luego se traigan del back.
   fortress = new ModesDTO("Fortress", [12,8,1,1,1.25]);
@@ -41,7 +41,7 @@ export class MatchCreateDialogComponent implements OnInit {
   constructor(
     public provinceService: ProvincesService,
     public userService: UsersService,
-    public dialogRef: MatDialogRef<MatchCreateDialogComponent>,
+    public dialogRef: MatDialogRef<MatchMoveDialogComponent>,
     public matchInput: MatchDTO,
     public matchOutput: MatchResponse,
     public matchService: MatchService,
@@ -70,22 +70,5 @@ export class MatchCreateDialogComponent implements OnInit {
     this.matchInput.configs = form.value.mode;
     this.matchInput.configs.push(form.value.gauchosQty);
     //this.matchInput.configs = allConf;
-    this.matchService.createMatch(this.matchInput).subscribe(
-      response => {
-        console.log("CreateMatch");
-        this.matchOutput.id = response.id;
-        this.matchOutput.date = response.date;
-        this.matchOutput.config = response.config;
-        this.matchOutput.map = response.map;
-        this.matchOutput.state = response.state;
-        this.matchOutput.users = response.users;
-        console.log(this.matchOutput);
-        console.log("Fin CreateMatch");
-        this.router.navigate(['/mapMatch/'+this.matchOutput.id]);
-        this.dialogRef.close(this.matchInput);
-      },
-      err => {console.log(err)}
-    );
-    
   }
 }

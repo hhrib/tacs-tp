@@ -1,7 +1,7 @@
 <div class="container" style="text-align: center;">
     <form #matchCreation="ngForm" (ngSubmit)="onSubmit(matchCreation)">
     <h1 mat-dialog-title style="text-align: center;">Settings</h1>
-    <div mat-dialog-content>
+    <div mat-dialog-content style="overflow: hidden;">
         <mat-form-field>
             <mat-label>Province</mat-label>
                 <mat-select name="province" ngModel [disabled]="clicked">
