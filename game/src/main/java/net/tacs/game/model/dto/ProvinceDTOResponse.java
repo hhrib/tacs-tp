@@ -1,15 +1,14 @@
-package net.tacs.game.model.bean;
+package net.tacs.game.model.dto;
 
-import java.util.Comparator;
 import java.util.Objects;
 
-public class ProvinceBeanResponse implements Comparable<ProvinceBeanResponse> {
+public class ProvinceDTOResponse implements Comparable<ProvinceDTOResponse> {
 
     private Long id;
 
     private String name;
 
-    public ProvinceBeanResponse() {
+    public ProvinceDTOResponse() {
 
     }
 
@@ -33,7 +32,7 @@ public class ProvinceBeanResponse implements Comparable<ProvinceBeanResponse> {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ProvinceBeanResponse that = (ProvinceBeanResponse) o;
+        ProvinceDTOResponse that = (ProvinceDTOResponse) o;
         return name.equals(that.name);
     }
 
@@ -43,7 +42,7 @@ public class ProvinceBeanResponse implements Comparable<ProvinceBeanResponse> {
     }
 
     @Override
-    public int compareTo(ProvinceBeanResponse otherBean) {
+    public int compareTo(ProvinceDTOResponse otherBean) {
         return this.name.compareTo(otherBean.getName());
     }
 }

@@ -1,9 +1,6 @@
 package net.tacs.game.mapper;
 
-import net.tacs.game.model.Match;
 import net.tacs.game.model.User;
-import net.tacs.game.model.bean.MatchBeanResponse;
-import net.tacs.game.model.bean.UserBeanResponse;
 import net.tacs.game.model.opentopodata.auth.AuthUserResponse;
 
 import java.util.List;

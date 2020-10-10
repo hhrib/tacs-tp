@@ -1,12 +1,12 @@
-package net.tacs.game.model.bean;
+package net.tacs.game.model.dto;
 
-public class UserBeanResponse {
+public class UserDTOResponse {
 
     String id;
 
     String name;
 
-    public UserBeanResponse() {
+    public UserDTOResponse() {
 
     }
 

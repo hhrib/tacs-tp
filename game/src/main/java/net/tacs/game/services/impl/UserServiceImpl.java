@@ -14,13 +14,15 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-import static net.tacs.game.GameApplication.getUsers;
 
 @Service("userService")
 public class UserServiceImpl implements UserService {
 
     @Autowired
     private SecurityProviderService securityProviderService;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Override
     public List<User> findAll() throws Exception {

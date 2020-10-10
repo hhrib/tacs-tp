@@ -3,19 +3,20 @@ package net.tacs.game.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.tacs.game.exceptions.MatchException;
+import net.tacs.game.model.dto.AttackMuniDTO;
+import net.tacs.game.model.dto.AttackResultDTO;
+import net.tacs.game.model.dto.MoveGauchosDTO;
+import net.tacs.game.model.dto.UpdateMunicipalityStateDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import net.tacs.game.model.Centroide;
 import net.tacs.game.model.Municipality;
-import net.tacs.game.model.Province;
 import net.tacs.game.model.User;
 import net.tacs.game.model.enums.MunicipalityState;
 import net.tacs.game.services.MunicipalityService;
@@ -24,7 +25,7 @@ import net.tacs.game.services.MunicipalityService;
 @CrossOrigin(origins = "http://localhost:4200")
 public class MunicipalityController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Municipality.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MunicipalityController.class);
     
     @Autowired
 	private MunicipalityService municipalityService;
@@ -34,8 +35,6 @@ public class MunicipalityController {
 
         List<Municipality> municipalities = new ArrayList<>();
         Municipality municipalityDefense = new Municipality("Cordoba");
-        municipalityDefense.setProvince(new Province("Cordoba"));
-
         municipalityDefense.setOwner(new User("testUser"));
         municipalityDefense.setGauchosQty(5);
         municipalityDefense.setElevation(100D);
@@ -44,7 +43,6 @@ public class MunicipalityController {
         municipalities.add(municipalityDefense);
 
         Municipality municipalityProduction = new Municipality("Alta Gracia");
-        municipalityProduction.setProvince(new Province("Cordoba"));
         municipalityProduction.setOwner(new User("testUserRival"));
         municipalityProduction.setGauchosQty(5);
         municipalityProduction.setElevation(100D);
@@ -55,7 +53,7 @@ public class MunicipalityController {
         return new ResponseEntity<>(municipalities, HttpStatus.OK);
     }
 
-    @GetMapping("/elevation/{LAT}/{LON}")
+    @GetMapping("/municipalities/elevation/{LAT}/{LON}")
 	public Double getElevation(@PathVariable("LAT") String lat, @PathVariable("LON") String lon) {
 		return municipalityService.getElevation(new Centroide(lat, lon));
 	}

@@ -30,7 +30,8 @@ import {MatSortModule} from '@angular/material/sort'
 import { FindMatchDTO } from './models/findMatch.dto';
 import { MatchService } from './services/matches.service';
 
-
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { InterceptorService } from './services/interceptor.service';
 
 
 @NgModule({
@@ -61,13 +62,14 @@ import { MatchService } from './services/matches.service';
     MatProgressSpinnerModule,
     MatSortModule,
     MatProgressBarModule,
-    AppRoutes
+    AppRoutes,
+    HttpClientModule
   ],
   entryComponents: [
     MatchCreateDialogComponent,
     MatchSearchComponent
   ],
-  providers: [MatchDTO, FindMatchDTO, MatchService],
+  providers: [MatchDTO, FindMatchDTO, MatchService, { provide: HTTP_INTERCEPTORS, useClass: InterceptorService, multi: true }], 
   bootstrap: [AppComponent]
 })
 export class AppModule { }

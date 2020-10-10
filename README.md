@@ -30,6 +30,9 @@ Para ejecuacion
 1. En el transcurso de la partida no puedan cambiar los datos obtenidos de las APIs con respecto a la altura de las municipalidades o el nombre de las provincias, por ejemplo.
 2. No hay equipos, cada jugador se enfrenta a los demas individualmente.
 3. Si un jugador abandona la partida, esta sigue en curso con el resto y los municipios que tenia se redistribuyen entre los demas jugadores.
+4. Solo el municipio destino se bloquea al mover gauchos.
+5. No se puede cambiar la configuracion de la partida una vez creada.
+6. Si un jugador abandona ANTES de que empieze la partida, esta se considera cancelada, de lo contrario, la partida continua con los jugadores restantes.
 
 -----
 # CI/CD:

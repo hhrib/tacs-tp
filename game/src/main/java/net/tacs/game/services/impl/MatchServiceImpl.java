@@ -3,14 +3,19 @@ package net.tacs.game.services.impl;
 import net.tacs.game.GameApplication;
 import net.tacs.game.controller.MatchController;
 import net.tacs.game.exceptions.MatchException;
-import net.tacs.game.mapper.AuthUserToUserMapper;
-import net.tacs.game.model.bean.CreateMatchBean;
+import net.tacs.game.exceptions.MatchNotPlayerTurnException;
+import net.tacs.game.exceptions.MatchNotStartedException;
+import net.tacs.game.mapper.MuniToStatsDTOMapper;
+import net.tacs.game.model.*;
+import net.tacs.game.model.dto.*;
 import net.tacs.game.model.enums.MatchState;
 import net.tacs.game.model.enums.MunicipalityState;
-import net.tacs.game.model.opentopodata.auth.AuthUserResponse;
+import net.tacs.game.repositories.MatchRepository;
+import net.tacs.game.repositories.ProvinceRepository;
+import net.tacs.game.repositories.UserRepository;
 import net.tacs.game.services.MatchService;
 import net.tacs.game.services.ProvinceService;
-import net.tacs.game.services.SecurityProviderService;
+import net.tacs.game.services.MunicipalityService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,54 +27,54 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import net.tacs.game.model.ApiError;
-import net.tacs.game.model.Match;
-import net.tacs.game.model.Municipality;
-import net.tacs.game.model.Province;
-import net.tacs.game.model.User;
-
-import static net.tacs.game.GameApplication.*;
+import static net.tacs.game.constants.Constants.*;
+import static net.tacs.game.constants.Constants.MUNICIPALITY_NOT_FOUND_DETAIL;
 
 @Service("matchService")
-//@Transactional
 public class MatchServiceImpl implements MatchService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MatchController.class);
 
-//    @Autowired
-//    private MatchRepository matchRepository;
-//
-//    @Autowired
-//    private UserRepository userRepository;
+    @Autowired
+    private MunicipalityService municipalityService;
 
     @Autowired
-    private SecurityProviderService securityProviderService;
+    private MatchRepository matchRepository;
 
     @Autowired
     private ProvinceService provinceService;
 
+    @Autowired
+    private ProvinceRepository provinceRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
     @Override
     public List<Match> findAll() {
-        List<Match> matches = GameApplication.getMatches();
+        List<Match> matches = matchRepository.getMatches();
         return matches;
     }
 
     @Override
     public Match getMatchById(String id) throws MatchException {
-        Long idLong;
-        if (id == null || id.isEmpty()) {
-            throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError("MATCH_ID_EMPTY", "Must provide an id")));
-        }
-        try {
-            idLong = Long.valueOf(id);
-        } catch (NumberFormatException e) {
-            LOGGER.error("Invalid match number id", e);
-            throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError("MATCH_ID_INVALID", "Must provide a valid id")));
-        }
-        Optional<Match> matchToRetrieve = GameApplication.getMatches().stream().filter(match -> match.getId().equals(idLong)).findFirst();
-        return matchToRetrieve.orElseThrow(() -> new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError("MATCH_NOT_FOUND", "Match not found for provided id"))));
+        Long idLong = validateAndGetIdLong(id, "MATCH");
+        Optional<Match> matchToRetrieve = matchRepository.findById(idLong);
+        return matchToRetrieve.orElseThrow(() -> new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(MATCH_NOT_FOUND_CODE, MATCH_NOT_FOUND_DETAIL))));
+    }
+
+    @Override
+    public List<MuniStatisticsDTOResponse> getAllStatisticsForMatch(String id) throws MatchException {
+        Long idLong = validateAndGetIdLong(id, "MATCH");
+        Optional<Match> matchOptional = matchRepository.findById(idLong);
+        Match match = matchOptional.orElseThrow(() -> new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(MATCH_NOT_FOUND_CODE, MATCH_NOT_FOUND_DETAIL))));
+        List<Municipality> munis = match.getMap().getMunicipalities();
+
+        return MuniToStatsDTOMapper.mapMunis(munis);
+
     }
 
     @Override
@@ -77,7 +82,7 @@ public class MatchServiceImpl implements MatchService {
             List<LocalDateTime> dates = validateDatesToSearch(isoDateFrom, isoDateTo);
             LocalDateTime dateFrom = dates.get(0);
             LocalDateTime dateTo = dates.get(1);
-            List<Match> matches = GameApplication.getMatches();
+            List<Match> matches = matchRepository.getMatches();
 
             if (matches == null || matches.isEmpty()) {
                 throw new MatchException(HttpStatus.NOT_FOUND, Arrays.asList(new ApiError("MATCHES_NOT_FOUND", "Matches not found for dates")));
@@ -94,26 +99,21 @@ public class MatchServiceImpl implements MatchService {
     }
 
     @Override
-    public Match createMatch(CreateMatchBean newMatchBean) throws MatchException {
-
+    public Match createMatch(CreateMatchDTO newMatchBean) throws MatchException, InterruptedException {
         Match newMatch = validateAndGenerateMatch(newMatchBean);
 
         newMatch.setDate(LocalDateTime.now());
         newMatch.setState(MatchState.CREATED);
         LOGGER.info(newMatchBean.toString());
 
-        //TODO guardar en base de datos.
-        addMatch(newMatch);
-        //Quizás no recibamos un Match entero, quizás recibamos el Bean de creación (dependiendo lo que elijamos)
-        //en ese caso va a haber que hacer la lógica de buscar usuarios y provincia y luego crear el objeto match para
-        //persistir
+        matchRepository.add(newMatch);
 
         return newMatch;
     }
 
-    private Match validateAndGenerateMatch(CreateMatchBean newMatchBean) throws MatchException {
+    private Match validateAndGenerateMatch(CreateMatchDTO newMatchBean) throws MatchException, InterruptedException {
         List<ApiError> errors = new ArrayList<>();
-        //TODO Algunas de estas validaciones se pueden hacer con annotations en los models. Revisar.
+
         if (newMatchBean.getUserIds() == null || newMatchBean.getUserIds().isEmpty()) {
             errors.add(new ApiError("MATCH_EMPTY_USERS", "Match Players not specified"));
         }
@@ -139,114 +139,283 @@ public class MatchServiceImpl implements MatchService {
         {
             boolean bUserFound = false;
 
-            for(User aUser : getUsers())
+            Optional<User> userOptional = userRepository.findById(aId);
+            if(userOptional.isPresent())
             {
-                if(aUser.getId().equals(aId))
-                {
-                    bUserFound = true;
-                    usersInMatch.add(aUser);
-                }
+                bUserFound = true;
+                usersInMatch.add(userOptional.get());
             }
 
             if(!bUserFound)
             {
-                //Si no estaba en la bd lo buscamos en la api de Auth0
-                AuthUserResponse response = null;
-                try {
-                    response = securityProviderService.getUserById(GameApplication.getToken(), aId);
-                } catch (Exception e) {
-                    errors.add(new ApiError("ERROR_GETTING_UPDATED_USER", "Error when getting user from updated source"));
-                    throw new MatchException(HttpStatus.INTERNAL_SERVER_ERROR, errors);
-                }
-                if (response == null) {
-                    //No estaba tampoco en la api. Not Found.
-                    errors.add(new ApiError("USER_NOT_FOUND", "Users not found"));
-                    throw new MatchException(HttpStatus.NOT_FOUND, errors);
-                }
-                //Estaba en la api, actualizamos BD y seguimos flujo normal
-                User newUser = AuthUserToUserMapper.mapUser(response);
-                GameApplication.addUser(newUser);
-                bUserFound = true;
-                usersInMatch.add(newUser);
+                errors.add(new ApiError("USER_NOT_FOUND", "Users not found"));
+                throw new MatchException(HttpStatus.NOT_FOUND, errors);
             }
         }
 
         newMatch.setUsers(usersInMatch);
 
+        //crear configuracion
+        MatchConfiguration newConfig = createConfig(newMatchBean);
+        newMatch.setConfig(newConfig);
+
+        //Copia de Provincia
         Province newProvince = new Province();
 
-        //TODO Buscar en base de datos
-        for (Province aProvince: getProvinces()) {
-            if(aProvince.getId() == (newMatchBean.getProvinceId()))
+        //Provincia Seleccionada a copiar
+        Optional<Province> provinceOptional = provinceRepository.findById(newMatchBean.getProvinceId());
+        if(provinceOptional.isEmpty())
+        {
+            errors.add(new ApiError("PROVINCE_NOT_FOUND",
+                    "Province Id does not exist"));
+
+            throw new MatchException(HttpStatus.NOT_FOUND, errors);
+        }
+        else
+        {
+            Province selectedProvince = provinceOptional.get();
+
+            newProvince.setNombre(selectedProvince.getNombre());
+            newProvince.setCentroide(selectedProvince.getCentroide());
+
+            Random random = new Random();
+
+            List<Municipality> tempMunicipalities;
+
+            if(selectedProvince.getMunicipalities().isEmpty())
             {
-                //Copia de Provincia
-                newProvince.setNombre(aProvince.getNombre());
+                tempMunicipalities = provinceService.findMunicipios(selectedProvince.getId().intValue(), null);
 
-                Random random = new Random();
+                //Se guarda en la cache
+                selectedProvince.setMunicipalities(tempMunicipalities);
+            }
+            else {
+                tempMunicipalities = selectedProvince.getMunicipalities();
+            }
 
-                List<Municipality> tempMunicipalities;
+            if (newMatchBean.getMunicipalitiesQty() > selectedProvince.getMunicipalities().size()) {
+                errors.add(new ApiError("EXCEEDED_MUNICIPALITIES_LIMIT",
+                        "Quantity of municipalities selected exceeds province availability"));
 
-                if(aProvince.getMunicipalities().isEmpty())
+                throw new MatchException(HttpStatus.BAD_REQUEST, errors);
+            }
+
+            List<Integer> selectedIndexes = new ArrayList<>();
+
+            //Crear Municipalidades
+            for(int i = 1; i <= newMatchBean.getMunicipalitiesQty(); i++)
+            {
+                Municipality muni = new Municipality();
+
+                int selectedMuniIndex = random.nextInt(tempMunicipalities.size());
+                while(selectedIndexes.contains(selectedMuniIndex))
                 {
-                    tempMunicipalities = provinceService.findMunicipios((int)aProvince.getId(), null);
-
-                    //Se guarda en la cache
-                    aProvince.setMunicipalities(tempMunicipalities);
-                }
-                else {
-                    tempMunicipalities = aProvince.getMunicipalities();
+                    selectedMuniIndex = random.nextInt(tempMunicipalities.size());
                 }
 
-                if (newMatchBean.getMunicipalitiesQty() > aProvince.getMunicipalities().size()) {
-                    errors.add(new ApiError("EXCEEDED_MUNICIPALITIES_LIMIT",
-                            "Amount of municipalities selected exceeds amount of province's amount of municipalities"));
+                muni.setNombre(tempMunicipalities.get(selectedMuniIndex).getNombre());
+                selectedIndexes.add(selectedMuniIndex);
 
-                    throw new MatchException(HttpStatus.BAD_REQUEST, errors);
-                }
+                muni.setCentroide(tempMunicipalities.get(selectedMuniIndex).getCentroide());
 
-                List<Integer> selectedIndexes = new ArrayList<>();
+                muni.setGauchosQty(newMatch.getConfig().getInitialGauchos());
 
-                //Crear Municipalidades
-                for(int i = 1; i <= newMatchBean.getMunicipalitiesQty(); i++)
+                //Por defecto se pone en defensa
+                muni.setState(MunicipalityState.DEFENSE);
+
+                newProvince.addMunicipality(muni);
+            }
+
+            newMatch.setMap(newProvince);
+
+            //buscar elevaciones de municipios
+            Double[] elevations = municipalityService.getElevations(newMatch.getMap().getMunicipalities());
+            for(int i = 0; i < elevations.length; i++)
+            {
+                newMatch.getMap().getMunicipalities().get(i).setElevation(elevations[i]);
+            }
+
+            //TODO: LA API SOLO ME DEJA HACER 1 REQUEST POR SEGUNDO
+            //TimeUnit.SECONDS.sleep(1);
+
+            //asignar municipalidades a usuarios
+            assignMunicipalities(newMatch.getMap().getMunicipalities(), newMatch.getUsers());
+
+            calculateConfigVariables(newMatch);
+
+            //create players order
+            assignPlayersOrder(newMatch);
+
+            return newMatch;
+        }
+    }
+
+    /**
+     * @method assignPlayersOrder
+     * @param newMatch
+     * @description creates an order for the match and assigns the starting player
+     */
+    public void assignPlayersOrder(Match newMatch)
+    {
+        MatchConfiguration matchConfig = newMatch.getConfig();
+
+        List<User> playersInMatch = new ArrayList<>(newMatch.getUsers());
+        List<User> playersOrder = new ArrayList<>();
+        int playersCounter = playersInMatch.size();
+
+        Random random = new Random();
+
+        for(int i = 0; i < playersCounter; i++)
+        {
+            int randomPlayer = random.nextInt(playersInMatch.size());
+
+            playersOrder.add(playersInMatch.remove(randomPlayer));
+        }
+
+        //listado con el orden de los jugadores
+        matchConfig.setPlayersTurns(playersOrder);
+
+        //el jugador que comienza la partida
+        newMatch.setTurnPlayer(playersOrder.get(0));
+        municipalityService.produceGauchos(newMatch, playersOrder.get(0));
+    }
+
+    /**
+     * @method createConfig
+     * @param newMatchBean
+     * @return the config class of the created match
+     */
+    private MatchConfiguration createConfig(CreateMatchDTO newMatchBean) {
+
+        MatchConfiguration newConfig = new MatchConfiguration();
+
+        if(newMatchBean.getConfigs() != null) {
+            newConfig.setMultGauchosProduction(newMatchBean.getConfigs().get(0));
+            newConfig.setMultGauchosDefense(newMatchBean.getConfigs().get(1));
+            newConfig.setMultDistance(newMatchBean.getConfigs().get(2));
+            newConfig.setMultHeight(newMatchBean.getConfigs().get(3));
+            newConfig.setMultDefense(newMatchBean.getConfigs().get(4));
+            newConfig.setInitialGauchos(newMatchBean.getConfigs().get(5).intValue());
+        }
+
+        return newConfig;
+    }
+
+    /**
+     * @method calculateConfigMultipliers
+     * @param match
+     * @description calcula las variables de maxima altura y distancia
+     */
+    @Override
+    public void calculateConfigVariables(Match match)
+    {
+        double MaxHeight = 0;
+        double MinHeight = 100000;
+        double MaxDistance = 0;
+        double MinDistance = 100000;
+
+        for (Municipality aMuni : match.getMap().getMunicipalities())
+        {
+            //calculate max and min heights
+            if(aMuni.getElevation() > MaxHeight)
+            {
+                MaxHeight = aMuni.getElevation();
+            }
+            if(aMuni.getElevation() < MinHeight)
+            {
+                MinHeight = aMuni.getElevation();
+            }
+
+            //calculate distances
+            List<Municipality> municipalityList = match.getMap().getMunicipalities();
+
+            for (Municipality otherMuni: municipalityList)
+            {
+                if(aMuni != otherMuni)
                 {
-                    Municipality muni = new Municipality();
+                    double distance = aMuni.getCentroide().getDistance(otherMuni.getCentroide());
 
-                    int selectedMuniIndex = random.nextInt(tempMunicipalities.size());
-                    while(selectedIndexes.contains(selectedMuniIndex))
+                    if(distance > MaxDistance)
                     {
-                        selectedMuniIndex = random.nextInt(tempMunicipalities.size());
+                        MaxDistance = distance;
                     }
-
-                    muni.setNombre(tempMunicipalities.get(selectedMuniIndex).getNombre());
-                    selectedIndexes.add(selectedMuniIndex);
-
-                    //TODO o buscar de la api o de la cache
-                    muni.setElevation(tempMunicipalities.get(selectedMuniIndex).getElevation());
-
-                    //TODO Gauchos son los mismos para todos?
-                    muni.setGauchosQty(tempMunicipalities.get(selectedMuniIndex).getGauchosQty());
-
-                    //TODO muni.setProvince(province); <--- la municipalidad necesita saber la provincia a la que pertenece?
-
-                    //TODO Por defecto se pone en defensa?
-                    muni.setState(MunicipalityState.DEFENSE);
-
-                    newProvince.addMunicipality(muni);
+                    if(distance < MinDistance)
+                    {
+                        MinDistance = distance;
+                    }
                 }
-
-                newMatch.setMap(newProvince);
-
-                //asignar municipalidades a usuarios
-                assignMunicipalities(newMatch.getMap().getMunicipalities(), newMatch.getUsers());
-
-                return newMatch;
             }
         }
 
-        errors.add(new ApiError("PROVINCE_NOT_FOUND",
-                "Province Id does not exist"));
+        match.getConfig().setMaxHeight(MaxHeight);
+        match.getConfig().setMinHeight(MinHeight);
+        match.getConfig().setMaxDist(MaxDistance);
+        match.getConfig().setMinDist(MinDistance);
+    }
 
-        throw new MatchException(HttpStatus.NOT_FOUND, errors);
+    @Override
+    public void start(String matchStringId) throws MatchException {
+        Long matchId = validateAndGetIdLong(matchStringId, "MATCH");
+        Optional<Match> matchOptional = matchRepository.findById(matchId);
+        Match match = matchOptional.orElseThrow(() -> new MatchException(HttpStatus.NOT_FOUND, Arrays.asList(new ApiError(MATCH_NOT_FOUND_CODE, MATCH_NOT_FOUND_DETAIL))));
+
+        CheckMatchFinished(match);
+
+        match.setState(MatchState.IN_PROGRESS);
+    }
+
+    @Override
+    public void updateMunicipalityState(String matchIdString, String muniIdString, UpdateMunicipalityStateDTO dto) throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException {
+        Long matchId = validateAndGetIdLong(matchIdString, "MATCH");
+        Integer muniId = validateAndGetIdLong(muniIdString, "MUNICIPALITY").intValue();
+        Optional<Match> matchOptional = matchRepository.findById(matchId);
+        Match match = matchOptional.orElseThrow(() -> new MatchException(HttpStatus.NOT_FOUND, Arrays.asList(new ApiError(MATCH_NOT_FOUND_CODE, MATCH_NOT_FOUND_DETAIL))));
+
+        CheckMatchNotStarted(match);
+        CheckMatchFinished(match);
+
+        Optional<Municipality> muniOptional = match.getMap().getMunicipalities().stream().filter(muni -> muni.getId().equals(muniId)).findFirst();
+        Municipality muni = muniOptional.orElseThrow(() -> new MatchException(HttpStatus.NOT_FOUND, Arrays.asList(new ApiError(MUNICIPALITY_NOT_FOUND_CODE, MUNICIPALITY_NOT_FOUND_DETAIL))));
+
+        if(!match.getTurnPlayer().equals(muni.getOwner()))
+            throw new MatchNotPlayerTurnException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(PLAYER_DOESNT_HAVE_TURN_CODE, PLAYER_DOESNT_HAVE_TURN_DETAIL)));
+
+        if(muni.isBlocked())
+            throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(MUNICIPALITY_DESTINY_BLOCKED_CODE, MUNICIPALITY_DESTINY_BLOCKED_DETAIL)));
+
+        muni.setState(dto.getNewState());
+
+        matchRepository.update(match);
+    }
+
+    @Override
+    public void passTurn(String matchIdString, String playerId) throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException {
+        Long matchId = validateAndGetIdLong(matchIdString, "MATCH");
+        Optional<Match> matchOptional = matchRepository.findById(matchId);
+        Match match = matchOptional.orElseThrow(() -> new MatchException(HttpStatus.NOT_FOUND, Arrays.asList(new ApiError(MATCH_NOT_FOUND_CODE, MATCH_NOT_FOUND_DETAIL))));
+
+        CheckMatchNotStarted(match);
+        CheckMatchFinished(match);
+
+        //si el jugador pertence a la partida
+        if(!match.userIsInMatch(playerId))
+        {
+            throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError("PLAYER_NOT_IN_MATCH", "This player doesn't belong here")));
+        }
+
+        //si el jugador tiene el turno
+        if(match.getTurnPlayer().getId().equals(playerId))
+        {
+            List<User> playerTurns = match.getConfig().getPlayersTurns();
+
+            User nextPlayer = match.getConfig().setNextPlayerTurn(playerId);
+            match.setTurnPlayer(nextPlayer);
+            municipalityService.produceGauchos(match, nextPlayer);
+        }
+        else //el jugador no tiene el turno
+        {
+            throw new MatchNotPlayerTurnException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(PLAYER_DOESNT_HAVE_TURN_CODE, PLAYER_DOESNT_HAVE_TURN_DETAIL)));
+        }
     }
 
     private List<LocalDateTime> validateDatesToSearch(String isoDateFrom, String isoDateTo) throws MatchException {
@@ -286,5 +455,85 @@ public class MatchServiceImpl implements MatchService {
                 usersIndex = 0;
             }
         }
+    }
+
+    private Long validateAndGetIdLong(String idString, String entity) throws MatchException {
+        Long idLong;
+        if (idString == null || idString.isEmpty()) {
+            throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(entity.concat("_ID_EMPTY"), "Must provide an id")));
+        }
+        try {
+            idLong = Long.valueOf(idString);
+        } catch (NumberFormatException e) {
+            LOGGER.error("Invalid " + entity + " number id", e);
+            throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(entity.concat("_ID_INVALID"), "Must provide a valid id")));
+        }
+        return idLong;
+    }
+
+    @Override
+    public void retireFromMatch(String matchStringId, RetireDTO retireDTO) throws MatchException {
+        Long matchId = validateAndGetIdLong(matchStringId, "MATCH");
+        Optional<Match> matchOptional = matchRepository.findById(matchId);
+        Match match = matchOptional.orElseThrow(() -> new MatchException(HttpStatus.NOT_FOUND, Arrays.asList(new ApiError(MATCH_NOT_FOUND_CODE, MATCH_NOT_FOUND_DETAIL))));
+
+        Optional<User> userOptional = userRepository.findById(retireDTO.getPlayerId());
+        User user = userOptional.orElseThrow(() -> new MatchException(HttpStatus.NOT_FOUND, Arrays.asList(new ApiError(USER_NOT_FOUND_CODE, USER_NOT_FOUND_DETAIL))));
+
+        if(match.getUsers().contains(user))
+        {
+            if(match.getState().equals(MatchState.CREATED))
+            {
+                match.setState(MatchState.CANCELLED);
+                return;
+            }
+
+            if(match.getState().equals(MatchState.FINISHED))
+            {
+                throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(MATCH_FINISHED_CODE, MATCH_FINISHED_DETAIL)));
+            }
+
+            //repartir municipios
+            distributeMunicipalities(match, user);
+        }
+        else
+        {
+            throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(PLAYER_NOT_IN_MATCH_CODE, PLAYER_NOT_IN_MATCH_DETAIL)));
+        }
+    }
+
+    private void distributeMunicipalities(Match match, User retiringPlayer) {
+        //si solo hay dos personas jugando, la partida termina
+        if(match.getConfig().getPlayersTurns().size() == 2)
+        {
+            match.setState(MatchState.FINISHED);
+            match.getConfig().removePlayer(retiringPlayer);
+            match.setWinner(match.getConfig().getPlayersTurns().get(0));
+
+            return;
+        }
+
+        List<Municipality> playerMunis = retiringPlayer.getMunicipalitiesOwning(match.getMap().getMunicipalities());
+        match.getConfig().removePlayer(retiringPlayer);
+        List<User> playerLeft = match.getConfig().getPlayersTurns();
+        int playerIndex = 0;
+
+        for (Municipality aMuni : playerMunis) {
+            aMuni.setOwner(playerLeft.get(playerIndex));
+
+            playerIndex++;
+            if(playerIndex >= playerLeft.size())
+                playerIndex = 0;
+        }
+    }
+
+    public void CheckMatchNotStarted(Match match) throws MatchNotStartedException {
+        if(match.getState().equals(MatchState.CREATED))
+            throw new MatchNotStartedException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(MATCH_NOT_STARTED_CODE, MATCH_NOT_STARTED_DETAIL)));
+    }
+
+    public void CheckMatchFinished(Match match) throws MatchException {
+        if(match.getState().equals(MatchState.FINISHED) || match.getState().equals(MatchState.CANCELLED))
+            throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(MATCH_FINISHED_CODE, MATCH_FINISHED_DETAIL)));
     }
 }

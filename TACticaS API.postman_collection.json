@@ -1,0 +1,462 @@
+{
+	"info": {
+		"_postman_id": "4e452f8d-341f-4faf-8506-5a9d33a104c5",
+		"name": "TACticaS API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create Match",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"configs\": [\r\n    12,\r\n    8,\r\n    1,\r\n    1,\r\n    1.25,\r\n    30\r\n  ],\r\n  \"municipalitiesQty\": 10,\r\n  \"provinceId\": 6,\r\n  \"userIds\": [\r\n    \"google-oauth2|108109799605958418950\",\r\n    \"google-oauth2|108732799064472479077\"\r\n  ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/matches",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"matches"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Empezar Partida",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/matches/1/start",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"matches",
+						"1",
+						"start"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "All Matches",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/matches",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"matches"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "One Match",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/matches/1",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"matches",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "All Provinces",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/provinces",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"provinces"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "All Municipalities for a Province",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/provinces/6/municipalities?qty=426",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"provinces",
+						"6",
+						"municipalities"
+					],
+					"query": [
+						{
+							"key": "qty",
+							"value": "426"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Move Gauchos",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"idDestinyMuni\": 138,\r\n  \"idOriginMuni\": 142,\r\n  \"qty\": 108\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/matches/1/municipalities/gauchos",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"matches",
+						"1",
+						"municipalities",
+						"gauchos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Change Municipality State",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"newState\": \"PRODUCTION\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/matches/1/municipalities/138/",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"matches",
+						"1",
+						"municipalities",
+						"138",
+						""
+					],
+					"query": [
+						{
+							"key": "",
+							"value": null,
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Attack a Municipality",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"muniAttackingId\" : 136,\r\n    \"muniDefendingId\" : 135,\r\n    \"gauchosQty\" : 30\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/matches/1/municipalities/attack",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"matches",
+						"1",
+						"municipalities",
+						"attack"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Pass Player Turn",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "matchId",
+						"value": "0",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userId\" : \"google-oauth2|108732799064472479077\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/matches/1/passTurn",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"matches",
+						"1",
+						"passTurn"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Token request",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "f497938d-d18f-4a77-ac5f-5343fe0b48a2",
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);\r",
+							"postman.setGlobalVariable(\"accessToken\",jsonData.access_token);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "content-type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"client_id\":\"YM3qJUxOFZJ43OJ2kC2DS8XMz8JHKtgl\",\r\n    \"client_secret\":\"oyXb5lySL0Xsb_QN0T-aCYgfxvrMfxE1wjEwCdvTroHYSykmS32OvxSxSkpkSJdN\",\r\n    \"audience\":\"https://tacs.game/api\",\r\n    \"grant_type\":\"client_credentials\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://tacticas.us.auth0.com/oauth/token",
+					"protocol": "https",
+					"host": [
+						"tacticas",
+						"us",
+						"auth0",
+						"com"
+					],
+					"path": [
+						"oauth",
+						"token"
+					]
+				},
+				"description": "Pide un token en auth0 para probar la API"
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IndsTS0wd2pfaVBmMWpMZmU3SnYtMyJ9.eyJpc3MiOiJodHRwczovL3RhY3RpY2FzLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJZTTNxSlV4T0ZaSjQzT0oya0MyRFM4WE16OEpIS3RnbEBjbGllbnRzIiwiYXVkIjoiaHR0cHM6Ly90YWNzLmdhbWUvYXBpIiwiaWF0IjoxNjAyMDAyNDIwLCJleHAiOjE2MDIwODg4MjAsImF6cCI6IllNM3FKVXhPRlpKNDNPSjJrQzJEUzhYTXo4SkhLdGdsIiwiZ3R5IjoiY2xpZW50LWNyZWRlbnRpYWxzIn0.DyZqzvlxyanjO0daRDCx5ccXVEg26YbRv-SNCnki9OQeNUJmR29v4tqcRpgOOzrrNlbX53tI_qlRpJSG77s3oJBHYcse8K3GQNk6Ddh1I4BuBr3tF3P8F5JUex9HKG4tFqWkR3Cff4JkTCld37QX215HEXNY6lY_sg9eUR-kOAt4A0oXFFMPz3hAlpNHxifuAJRXNQxlQuXj-uQBN_d6xw__Q6fHVMF0gSHVMXxiwPqUchpOimDbC3dJcejvzZhfoEH9r50EmofRrqY1V5tFKt8_fdnIfh5nr2_Vvw9OP5on97ojnv1LsonwUO0-hK3IDZUJu6qO7z5A2NgFwsZEew",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "8e1d0706-74cf-4aae-a320-e2bbce3eb89f",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "a89b7b86-6389-4ade-9b71-a5b0fd3fe74e",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"protocolProfileBehavior": {}
+}

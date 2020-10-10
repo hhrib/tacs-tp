@@ -2,8 +2,9 @@ package net.tacs.game.controller;
 
 import java.util.List;
 
-import net.tacs.game.mapper.ProvinceToBeanMapper;
-import net.tacs.game.model.bean.ProvinceBeanResponse;
+import net.tacs.game.mapper.ProvinceToDTOMapper;
+import net.tacs.game.model.dto.ProvinceDTOResponse;
+import net.tacs.game.repositories.ProvinceRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +16,6 @@ import net.tacs.game.model.Municipality;
 import net.tacs.game.model.Province;
 import net.tacs.game.services.ProvinceService;
 
-import static net.tacs.game.GameApplication.getProvinces;
-
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
 public class ProvinceController {
@@ -26,13 +25,16 @@ public class ProvinceController {
 	@Autowired
 	private ProvinceService provinceService;
 
+	@Autowired
+	private ProvinceRepository provinceRepository;
+
 	@GetMapping("/provinces")
-	public ResponseEntity<List<ProvinceBeanResponse>> getAllProvinces() {
+	public ResponseEntity<List<ProvinceDTOResponse>> getAllProvinces() {
 
 		//List<Province> provinces = provinceService.findAll(); <-- se carga al iniciar la aplicacion
-		List<Province> provinces = getProvinces();
+		List<Province> provinces = provinceRepository.getProvinces();
 		LOGGER.info("provinces qty: {}", provinces.size());
-		return new ResponseEntity<>(ProvinceToBeanMapper.mapProvinces(provinces), HttpStatus.OK);
+		return new ResponseEntity<>(ProvinceToDTOMapper.mapProvinces(provinces), HttpStatus.OK);
 	}
 
 	@GetMapping("/provinces/{PROVINCE_ID}/municipalities")

@@ -1,13 +1,14 @@
-package net.tacs.game.model.bean;
+package net.tacs.game.model.dto;
 
 import java.util.List;
 import java.util.Objects;
 
-public class CreateMatchBean {
+public class CreateMatchDTO {
 
     private Long provinceId;
     private Integer municipalitiesQty;
     private List<String> userIds;
+    private List<Double> configs;
 
     public Long getProvinceId() {
         return provinceId;
@@ -33,6 +34,14 @@ public class CreateMatchBean {
         this.userIds = userIds;
     }
 
+    public List<Double> getConfigs() {
+        return configs;
+    }
+
+    public void setConfigs(List<Double> configs) {
+        this.configs = configs;
+    }
+
     @Override
     public String toString() {
         return "CreateMatchBean{" +
@@ -46,7 +55,7 @@ public class CreateMatchBean {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        CreateMatchBean that = (CreateMatchBean) o;
+        CreateMatchDTO that = (CreateMatchDTO) o;
         return provinceId.equals(that.provinceId) &&
                 municipalitiesQty.equals(that.municipalitiesQty) &&
                 userIds.equals(that.userIds);

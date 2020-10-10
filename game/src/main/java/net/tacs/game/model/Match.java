@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import net.tacs.game.model.dto.AttackMuniDTO;
+import net.tacs.game.model.dto.AttackResultDTO;
 import net.tacs.game.model.enums.MatchState;
 
 import java.time.LocalDateTime;
@@ -11,16 +13,20 @@ import java.util.List;
 import java.util.Objects;
 
 public class Match {
-
+    private static long idCounter = 0;
     private Long id;
 
-    // @OneToMany(cascade = {CascadeType.ALL})
     private List<User> users;
+
     private MatchState state;
-   // @OneToOne
+
     private Province map;
+
+    private User turnPlayer;
+
     private User winner;
 
+    private MatchConfiguration config;
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonProperty("date")
@@ -67,35 +73,33 @@ public class Match {
         this.map = map;
     }
 
-    public Match(){
+    public MatchConfiguration getConfig() {
+        return config;
     }
-    //User story 2.a
-//    TODO? agregar configuraciones al crear partida
-//    @Autowired
-//    public Match(String provinceName, Integer municipalitiesQty, long[] player_ids, UserService userService)
-//    {
-//        this.userService = userService;
-//        this.users = new ArrayList<User>();
-//        map = new Province(provinceName, municipalitiesQty);
-//
-//        search_users(player_ids);
-//
-//        state = MatchState.CREATED;
-//    }
 
-//    /**
-//     * @method search_users
-//     * @param player_ids
-//     * Busca en la aplicacion los usuarios que corresponden a la partida y los agrega a la lista
-//     */
-//    private void search_users(long[] player_ids)
-//    {
-//        for (long player_id : player_ids) {
-//            User user = userService.findById(player_id).orElseThrow(() -> new UserNotFoundException(player_id));
-//            users.add(user);
-//        }
-//    }
+    public void setConfig(MatchConfiguration config) {
+        this.config = config;
+    }
 
+    public User getTurnPlayer() {
+        return turnPlayer;
+    }
+
+    public void setTurnPlayer(User turnPlayer) {
+        this.turnPlayer = turnPlayer;
+    }
+
+    public User getWinner() {
+        return winner;
+    }
+
+    public void setWinner(User winner) {
+        this.winner = winner;
+    }
+
+    public Match(){
+        id = ++idCounter;
+    }
 
     @Override
     public String toString() {
@@ -125,5 +129,34 @@ public class Match {
     @Override
     public int hashCode() {
         return Objects.hash(id, users, state, map, winner, date);
+    }
+
+    public boolean userIsInMatch(String userId) {
+        for(User aUser : getUsers())
+        {
+            if(aUser.getId().equals(userId))
+                return true;
+        }
+
+        return false;
+    }
+
+    public void checkVictory(User player) {
+        int playerMunis = player.municipalitiesOwning(this.getMap().getMunicipalities());
+
+        if(playerMunis == 0)
+        {
+            this.getConfig().removePlayer(player);
+        }
+
+        if(getConfig().getPlayersTurns().size() == 1) //solo quedo un jugador
+        {
+            this.winner = this.getConfig().getPlayersTurns().get(0);
+            this.setState(MatchState.FINISHED);
+        }
+    }
+
+    public boolean playerCanAttack(User player) {
+        return player.equals(turnPlayer);
     }
 }
