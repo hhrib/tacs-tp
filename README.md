@@ -16,6 +16,9 @@ Para ejecuacion
 # Swagger UI - Ver especificación de la API Rest:
 * Se puede verificar ingresando por navegador al endpoint /swagger-ui.html <br />
   Por ejemplo, si se levantó local -> http://localhost:8080/swagger-ui.html
+  
+# Postman
+* Se puede usar la coleccion de request para probar en Postman, primero se debe hacer un request de access token a auth0, luego se pueden hacer todos los request que quiera
 
 -----
 # Decisiones de Diseño:
