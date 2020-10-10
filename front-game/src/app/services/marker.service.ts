@@ -24,7 +24,6 @@ export class MarkerService {
 
     var self = this;
     this.match.map.municipalities.forEach(function (value) {
-      console.log(value);
       let lat = value.centroide.lon;
       let lon = value.centroide.lat;
       const marker = L.marker([Number(lon), Number(lat)]).addTo(map);

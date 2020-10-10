@@ -12,6 +12,8 @@ import { UsersService } from 'src/app/services/users.service';
 import { MatchService } from 'src/app/services/matches.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatchResponse } from 'src/app/models/match.response';
+import { Municipality } from 'src/app/models/municipality';
+import { Atack } from 'src/app/models/atack.dto';
 
 @Component({
   selector: 'app-match-atack-dialog',
@@ -28,9 +30,8 @@ export class MatchAtackDialogComponent implements OnInit {
 
 
   playersList : UserDTO[] = null;
-  provinceList: ProvinceDTO[] = null;
-  quantityList: number[] = [10,15,20];
-  modeList: ModesDTO[] = [this.from,this.to,this.war];
+  municipalityList: Municipality[] = null;
+  municipalityEnemyList: Municipality[] = null;
   gauchosQtyList: number[] = [10,20,30,40,50];
 
   ngOnInit(): void {
@@ -42,15 +43,16 @@ export class MatchAtackDialogComponent implements OnInit {
     public provinceService: ProvincesService,
     public userService: UsersService,
     public dialogRef: MatDialogRef<MatchAtackDialogComponent>,
-    public matchInput: MatchDTO,
-    public matchOutput: MatchResponse,
+    public match: MatchResponse,
     public matchService: MatchService,
     public route: ActivatedRoute,
     public router: Router)
     {
-      this.provinceService.getProvincesForCreation().subscribe(
-        response => this.provinceList = response,
-        err => console.log(err));
+
+      this.municipalityList = match.map.municipalities
+        .filter(x => x.owner.id == this.match.users[0].id); 
+      this.municipalityEnemyList = match.map.municipalities
+      .filter(x => x.owner.id != this.match.users[0].id);
 
       this.userService.getAllUsers().subscribe(
         response => this.playersList = response,
@@ -64,28 +66,18 @@ export class MatchAtackDialogComponent implements OnInit {
   onSubmit(form: NgForm){
     this.clicked = true;
     this.dialogRef.disableClose = true;
-    this.matchInput.municipalitiesQty = form.value.quantity;
-    this.matchInput.provinceId = form.value.province;
-    this.matchInput.userIds = form.value.players;
-    this.matchInput.configs = form.value.mode;
-    this.matchInput.configs.push(form.value.gauchosQty);
-    //this.matchInput.configs = allConf;
-    /*this.matchService.createMatch(this.matchInput).subscribe(
+    let atack = new Atack();
+    atack.gauchosQty = form.value.quantity;
+    atack.muniAttackingId = form.value.municipalityAtacking;
+    atack.muniDefendingId = form.value.municipalityDefending;
+    this.matchService.atackMatchMunicipalities(this.match.id,atack).subscribe(
       response => {
-        console.log("CreateMatch");
-        this.matchOutput.id = response.id;
-        this.matchOutput.date = response.date;
-        this.matchOutput.config = response.config;
-        this.matchOutput.map = response.map;
-        this.matchOutput.state = response.state;
-        this.matchOutput.users = response.users;
-        console.log(this.matchOutput);
-        console.log("Fin CreateMatch");
-        this.router.navigate(['/mapMatch/'+this.matchOutput.id]);
-        this.dialogRef.close(this.matchInput);
+        console.log(response);
+        this.router.navigate(['/mapMatch/'+this.match.id]);
+        this.dialogRef.close();
       },
       err => {console.log(err)}
-    );*/
-    
+    );
+    this.dialogRef.close();
   }
 }

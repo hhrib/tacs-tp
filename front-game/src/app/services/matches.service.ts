@@ -25,12 +25,10 @@ export class MatchService {
     }
 
     public getById(matchId: any): Observable<MatchResponse> {
-        //return this.http.get<MatchResponse>(`${MATCH_URL}/${matchId}`);
         return this.http.get<any>(`${MATCH_URL}/${matchId}`);
     }
 
     public createMatch(match: MatchDTO): Observable<MatchResponse> {
-        //return this.http.post<MatchResponse>(`${MATCH_URL}/`, match);
         let matchJSON = JSON.stringify(match);
         //console.log(matchJSON);
         return this.http.post<any>(`${MATCH_URL}/`, matchJSON, httpOptions);
@@ -54,5 +52,25 @@ export class MatchService {
         var result = this.http.get<any>(`${MATCH_URL}/${matchId}/municipalities`,{responseType: 'json'})
         console.log(result);
         return result;
+    }
+
+    public atackMatchMunicipalities(matchId: any, atack: any): any {
+        let atackJSON = JSON.stringify(atack);
+        return this.http.post<any>(`${MATCH_URL}/${matchId}/municipalities/atack/`, atackJSON, httpOptions);
+    }
+
+    public moveMatchMunicipalities(matchId: any, move: any): any {
+        let moveJSON = JSON.stringify(move);
+        return this.http.post<any>(`${MATCH_URL}/${matchId}/municipalities/gauchos/`, moveJSON, httpOptions);
+    }
+
+    public stateMatchMunicipalities(matchId: any, muniId: any, state: any): any {
+        let stateJSON = JSON.stringify(state);
+        return this.http.patch<any>(`${MATCH_URL}/${matchId}/municipalities/${muniId}/`, stateJSON, httpOptions);
+    }
+
+    public passTurnMatch(matchId: any, passTurn: any): any {
+        let passTurnJSON = JSON.stringify(passTurn);
+        return this.http.patch<any>(`${MATCH_URL}/${matchId}/passTurn/`, passTurnJSON, httpOptions);
     }
 }
