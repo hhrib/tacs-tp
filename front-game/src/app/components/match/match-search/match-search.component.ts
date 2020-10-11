@@ -9,6 +9,8 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatchService } from 'src/app/services/matches.service';
 import {StatisticsPanelComponent} from '../statistics-panel/statistics-panel.component';
 import { HttpClient } from '@angular/common/http';
+import { MatchResponse } from 'src/app/models/match.response';
+import { ActivatedRoute, Router } from '@angular/router';
 
 
 
@@ -46,7 +48,13 @@ export class MatchSearchComponent implements AfterViewInit {
   selectedMuni:object;
   selectedMatch;
   pagePhoto:any;
-  constructor(public matchService : MatchService, private http: HttpClient) {}
+  constructor(
+    public match: MatchResponse, 
+    public matchService : MatchService, 
+    private http: HttpClient,
+    public route: ActivatedRoute,
+    public router: Router
+    ) {}
 
   ngAfterViewInit() {
       this.matchService.getMatches().subscribe(
@@ -68,11 +76,30 @@ export class MatchSearchComponent implements AfterViewInit {
 
   viewDetail(match) {
     this.selectedMatch=match;
-    this.matchService.getMatchMunicipalities(match.id).
+    this.matchService.getById(match.id).
     subscribe(
-      municipalities => {
-        this.municipalities = municipalities;
-      err => console.log(err)});
+      response => {
+        console.log("CreateMatch");
+        this.match.id = response.id;
+        this.match.date = response.date;
+        this.match.config = response.config;
+        this.match.map = response.map;
+        this.match.state = response.state;
+        this.match.users = response.users;
+        console.log(this.match);
+        console.log("Fin CreateMatch");
+        this.matchService.newTurnMatch(this.match.id).subscribe(
+          response => {
+            console.log(response);
+            this.router.navigate(['/mapMatch/'+this.match.id]);
+          },
+          err => {
+            console.log(err);
+          });
+      },
+      err => {
+        console.log(err);
+      });
   }
   
   

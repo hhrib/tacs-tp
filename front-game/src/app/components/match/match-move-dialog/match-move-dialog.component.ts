@@ -12,6 +12,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatchResponse } from 'src/app/models/match.response';
 import { Municipality } from 'src/app/models/municipality';
 import { Move } from 'src/app/models/move.dto';
+import { User } from 'src/app/models/user';
 
 @Component({
   selector: 'app-match-move-dialog',
@@ -33,13 +34,14 @@ export class MatchMoveDialogComponent implements OnInit {
     public provinceService: ProvincesService,
     public userService: UsersService,
     public dialogRef: MatDialogRef<MatchMoveDialogComponent>,
+    public user: User,
     public match: MatchResponse,
     public matchService: MatchService,
     public route: ActivatedRoute,
     public router: Router)
     {
       this.municipalityList = match.map.municipalities
-        .filter(x => x.owner.id == this.match.users[0].id); 
+        .filter(x => x.owner.id == this.user.id); 
 
       this.userService.getAllUsers().subscribe(
         response => this.playersList = response,
@@ -56,7 +58,7 @@ export class MatchMoveDialogComponent implements OnInit {
     let move = new Move();
     move.idDestinyMuni = form.value.municipalityDest;
     move.idOriginMuni = form.value.municipalityOri;
-    move.qty = form.value.quantity;
+    move.qty = form.value.gauchosQty;
     this.matchService.moveMatchMunicipalities(this.match.id,move).subscribe(
       response => {
         console.log(response);

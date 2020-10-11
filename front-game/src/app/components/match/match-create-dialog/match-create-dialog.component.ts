@@ -43,7 +43,7 @@ export class MatchCreateDialogComponent implements OnInit {
     public userService: UsersService,
     public dialogRef: MatDialogRef<MatchCreateDialogComponent>,
     public matchInput: MatchDTO,
-    public matchOutput: MatchResponse,
+    public match: MatchResponse,
     public matchService: MatchService,
     public route: ActivatedRoute,
     public router: Router)
@@ -73,19 +73,28 @@ export class MatchCreateDialogComponent implements OnInit {
     this.matchService.createMatch(this.matchInput).subscribe(
       response => {
         console.log("CreateMatch");
-        this.matchOutput.id = response.id;
-        this.matchOutput.date = response.date;
-        this.matchOutput.config = response.config;
-        this.matchOutput.map = response.map;
-        this.matchOutput.state = response.state;
-        this.matchOutput.users = response.users;
-        console.log(this.matchOutput);
+        this.match.id = response.id;
+        this.match.date = response.date;
+        this.match.config = response.config;
+        this.match.map = response.map;
+        this.match.state = response.state;
+        this.match.users = response.users;
+        console.log(this.match);
         console.log("Fin CreateMatch");
-        this.router.navigate(['/mapMatch/'+this.matchOutput.id]);
-        this.dialogRef.close(this.matchInput);
+        this.matchService.newTurnMatch(this.match.id).subscribe(
+          response => {
+            console.log(response);
+            this.router.navigate(['/mapMatch/'+this.match.id]);
+            this.dialogRef.close(this.matchInput);
+          },
+          err => {
+            console.log(err);
+            this.clicked = false;
+          });
       },
-      err => {console.log(err)}
-    );
-    
+      err => {
+        console.log(err);
+        this.clicked = false;
+      });
   }
 }

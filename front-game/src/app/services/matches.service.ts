@@ -56,21 +56,37 @@ export class MatchService {
 
     public atackMatchMunicipalities(matchId: any, atack: any): any {
         let atackJSON = JSON.stringify(atack);
-        return this.http.post<any>(`${MATCH_URL}/${matchId}/municipalities/atack/`, atackJSON, httpOptions);
+        console.log("Attacking...");
+        console.log(atackJSON);
+        console.log("End attack");
+        return this.http.post<any>(`${MATCH_URL}/${matchId}/municipalities/attack/`, atackJSON, httpOptions);
     }
 
     public moveMatchMunicipalities(matchId: any, move: any): any {
         let moveJSON = JSON.stringify(move);
+        console.log("Moving...");
+        console.log(moveJSON);
+        console.log("End move");
         return this.http.post<any>(`${MATCH_URL}/${matchId}/municipalities/gauchos/`, moveJSON, httpOptions);
     }
 
     public stateMatchMunicipalities(matchId: any, muniId: any, state: any): any {
         let stateJSON = JSON.stringify(state);
+        console.log("Changing state...");
+        console.log(stateJSON);
+        console.log("End change state");
         return this.http.patch<any>(`${MATCH_URL}/${matchId}/municipalities/${muniId}/`, stateJSON, httpOptions);
     }
 
     public passTurnMatch(matchId: any, passTurn: any): any {
         let passTurnJSON = JSON.stringify(passTurn);
+        console.log("Passing...");
+        console.log(passTurnJSON);
+        console.log("End pass");
         return this.http.patch<any>(`${MATCH_URL}/${matchId}/passTurn/`, passTurnJSON, httpOptions);
+    }
+
+    public newTurnMatch(matchId: any): any {
+        return this.http.patch<any>(`${MATCH_URL}/${matchId}/start/`, null, {responseType: 'json'});
     }
 }

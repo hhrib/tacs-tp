@@ -17,6 +17,7 @@ import { MatchAtackDialogComponent } from '../match/match-atack-dialog/match-ata
 import { MatchMoveDialogComponent } from '../match/match-move-dialog/match-move-dialog.component';
 import { MatchStateDialogComponent } from '../match/match-state-dialog/match-state-dialog.component';
 import { MatchEndshiftDialogComponent } from '../match/match-endshift-dialog/match-endshift-dialog.component';
+import { User } from 'src/app/models/user';
 
 @Component({
   selector: 'app-menu',
@@ -32,6 +33,7 @@ export class MenuComponent implements OnInit {
     public matchService: MatchService,
     public dialog: MatDialog,
     public auth: AuthService,
+    public user: User,
     public match: MatchDTO,
     public matchOutput: MatchResponse,
     public route: ActivatedRoute,
@@ -39,6 +41,11 @@ export class MenuComponent implements OnInit {
     ) { }
 
   ngOnInit(): void {
+    this.auth.userProfile$.subscribe(result=> {
+      console.log("Menu - userProfile", result);
+      this.user.id = result?.sub;
+      this.user.username = result?.nickname;
+    });
   }
 
   openDialogCreateMatch(): void{

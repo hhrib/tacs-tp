@@ -11,6 +11,7 @@ import { MatchService } from 'src/app/services/matches.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatchResponse } from 'src/app/models/match.response';
 import { PassTurnDto } from 'src/app/models/passTurn.dto';
+import { User } from 'src/app/models/user';
 
 @Component({
   selector: 'app-match-endshift-dialog',
@@ -31,6 +32,7 @@ export class MatchEndshiftDialogComponent implements OnInit {
     public provinceService: ProvincesService,
     public userService: UsersService,
     public dialogRef: MatDialogRef<MatchEndshiftDialogComponent>,
+    public user: User,
     public match: MatchResponse,
     public matchService: MatchService,
     public route: ActivatedRoute,
@@ -47,7 +49,7 @@ export class MatchEndshiftDialogComponent implements OnInit {
 
   onSubmit(form: NgForm){
     let passTurn = new PassTurnDto();
-    passTurn.userId = this.match.users[0].id;
+    passTurn.userId = this.user.id;
     this.matchService.passTurnMatch(this.match.id, passTurn).subscribe(
       response => {
         console.log(response);

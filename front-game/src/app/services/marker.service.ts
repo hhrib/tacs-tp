@@ -3,10 +3,9 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 
 import * as L from 'leaflet';
-import { MatchDTO } from '../models/match.dto';
-import { Observable } from 'rxjs';
 import { PopUpService } from './pop-up.service';
 import { MatchResponse } from '../models/match.response';
+import { User } from '../models/user';
 
 const MATCH_URL = environment.BASE_URL + 'matches';
 
@@ -14,10 +13,24 @@ const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' })
 };
 
+const redIcon = L.icon({
+  iconUrl: "assets/redIcon.png",
+  shadowUrl: "assets/marker-shadow.png",
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  tooltipAnchor: [16, -28],
+  shadowSize: [41, 41]
+});
+
 @Injectable()
 export class MarkerService {
 
-  constructor(private http: HttpClient, private popupService: PopUpService, private match: MatchResponse) {
+  constructor(
+    private http: HttpClient, 
+    private popupService: PopUpService, 
+    private match: MatchResponse,
+    private user: User) {
   }
 
   makeMunicipalitiesMarkers(map: L.Map): void {
@@ -26,7 +39,13 @@ export class MarkerService {
     this.match.map.municipalities.forEach(function (value) {
       let lat = value.centroide.lon;
       let lon = value.centroide.lat;
-      const marker = L.marker([Number(lon), Number(lat)]).addTo(map);
+      let marker: L.Marker<any>; 
+
+      if(value.owner.id == self.user.id)
+        marker = L.marker([Number(lon), Number(lat)]).addTo(map);
+      else
+        marker = L.marker([Number(lon), Number(lat)], {icon: redIcon}).addTo(map);
+
 
       marker.bindPopup(self.popupService.makeMunicipalitesPopup(value));
     }); 

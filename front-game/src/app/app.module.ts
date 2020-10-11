@@ -45,6 +45,7 @@ import { MatchAtackDialogComponent } from './components/match/match-atack-dialog
 import { MatchMoveDialogComponent } from './components/match/match-move-dialog/match-move-dialog.component';
 import { MatchStateDialogComponent } from './components/match/match-state-dialog/match-state-dialog.component';
 import { MatchEndshiftDialogComponent } from './components/match/match-endshift-dialog/match-endshift-dialog.component';
+import { User } from './models/user';
 
 
 @NgModule({
@@ -94,7 +95,7 @@ import { MatchEndshiftDialogComponent } from './components/match/match-endshift-
     MatchStateDialogComponent,
     MatchEndshiftDialogComponent
   ],
-  providers: [MatchDTO, MatchResponse, FindMatchDTO, MatchService, MarkerService, PopUpService, WebSocketService,
+  providers: [MatchDTO, MatchResponse, FindMatchDTO, MatchService, MarkerService, PopUpService, WebSocketService, User,
     { provide: HTTP_INTERCEPTORS, useClass: InterceptorService, multi: true }],
     
   bootstrap: [AppComponent]
