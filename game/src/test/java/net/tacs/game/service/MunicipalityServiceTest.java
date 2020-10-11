@@ -476,4 +476,31 @@ public class MunicipalityServiceTest {
 
         municipalityService.attackMunicipality("111111", attackMuniDTO);
     }
+
+    @Test(expected = MatchException.class)
+    public void attackNotEnoughGauchosMunicipalityThrowsException() throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException {
+        Match match = new Match();
+        match.setId(111111L);
+        match.setState(MatchState.IN_PROGRESS);
+        match.setMap(buenosAires);
+        match.getMap().setMunicipalities(Arrays.asList(Lanus, Avellaneda));
+        match.setTurnPlayer(user1);
+
+        Mockito.when(matchService.getMatchById("111111")).thenReturn(match);
+
+        Lanus.setId(999999);
+        Lanus.setOwner(user1);
+        Lanus.setGauchosQty(10);
+        Lanus.setBlocked(false);
+
+        Avellaneda.setId(888888);
+        Avellaneda.setOwner(user2);
+
+        AttackMuniDTO attackMuniDTO = new AttackMuniDTO();
+        attackMuniDTO.setGauchosQty(250);
+        attackMuniDTO.setMuniAttackingId(999999);
+        attackMuniDTO.setMuniDefendingId(888888);
+
+        municipalityService.attackMunicipality("111111", attackMuniDTO);
+    }
 }
