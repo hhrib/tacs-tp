@@ -1,6 +1,5 @@
 package net.tacs.game.services.impl;
 
-import net.tacs.game.GameApplication;
 import net.tacs.game.controller.MatchController;
 import net.tacs.game.exceptions.MatchException;
 import net.tacs.game.exceptions.MatchNotPlayerTurnException;
@@ -9,7 +8,6 @@ import net.tacs.game.mapper.MuniToStatsDTOMapper;
 import net.tacs.game.model.*;
 import net.tacs.game.model.dto.*;
 import net.tacs.game.model.enums.MatchState;
-//import net.tacs.game.model.enums.MunicipalityState;
 import net.tacs.game.repositories.MatchRepository;
 import net.tacs.game.repositories.ProvinceRepository;
 import net.tacs.game.repositories.UserRepository;
@@ -27,7 +25,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static net.tacs.game.constants.Constants.*;
@@ -71,7 +68,7 @@ public class MatchServiceImpl implements MatchService {
         Long idLong = validateAndGetIdLong(id, "MATCH");
         Optional<Match> matchOptional = matchRepository.findById(idLong);
         Match match = matchOptional.orElseThrow(() -> new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(MATCH_NOT_FOUND_CODE, MATCH_NOT_FOUND_DETAIL))));
-        List<Municipality> munis = match.getMap().getMunicipalities();
+        List<Municipality> munis = new ArrayList<>(match.getMap().getMunicipalities().values());
 
         return MuniToStatsDTOMapper.mapMunis(munis);
 
@@ -230,7 +227,7 @@ public class MatchServiceImpl implements MatchService {
                 selectedProvince.setMunicipalities(tempMunicipalities);
             }
             else {
-                tempMunicipalities = selectedProvince.getMunicipalities();
+                tempMunicipalities = new ArrayList<>(selectedProvince.getMunicipalities().values());
             }
 
             if (newMatchBean.getMunicipalitiesQty() > selectedProvince.getMunicipalities().size()) {
@@ -260,23 +257,23 @@ public class MatchServiceImpl implements MatchService {
 
                 muni.setGauchosQty(newMatch.getConfig().getInitialGauchos());
 
-                newProvince.addMunicipality(muni);
+                newProvince.addMunicipalityMap(muni);
             }
 
             newMatch.setMap(newProvince);
 
             //buscar elevaciones de municipios
-            Double[] elevations = municipalityService.getElevations(newMatch.getMap().getMunicipalities());
-            for(int i = 0; i < elevations.length; i++)
+            Map<Integer, Double> elevations = municipalityService.getElevations(new ArrayList<>(newMatch.getMap().getMunicipalities().values()));
+            for(Map.Entry<Integer, Double> elevation : elevations.entrySet())
             {
-                newMatch.getMap().getMunicipalities().get(i).setElevation(elevations[i]);
+                newMatch.getMap().getMunicipalities().get(elevation.getKey()).setElevation(elevation.getValue());
             }
 
             //TODO: LA API SOLO ME DEJA HACER 1 REQUEST POR SEGUNDO
             //TimeUnit.SECONDS.sleep(1);
 
             //asignar municipalidades a usuarios
-            assignMunicipalities(newMatch.getMap().getMunicipalities(), newMatch.getUsers());
+            assignMunicipalities(new ArrayList<>(newMatch.getMap().getMunicipalities().values()), newMatch.getUsers());
 
             calculateConfigVariables(newMatch);
 
@@ -351,26 +348,26 @@ public class MatchServiceImpl implements MatchService {
         double MaxDistance = 0;
         double MinDistance = 100000;
 
-        for (Municipality aMuni : match.getMap().getMunicipalities())
+        for (Map.Entry<Integer, Municipality> aMuni : match.getMap().getMunicipalities().entrySet())
         {
             //calculate max and min heights
-            if(aMuni.getElevation() > MaxHeight)
+            if(aMuni.getValue().getElevation() > MaxHeight)
             {
-                MaxHeight = aMuni.getElevation();
+                MaxHeight = aMuni.getValue().getElevation();
             }
-            if(aMuni.getElevation() < MinHeight)
+            if(aMuni.getValue().getElevation() < MinHeight)
             {
-                MinHeight = aMuni.getElevation();
+                MinHeight = aMuni.getValue().getElevation();
             }
 
             //calculate distances
-            List<Municipality> municipalityList = match.getMap().getMunicipalities();
+            List<Municipality> municipalityList = new ArrayList<>(match.getMap().getMunicipalities().values());
 
             for (Municipality otherMuni: municipalityList)
             {
-                if(aMuni != otherMuni)
+                if(aMuni.getValue() != otherMuni)
                 {
-                    double distance = aMuni.getCentroide().getDistance(otherMuni.getCentroide());
+                    double distance = aMuni.getValue().getCentroide().getDistance(otherMuni.getCentroide());
 
                     if(distance > MaxDistance)
                     {
@@ -411,7 +408,7 @@ public class MatchServiceImpl implements MatchService {
         CheckMatchNotStarted(match);
         CheckMatchFinished(match);
 
-        Optional<Municipality> muniOptional = match.getMap().getMunicipalities().stream().filter(muni -> muni.getId().equals(muniId)).findFirst();
+        Optional<Municipality> muniOptional = Optional.ofNullable(match.getMap().getMunicipalities().get(muniId));
         Municipality muni = muniOptional.orElseThrow(() -> new MatchException(HttpStatus.NOT_FOUND, Arrays.asList(new ApiError(MUNICIPALITY_NOT_FOUND_CODE, MUNICIPALITY_NOT_FOUND_DETAIL))));
 
         if(!match.getTurnPlayer().equals(muni.getOwner()))
@@ -551,7 +548,7 @@ public class MatchServiceImpl implements MatchService {
             return;
         }
 
-        List<Municipality> playerMunis = retiringPlayer.getMunicipalitiesOwning(match.getMap().getMunicipalities());
+        List<Municipality> playerMunis = retiringPlayer.getMunicipalitiesOwning(new ArrayList<>(match.getMap().getMunicipalities().values()));
         match.getConfig().removePlayer(retiringPlayer);
         List<User> playerLeft = match.getConfig().getPlayersTurns();
         int playerIndex = 0;

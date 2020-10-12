@@ -2,9 +2,7 @@ package net.tacs.game.model;
 
 
 import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 //@Entity
 //@Table(name = "province")
@@ -15,8 +13,8 @@ public class Province {
     private Long id;
 
 	private String nombre;
-//    @OneToMany(cascade = {CascadeType.ALL})
-    private List<Municipality> municipalities = new ArrayList<>();
+
+	private Map<Integer, Municipality> municipalities = new HashMap<>();
 
 	private Centroide centroide;
 
@@ -61,15 +59,23 @@ public class Province {
 		this.id = id;
 	}
 
-	public List<Municipality> getMunicipalities() {
-        return municipalities;
-    }
-
-    public void setMunicipalities(List<Municipality> municipalities) {
-        this.municipalities = municipalities;
+	public Map<Integer, Municipality> getMunicipalities() {
+		return municipalities;
 	}
 
-	public void addMunicipality(Municipality municipality){ this.municipalities.add(municipality);}
+	/*public void setMunicipalityMap(Map<Integer, Municipality> municipalityMap) {
+		this.municipalityMap = municipalityMap;
+	}*/
+
+	public void setMunicipalities(List<Municipality> municipalities) {
+		for (Municipality aMuni : municipalities) {
+			this.addMunicipalityMap(aMuni);
+		}
+	}
+
+	public void addMunicipalityMap(Municipality municipality){
+		municipalities.put(municipality.getId(), municipality);
+	}
 
 	@Override
 	public String toString() {

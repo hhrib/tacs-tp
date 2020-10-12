@@ -7,9 +7,9 @@ import net.tacs.game.model.*;
 import net.tacs.game.model.dto.AttackMuniDTO;
 import net.tacs.game.model.dto.AttackResultDTO;
 import net.tacs.game.model.dto.MoveGauchosDTO;
-import net.tacs.game.model.dto.UpdateMunicipalityStateDTO;
 
 import java.util.List;
+import java.util.Map;
 
 public interface MunicipalityService {
 	/**
@@ -19,7 +19,7 @@ public interface MunicipalityService {
 	 */
 	public Double getElevation(Centroide location);
 
-	public Double[] getElevations(List<Municipality> municipalities);
+	public Map<Integer, Double> getElevations(List<Municipality> municipalities);
 
 	/**
 	 * @method attackMunicipality
