@@ -14,6 +14,7 @@ import net.tacs.game.repositories.UserRepository;
 import net.tacs.game.services.MatchService;
 import net.tacs.game.services.ProvinceService;
 import net.tacs.game.services.MunicipalityService;
+import net.tacs.game.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +47,9 @@ public class MatchServiceImpl implements MatchService {
 
     @Autowired
     private ProvinceRepository provinceRepository;
+
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private UserRepository userRepository;
@@ -544,6 +548,8 @@ public class MatchServiceImpl implements MatchService {
             match.setState(MatchState.FINISHED);
             match.getConfig().removePlayer(retiringPlayer);
             match.setWinner(match.getConfig().getPlayersTurns().get(0));
+
+            userService.setWinnerAndLosersStats(match);
 
             return;
         }

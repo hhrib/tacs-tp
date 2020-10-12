@@ -12,6 +12,7 @@ import net.tacs.game.model.dto.AttackResultDTO;
 import net.tacs.game.model.dto.MoveGauchosDTO;
 import net.tacs.game.repositories.MunicipalityRepository;
 import net.tacs.game.services.MatchService;
+import net.tacs.game.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +36,9 @@ public class MunicipalityServiceImpl implements MunicipalityService {
 
 	@Autowired
     private MatchService matchService;
+
+	@Autowired
+    private UserService userService;
 
 	@Autowired
     private MunicipalityRepository municipalityRepository;
@@ -123,8 +127,8 @@ public class MunicipalityServiceImpl implements MunicipalityService {
 
             muniAtk.setBlocked(true);
 
-            if(result == 1) //si el rival perdio el municipio chequear si perdio la partida
-                match.checkVictory(rival);
+            if(match.checkVictory(rival)) //si el rival perdio el municipio chequear si perdio la partida
+                userService.setWinnerAndLosersStats(match);
 
             return new AttackResultDTO(result, muniAtk, muniDef);
 	    }

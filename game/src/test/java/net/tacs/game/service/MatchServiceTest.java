@@ -20,6 +20,7 @@ import net.tacs.game.repositories.ProvinceRepository;
 import net.tacs.game.repositories.UserRepository;
 import net.tacs.game.services.MunicipalityService;
 import net.tacs.game.GameApplication;
+import net.tacs.game.services.UserService;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import net.tacs.game.services.SecurityProviderService;
@@ -55,6 +56,9 @@ public class MatchServiceTest {
 
     @MockBean
     private ProvinceRepository provinceRepository;
+
+    @MockBean
+    private UserService userService;
 
     @MockBean
     private UserRepository userRepository;

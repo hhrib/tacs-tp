@@ -140,7 +140,7 @@ public class Match {
         return false;
     }
 
-    public void checkVictory(User player) {
+    public boolean checkVictory(User player) {
         int playerMunis = player.municipalitiesOwning(new ArrayList<>(this.getMap().getMunicipalities().values()));
 
         if(playerMunis == 0)
@@ -152,7 +152,10 @@ public class Match {
         {
             this.winner = this.getConfig().getPlayersTurns().get(0);
             this.setState(MatchState.FINISHED);
+            return true;
         }
+
+        return false;
     }
 
     public boolean playerCanAttack(User player) {
