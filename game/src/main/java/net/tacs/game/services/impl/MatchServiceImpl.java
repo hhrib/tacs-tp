@@ -99,6 +99,46 @@ public class MatchServiceImpl implements MatchService {
     }
 
     @Override
+    public MatchesStatisticsDTO getStatisticsForMatches(String isoDateFrom, String isoDateTo) throws MatchException {
+        List<Match> filteredMatches = null;
+
+        if(isoDateFrom != null && isoDateTo != null)
+            filteredMatches = findMatchesByDate(isoDateFrom, isoDateTo);
+        else
+            filteredMatches = findAll();
+
+        MatchesStatisticsDTO matchesStatisticsDTO = new MatchesStatisticsDTO();
+
+        for (Match aMatch : filteredMatches) {
+            switch (aMatch.getState())
+            {
+                case CREATED:
+                {
+                    matchesStatisticsDTO.addCreatedMatched();
+                    break;
+                }
+                case CANCELLED:
+                {
+                    matchesStatisticsDTO.addCancelledMatches();
+                    break;
+                }
+                case IN_PROGRESS:
+                {
+                    matchesStatisticsDTO.addInProgressMatches();
+                    break;
+                }
+                case FINISHED:
+                {
+                    matchesStatisticsDTO.addFinishedMatches();
+                    break;
+                }
+            }
+        }
+
+        return matchesStatisticsDTO;
+    }
+
+    @Override
     public Match createMatch(CreateMatchDTO newMatchBean) throws MatchException, InterruptedException {
         Match newMatch = validateAndGenerateMatch(newMatchBean);
 

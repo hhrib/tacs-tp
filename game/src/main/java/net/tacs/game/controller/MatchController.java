@@ -61,6 +61,13 @@ public class MatchController {
         return new ResponseEntity<>(MatchToDTOMapper.mapMatches(matches), HttpStatus.OK);
     }
 
+    //TODO ADMIN ONLY
+    @GetMapping("/matches/statistics")
+    public ResponseEntity<MatchesStatisticsDTO> getStatisticsForMatches(@RequestParam(name = "dateFrom", required = false) String dateFrom, @RequestParam(name = "dateTo", required = false) String dateTo) throws MatchException
+    {
+        return new ResponseEntity<>(matchService.getStatisticsForMatches(dateFrom, dateTo), HttpStatus.OK);
+    }
+
     @ApiOperation(value = "Buscar partida por ID", produces = "application/json")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successful matches search"),

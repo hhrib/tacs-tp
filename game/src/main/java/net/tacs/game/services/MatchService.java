@@ -20,6 +20,8 @@ public interface MatchService {
 
     public List<MuniStatisticsDTOResponse> getAllStatisticsForMatch(String id) throws MatchException;
 
+    public MatchesStatisticsDTO getStatisticsForMatches(String isoDateFrom, String isoDateTo) throws MatchException;
+
     public void assignPlayersOrder(Match newMatch);
 
     public void calculateConfigVariables(Match match);

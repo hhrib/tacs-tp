@@ -15,6 +15,7 @@ import java.util.List;
 import net.tacs.game.exceptions.MatchNotPlayerTurnException;
 import net.tacs.game.exceptions.MatchNotStartedException;
 import net.tacs.game.model.*;
+import net.tacs.game.model.dto.MatchesStatisticsDTO;
 import net.tacs.game.model.dto.RetireDTO;
 import net.tacs.game.model.dto.UpdateMunicipalityStateDTO;
 import net.tacs.game.model.enums.MatchState;
@@ -637,5 +638,81 @@ public class MatchServiceTest {
         Mockito.when(userRepository.findById("ABC123")).thenReturn(java.util.Optional.of(user1));
 
         matchService.retireFromMatch("123456", retireDTO);
+    }
+
+    @Test
+    public void getStatisticsForMatchesByDatesOK() throws MatchException {
+        Match match = new Match();
+        match.setId(1234L);
+        match.setState(MatchState.CREATED);
+        match.setDate(LocalDateTime.of(2020, 9, 10, 0, 0));
+
+        Match match2 = new Match();
+        match2.setId(1235L);
+        match2.setState(MatchState.CANCELLED);
+        match2.setDate(LocalDateTime.of(2020, 9, 11, 0, 0));
+
+        Match match3 = new Match();
+        match3.setId(1236L);
+        match3.setState(MatchState.IN_PROGRESS);
+        match3.setDate(LocalDateTime.of(2020, 9, 12, 0, 0));
+
+        Match match4 = new Match();
+        match4.setId(1237L);
+        match4.setState(MatchState.IN_PROGRESS);
+        match4.setDate(LocalDateTime.of(2020, 9, 13, 0, 0));
+
+        Match match5 = new Match();
+        match5.setId(1238L);
+        match5.setState(MatchState.FINISHED);
+        match5.setDate(LocalDateTime.of(2020, 9, 9, 0, 0));
+
+        Mockito.when(matchRepository.getMatches()).thenReturn(Arrays.asList(match, match2, match3, match4, match5));
+        LocalDate dateFrom = LocalDate.of(2020, 9, 10);
+        LocalDate dateTo = LocalDate.of(2020, 9, 20);
+
+        MatchesStatisticsDTO dto = matchService.getStatisticsForMatches(dateFrom.format(DateTimeFormatter.ISO_LOCAL_DATE), dateTo.format(DateTimeFormatter.ISO_LOCAL_DATE));
+
+        assertEquals(1, dto.getCreatedMatches());
+        assertEquals(1, dto.getCancelledMatches());
+        assertEquals(2, dto.getInProgressMatches());
+        assertEquals(0, dto.getFinishedMatches());
+    }
+
+    @Test
+    public void getStatisticsForMatchesDatesNotProvidedOK() throws MatchException {
+        Match match = new Match();
+        match.setId(1234L);
+        match.setState(MatchState.CREATED);
+        match.setDate(LocalDateTime.of(2020, 9, 10, 0, 0));
+
+        Match match2 = new Match();
+        match2.setId(1235L);
+        match2.setState(MatchState.CANCELLED);
+        match2.setDate(LocalDateTime.of(2020, 9, 11, 0, 0));
+
+        Match match3 = new Match();
+        match3.setId(1236L);
+        match3.setState(MatchState.IN_PROGRESS);
+        match3.setDate(LocalDateTime.of(2020, 9, 12, 0, 0));
+
+        Match match4 = new Match();
+        match4.setId(1237L);
+        match4.setState(MatchState.IN_PROGRESS);
+        match4.setDate(LocalDateTime.of(2020, 9, 13, 0, 0));
+
+        Match match5 = new Match();
+        match5.setId(1238L);
+        match5.setState(MatchState.FINISHED);
+        match5.setDate(LocalDateTime.of(2020, 9, 9, 0, 0));
+
+        Mockito.when(matchRepository.getMatches()).thenReturn(Arrays.asList(match, match2, match3, match4, match5));
+
+        MatchesStatisticsDTO dto = matchService.getStatisticsForMatches(null, null);
+
+        assertEquals(1, dto.getCreatedMatches());
+        assertEquals(1, dto.getCancelledMatches());
+        assertEquals(2, dto.getInProgressMatches());
+        assertEquals(1, dto.getFinishedMatches());
     }
 }
