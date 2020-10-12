@@ -3,11 +3,8 @@ package net.tacs.game.controller;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.tacs.game.exceptions.MatchException;
-import net.tacs.game.model.dto.AttackMuniDTO;
-import net.tacs.game.model.dto.AttackResultDTO;
-import net.tacs.game.model.dto.MoveGauchosDTO;
-import net.tacs.game.model.dto.UpdateMunicipalityStateDTO;
+import net.tacs.game.model.interfaces.MunicipalityDefense;
+import net.tacs.game.model.interfaces.MunicipalityProduction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import net.tacs.game.model.Centroide;
 import net.tacs.game.model.Municipality;
 import net.tacs.game.model.User;
-import net.tacs.game.model.enums.MunicipalityState;
+//import net.tacs.game.model.enums.MunicipalityState;
 import net.tacs.game.services.MunicipalityService;
 
 @RestController
@@ -38,7 +35,7 @@ public class MunicipalityController {
         municipalityDefense.setOwner(new User("testUser"));
         municipalityDefense.setGauchosQty(5);
         municipalityDefense.setElevation(100D);
-        municipalityDefense.setState(MunicipalityState.DEFENSE);
+        municipalityDefense.setState(new MunicipalityDefense());
         LOGGER.info(municipalityDefense.toString());
         municipalities.add(municipalityDefense);
 
@@ -46,7 +43,7 @@ public class MunicipalityController {
         municipalityProduction.setOwner(new User("testUserRival"));
         municipalityProduction.setGauchosQty(5);
         municipalityProduction.setElevation(100D);
-        municipalityProduction.setState(MunicipalityState.PRODUCTION);
+        municipalityProduction.setState(new MunicipalityProduction());
         LOGGER.info(municipalityProduction.toString());
         municipalities.add(municipalityProduction);
 

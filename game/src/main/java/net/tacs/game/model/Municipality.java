@@ -2,7 +2,10 @@ package net.tacs.game.model;
 
 import java.util.Objects;
 
-import net.tacs.game.model.enums.MunicipalityState;
+//import net.tacs.game.model.enums.MunicipalityState;
+import net.tacs.game.model.interfaces.MunicipalityDefense;
+import net.tacs.game.model.interfaces.MunicipalityProduction;
+import net.tacs.game.model.interfaces.MunicipalityState;
 
 //@Entity
 //@Table(name = "municipality")
@@ -18,6 +21,8 @@ public class Municipality {
     private Double elevation;
 
     private MunicipalityState state;
+    private final MunicipalityProduction productionState = new MunicipalityProduction();
+    private final MunicipalityDefense defenseState = new MunicipalityDefense();
 
     private User owner;
 
@@ -28,7 +33,16 @@ public class Municipality {
 	public Municipality() {
 		super();
 		id = ++idCounter;
+		state = defenseState;
 	}
+
+    public Municipality(Double defenseMultiplier, Double gauchosProdMultiplier, Double gauchosDefMultiplier) {
+        super();
+        id = ++idCounter;
+        defenseState.createState(defenseMultiplier, gauchosDefMultiplier, productionState);
+        productionState.createState(1D, gauchosProdMultiplier, defenseState);
+        state = defenseState;
+    }
 
 	public Municipality(String nombre) {
 	    this.nombre = nombre;
@@ -73,6 +87,11 @@ public class Municipality {
 	public void setState(MunicipalityState state) {
 		this.state = state;
 	}
+
+	public void nextState()
+    {
+        state = state.nextState();
+    }
 
 	public User getOwner() {
 		return owner;
@@ -138,26 +157,7 @@ public class Municipality {
      */
     public void produceGauchos(MatchConfiguration Config)
     {
-        int newGauchos = 0;
-
-        if(state == MunicipalityState.PRODUCTION)
-        {
-            newGauchos = (int) Math.floor(Config.getMultGauchosProduction() *
-                                (1 - ((elevation - Config.getMinHeight()) /
-                                        (Config.getMultHeight() * (Config.getMaxHeight() - Config.getMinHeight())))));
-        }
-        else if(state == MunicipalityState.DEFENSE)
-        {
-            newGauchos = (int) Math.floor(Config.getMultGauchosDefense() *
-                                (1 - ((elevation - Config.getMinHeight()) /
-                                        (Config.getMultHeight() * (Config.getMaxHeight() - Config.getMinHeight())))));
-        }
-        else
-        {
-            //Estado erroneo
-        }
-
-        gauchosQty += newGauchos;
+        gauchosQty += state.produceGauchos(Config, elevation);
     }
 
     /**
@@ -177,11 +177,7 @@ public class Municipality {
         double multAltura = (1 + (enemyMunicipality.getElevation() - Config.getMinHeight()) /
                                 (Config.getMultHeight() * (Config.getMaxHeight() - Config.getMinHeight())));
 
-        double multDefensa = 1;
-        if(enemyMunicipality.getState() == MunicipalityState.DEFENSE)
-        {
-            multDefensa = Config.getMultDefense();
-        }
+        double multDefensa = enemyMunicipality.getState().getDefenseMultiplier();
 
 	    int GauchosAtacantesFinal = (int) Math.round(Math.floor(GauchosAttacking * multDist -
                 enemyMunicipality.getGauchosQty() * multAltura * multDefensa));
