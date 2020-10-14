@@ -9,7 +9,9 @@ import net.tacs.game.model.dto.AttackMuniDTO;
 import net.tacs.game.model.dto.AttackResultDTO;
 import net.tacs.game.model.dto.MoveGauchosDTO;
 import net.tacs.game.model.enums.MatchState;
-import net.tacs.game.model.enums.MunicipalityState;
+//import net.tacs.game.model.enums.MunicipalityState;
+import net.tacs.game.model.interfaces.MunicipalityDefense;
+import net.tacs.game.model.interfaces.MunicipalityProduction;
 import net.tacs.game.repositories.MatchRepository;
 import net.tacs.game.services.MatchService;
 import net.tacs.game.services.MunicipalityService;
@@ -50,6 +52,8 @@ public class MunicipalityServiceTest {
     private Municipality Lomas;
     private Municipality Matanza;
     private MatchConfiguration configuration;
+    private MunicipalityDefense defenseState;
+    private MunicipalityProduction prodState;
 
     @Before
     public void setUp() {
@@ -64,6 +68,10 @@ public class MunicipalityServiceTest {
         Lomas = new Municipality("Lomas de Zamora");
         Matanza = new Municipality("La Matanza");
         configuration = new MatchConfiguration();
+        defenseState = new MunicipalityDefense();
+        prodState = new MunicipalityProduction();
+        defenseState.createState(1.25D, 10D, prodState);
+        prodState.createState(1D, 15D, defenseState);
     }
 
     @Test
@@ -105,8 +113,7 @@ public class MunicipalityServiceTest {
 
         Lanus.setGauchosQty(300);
         Avellaneda.setGauchosQty(100);
-
-        Avellaneda.setState(MunicipalityState.DEFENSE);
+        Avellaneda.setState(defenseState);
 
         AttackMuniDTO attackMuniDTO = new AttackMuniDTO();
         attackMuniDTO.setGauchosQty(250);
@@ -155,8 +162,7 @@ public class MunicipalityServiceTest {
 
         Lanus.setGauchosQty(100);
         Avellaneda.setGauchosQty(100);
-
-        Avellaneda.setState(MunicipalityState.PRODUCTION);
+        Avellaneda.setState(prodState);
 
         AttackMuniDTO attackMuniDTO = new AttackMuniDTO();
         attackMuniDTO.setGauchosQty(100);
@@ -178,7 +184,7 @@ public class MunicipalityServiceTest {
         Lanus.setElevation(1500D);
 
         Lanus.setGauchosQty(0);
-        Lanus.setState(MunicipalityState.PRODUCTION);
+        Lanus.setState(prodState);
         Lanus.produceGauchos(configuration);
 
         assertEquals(11, Lanus.getGauchosQty());
@@ -194,7 +200,7 @@ public class MunicipalityServiceTest {
         Lanus.setElevation(1500D);
 
         Lanus.setGauchosQty(0);
-        Lanus.setState(MunicipalityState.DEFENSE);
+        Lanus.setState(defenseState);
         Lanus.produceGauchos(configuration);
 
         assertEquals(7, Lanus.getGauchosQty());
@@ -360,11 +366,11 @@ public class MunicipalityServiceTest {
         configuration.setMinDist(10D);
 
         Lanus.setElevation(1500D);
-        Lanus.setState(MunicipalityState.DEFENSE);
+        Lanus.setState(defenseState);
         Avellaneda.setElevation(1500D);
-        Avellaneda.setState(MunicipalityState.PRODUCTION);
+        Avellaneda.setState(prodState);
         Quilmes.setElevation(1500D);
-        Quilmes.setState(MunicipalityState.PRODUCTION);
+        Quilmes.setState(prodState);
 
         municipalityService.produceGauchos(match, user1);
 
@@ -414,7 +420,7 @@ public class MunicipalityServiceTest {
         Lanus.setGauchosQty(300);
         Avellaneda.setGauchosQty(100);
 
-        Avellaneda.setState(MunicipalityState.DEFENSE);
+        Avellaneda.setState(defenseState);
 
         AttackMuniDTO attackMuniDTO = new AttackMuniDTO();
         attackMuniDTO.setGauchosQty(250);
@@ -468,6 +474,33 @@ public class MunicipalityServiceTest {
         Lanus.setBlocked(true);
         Avellaneda.setId(888888);
         Avellaneda.setOwner(user1);
+
+        AttackMuniDTO attackMuniDTO = new AttackMuniDTO();
+        attackMuniDTO.setGauchosQty(250);
+        attackMuniDTO.setMuniAttackingId(999999);
+        attackMuniDTO.setMuniDefendingId(888888);
+
+        municipalityService.attackMunicipality("111111", attackMuniDTO);
+    }
+
+    @Test(expected = MatchException.class)
+    public void attackNotEnoughGauchosMunicipalityThrowsException() throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException {
+        Match match = new Match();
+        match.setId(111111L);
+        match.setState(MatchState.IN_PROGRESS);
+        match.setMap(buenosAires);
+        match.getMap().setMunicipalities(Arrays.asList(Lanus, Avellaneda));
+        match.setTurnPlayer(user1);
+
+        Mockito.when(matchService.getMatchById("111111")).thenReturn(match);
+
+        Lanus.setId(999999);
+        Lanus.setOwner(user1);
+        Lanus.setGauchosQty(10);
+        Lanus.setBlocked(false);
+
+        Avellaneda.setId(888888);
+        Avellaneda.setOwner(user2);
 
         AttackMuniDTO attackMuniDTO = new AttackMuniDTO();
         attackMuniDTO.setGauchosQty(250);

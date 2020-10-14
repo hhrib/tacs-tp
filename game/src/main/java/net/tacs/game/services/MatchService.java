@@ -26,7 +26,7 @@ public interface MatchService {
 
     public void start(String matchStringId) throws MatchException;
 
-    public void updateMunicipalityState(String matchId, String muniId, UpdateMunicipalityStateDTO dto) throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException;
+    public void updateMunicipalityState(String matchId, String muniId/*, UpdateMunicipalityStateDTO dto*/) throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException;
 
     public void passTurn(String matchId, String playerId) throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException;
 

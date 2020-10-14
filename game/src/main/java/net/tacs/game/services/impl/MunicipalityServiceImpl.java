@@ -135,6 +135,9 @@ public class MunicipalityServiceImpl implements MunicipalityService {
             if(muniAtk.getOwner().equals(muniDef.getOwner()))
                 throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(SAME_OWNER_MUNIS_CODE, SAME_OWNER_MUNIS_DETAIL)));
 
+            if(muniAtk.getGauchosQty() < attackMuniDTO.getGauchosQty())
+                throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(NOT_ENOUGH_GAUCHOS_CODE, NOT_ENOUGH_GAUCHOS_DETAIL)));
+
             result = muniAtk.attack(muniDef, match.getConfig(), attackMuniDTO.getGauchosQty());
 
             muniAtk.setBlocked(true);
