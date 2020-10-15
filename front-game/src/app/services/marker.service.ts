@@ -14,7 +14,7 @@ const httpOptions = {
 };
 
 const redIcon = L.icon({
-  iconUrl: "assets/redIcon.png",
+  iconUrl: "assets/marker-red-icon.png",
   shadowUrl: "assets/marker-shadow.png",
   iconSize: [25, 41],
   iconAnchor: [12, 41],
