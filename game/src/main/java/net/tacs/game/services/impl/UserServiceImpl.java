@@ -1,17 +1,18 @@
 package net.tacs.game.services.impl;
 
 import net.tacs.game.GameApplication;
+import net.tacs.game.exceptions.UserNotFoundException;
 import net.tacs.game.mapper.AuthUserToUserMapper;
 import net.tacs.game.model.Match;
 import net.tacs.game.model.User;
 import net.tacs.game.model.UserStats;
+import net.tacs.game.model.dto.Scoreboard;
 import net.tacs.game.repositories.UserRepository;
 import net.tacs.game.repositories.UserStatisticsRepository;
 import net.tacs.game.services.SecurityProviderService;
 import net.tacs.game.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,20 +38,31 @@ public class UserServiceImpl implements UserService {
 //        return getUsers();
     }
 
-    //TODO Ir a buscar al mapa que persiste en memoria para primeras entregas.
     @Override
-    public User getUserById(Long id) {
-        return null;
+    public User getUserById(String id)
+    {
+        Optional<User> userOptional = userRepository.findById(id);
+        return userOptional.orElseThrow(() -> new UserNotFoundException(id));
     }
 
-    //TODO Ir a buscar al mapa que persiste en memoria para primeras entregas.
     @Override
-    public User getUserByUserName(String userName) {
-        return null;
+    public User getUserByUserName(String userName)
+    {
+        Optional<User> userOptional = userRepository.findByUsername(userName);
+        return userOptional.orElseThrow(() -> new UserNotFoundException(userName));
     }
 
-    public UserStats getUserStatistics(String username){
-        return userStatisticsRepository.getByUsername(username);
+    public UserStats getUserStatistics(String id){
+        return userStatisticsRepository.getById(id);
+    }
+
+    public Scoreboard getScoreboard()
+    {
+        Scoreboard scoreboard = new Scoreboard();
+
+        scoreboard.fillAndSort(userStatisticsRepository.getAll());
+
+        return scoreboard;
     }
 
     public void setWinnerAndLosersStats(Match match)
@@ -60,15 +72,15 @@ public class UserServiceImpl implements UserService {
 
         losers.remove(winner);
 
-        if(!userStatisticsRepository.contains(winner.getUsername()))
-            userStatisticsRepository.addNewUserStats(winner.getUsername());
-        UserStats winnerStats = userStatisticsRepository.getByUsername(winner.getUsername());
+        if(!userStatisticsRepository.contains(winner.getId()))
+            userStatisticsRepository.addNewUserStats(winner.getId(), winner.getUsername());
+        UserStats winnerStats = userStatisticsRepository.getById(winner.getId());
         winnerStats.addMatchesWon();
 
         for (User aUser : losers) {
-            if(!userStatisticsRepository.contains(aUser.getUsername()))
-                userStatisticsRepository.addNewUserStats(aUser.getUsername());
-            UserStats loserStats = userStatisticsRepository.getByUsername(aUser.getUsername());
+            if(!userStatisticsRepository.contains(aUser.getId()))
+                userStatisticsRepository.addNewUserStats(aUser.getId(), winner.getUsername());
+            UserStats loserStats = userStatisticsRepository.getById(aUser.getId());
             loserStats.addMatchesLost();
         }
     }

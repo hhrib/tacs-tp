@@ -1,7 +1,7 @@
 package net.tacs.game.exceptions;
 
 public class UserNotFoundException extends RuntimeException {
-    public UserNotFoundException(long player_id) {
-        super("User with id: " + player_id + "not found");
+    public UserNotFoundException(String player_id) {
+        super("User: " + player_id + "not found");
     }
 }

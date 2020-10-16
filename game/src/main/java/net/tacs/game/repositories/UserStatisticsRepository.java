@@ -3,21 +3,29 @@ package net.tacs.game.repositories;
 import net.tacs.game.model.UserStats;
 import org.springframework.stereotype.Component;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 @Component("userStatisticsRepository")
 public class UserStatisticsRepository {
-    private static Map<String, UserStats> userStatistics = new HashMap<>();
+    private static Map</*id*/String, UserStats> userStatistics = new HashMap<>();
 
-    public UserStats getByUsername(String username)
+    public UserStats getById(String id)
     {
-        return userStatistics.get(username);
+        return userStatistics.get(id);
     }
 
-    public void addNewUserStats(String username)
+    public Collection<UserStats> getAll()
     {
-        userStatistics.put(username, new UserStats());
+        return userStatistics.values();
+    }
+
+    public void addNewUserStats(String id, String username)
+    {
+        UserStats userStats = new UserStats();
+        userStats.setUsername(username);
+        userStatistics.put(id, userStats);
     }
 
     public boolean contains(String username)
