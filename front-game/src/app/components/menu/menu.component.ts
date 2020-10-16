@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { MatchService } from '../../services/matches.service';
 import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {MatSelectModule} from '@angular/material/select';
@@ -8,6 +8,10 @@ import { AuthService } from '../../services/auth.service';
 import { MatchCreateDialogComponent } from '../../components/match/match-create-dialog/match-create-dialog.component';
 import { MatchSearchComponent } from '../match/match-search/match-search.component'
 import { ProvincesService } from 'src/app/services/provinces.service';
+import { concatMap, pluck, tap } from 'rxjs/operators';
+import { Auth0Client } from '@auth0/auth0-spa-js';
+import { MessageService } from 'src/app/services/message.service';
+import { stringify } from 'querystring';
 
 @Component({
   selector: 'app-menu',
@@ -17,21 +21,43 @@ import { ProvincesService } from 'src/app/services/provinces.service';
     MatchService,
   ]
 })
-export class MenuComponent implements OnInit {
 
+//TODO: Limpiar OnDestroy -> websocket debe ir en otro componente
+export class MenuComponent implements OnInit, OnDestroy {
+  alreadyInMatch: number = 0;
+  activeUser: string = null
+  
   constructor(
     public matchService: MatchService,
     public dialog: MatDialog,
     public auth: AuthService,
-    ) { }
+    public messageService: MessageService, //TODO: Retirar, se usó para probar el passTurn que debe ir en otro componente.
+    ){}
 
   ngOnInit(): void {
+    //TODO: Corregir sincronismo con promesas entre nuestra api y auth0.
+    setTimeout(() => {
+      this.auth.isAuthenticated$.subscribe((isAuth) => {
+        if(isAuth){
+          this.auth.userProfile$.subscribe((userProfile) => {
+              this.activeUser = userProfile.sub;
+              this.matchService.getUserAlreadyInMatch(userProfile.sub)
+              .subscribe(
+                (matchId) => this.alreadyInMatch = matchId.matchId,
+                err => this.alreadyInMatch = 0
+            )
+          })
+        };
+      })
+      
+    }, 2000);
   }
 
-  openDialogCreateMatch(): void{
-    //Crear promise para recibir parámetros del front, y luego:
+  ngOnDestroy(): void {
+    this.messageService.disconnect();
+  }
 
-    //this.matchService.createMatch(match);
+  openDialogCreateMatch(): void {
     const dialogRef = this.dialog.open(MatchCreateDialogComponent, {
       height: '450px',
       width: '300px',
@@ -47,4 +73,22 @@ export class MenuComponent implements OnInit {
       );
     });
   }
+
+  //TODO: Trasladar método a interfaz donde se interactúa con el mapa
+  passTurn(): void {
+    let jsonBody = {
+      "userId" : this.activeUser
+    }
+    this.matchService.passTurn(this.alreadyInMatch,jsonBody).subscribe()
+
+    //this.messageService.sendMessage()
+
+  }
+
+  joinGameByWebSocket(): void {
+    this.messageService.connect(this.alreadyInMatch);    
+  }
+
+
+
 }

@@ -64,7 +64,6 @@ import { InterceptorService } from './services/interceptor.service';
     MatSortModule,
     MatProgressBarModule,
     AppRoutes,
-    HttpClientModule
   ],
   entryComponents: [
     MatchCreateDialogComponent,

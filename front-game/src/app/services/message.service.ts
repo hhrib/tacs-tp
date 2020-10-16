@@ -12,13 +12,12 @@ export class MessageService {
 
   endTurns: EndTurnModel[] = [];
 
-  connect() {
+  connect(matchId: any) {
     this.socket = new SockJS('http://localhost:8080/socket');
     this.stompClient = Stomp.over(this.socket);
-
     this.stompClient.connect(
       {},
-      () => this.onConnectCallback(),
+      () => this.onConnectCallback(matchId),
       () => this.onDisconnectCallback()
     );
   }
@@ -32,19 +31,19 @@ export class MessageService {
     console.log("Message Json: " + JSON.stringify(message));
     this.stompClient.send('/app/send', {}, JSON.stringify(message));
   }
-
-  private onConnectCallback() {
-    this.stompClient.subscribe('/topic/0/turn_end', (frame) => {
+  private onConnectCallback(matchId: any) {
+    this.stompClient.subscribe(`/topic/${matchId}/turn_end`, (turnResponse) => {
       // if (frame.body) {
       //   let chat = JSON.parse(frame.body);
       //   this.chats.push(new EndTurnModel(chat.sender, chat.message));
       //   console.log(this.chats);
       // }
-      if (frame.body) {
+      console.log(turnResponse);
+      /* if (frame.body) {
         let endTurn = JSON.parse(frame.body);
         this.endTurns.push(new EndTurnModel(endTurn.userId));
         console.log(this.endTurns);
-      }
+      } */
     });
   }
 

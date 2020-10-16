@@ -24,7 +24,6 @@ export class SocketComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.service.connect();
   }
 
   ngOnDestroy() {

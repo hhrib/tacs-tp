@@ -18,6 +18,10 @@ const httpOptions = {
 export class MatchService {
     
     constructor(private http: HttpClient) { }
+    
+    public getUserAlreadyInMatch(user_id: any): Observable<any> {
+      return this.http.get<any>(`${MATCH_URL}/users/${user_id}`);
+    }
 
     public getMatches(): Observable<any> {
         return this.http.get<any>(`${MATCH_URL}`)
@@ -42,5 +46,9 @@ export class MatchService {
 
     public deleteMatch(matchId: any): any {
         return this.http.delete<any>(`${MATCH_URL}/${matchId}`);
+    }
+
+    public passTurn(matchId: any, userId: any): Observable<any> {
+        return this.http.patch<any>(`${MATCH_URL}/${matchId}/passTurn`,userId);
     }
 }

@@ -8,6 +8,11 @@
       </button>
       <span>Menu</span>
       <span class="example-spacer" style="flex: auto;"></span>
+      
+      <button mat-icon-button class="material-icons" (click)="passTurn()">
+        <mat-icon>check_circle</mat-icon> 
+      </button>
+      
       <p style="margin-bottom: 0px;" routerLink="/home" routerLinkActive="active"><button mat-icon-button>
         <mat-icon>home</mat-icon>
       </button></p>
@@ -17,6 +22,7 @@
       <button mat-icon-button class="example-icon" aria-label="Example icon-button with share icon">
         <mat-icon>share</mat-icon>
       </button>
+
     </ng-container>
   </mat-toolbar>
 
@@ -26,6 +32,7 @@
     <button mat-menu-item styles="text-decoration: none">Search matches</button></p>
     <p routerLink="/socket" routerLinkActive="active">
     <button mat-menu-item styles="text-decoration: none">Ver Websockets</button></p>
+    <button mat-menu-item styles="text-decoration: none"*ngIf="(alreadyInMatch>0)" (click)="joinGameByWebSocket()">Join Game</button>
     <button mat-menu-item (click)="auth.logout()" *ngIf="auth.loggedIn">Log Out</button>
   </mat-menu>
 </p>
