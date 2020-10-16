@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { MatchService } from '../../services/matches.service';
 import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {MatSelectModule} from '@angular/material/select';
@@ -12,6 +12,8 @@ import { concatMap, pluck, tap } from 'rxjs/operators';
 import { Auth0Client } from '@auth0/auth0-spa-js';
 import { MessageService } from 'src/app/services/message.service';
 import { stringify } from 'querystring';
+import { Observable, of } from 'rxjs';
+import { OnReadOpts } from 'net';
 
 @Component({
   selector: 'app-menu',
@@ -66,11 +68,22 @@ export class MenuComponent implements OnInit, OnDestroy {
     dialogRef.afterClosed().subscribe(result => {
       console.log('The dialog was closed');
       console.log(result);
-      
+
       this.matchService.createMatch(result).subscribe(
         response => console.log(response),
         err => console.log(err)
       );
+
+      setTimeout(() => {
+        this.matchService.getUserAlreadyInMatch(this.activeUser).subscribe(
+          (res) => {
+            if (res){
+              this.alreadyInMatch = res.matchId
+              console.log("El usuario actual se unió a la partida número: " + this.alreadyInMatch)
+            }
+          }
+        )
+      }, 2000); 
     });
   }
 
@@ -86,9 +99,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
 
   joinGameByWebSocket(): void {
-    this.messageService.connect(this.alreadyInMatch, this.activeUser);    
+    this.messageService.connect(this.alreadyInMatch, this.activeUser);
   }
-
-
 
 }

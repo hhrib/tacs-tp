@@ -30,8 +30,6 @@
     <button mat-menu-item (click)="openDialogCreateMatch()">New game</button>
     <p routerLink="/searchMatches" routerLinkActive="active">
     <button mat-menu-item styles="text-decoration: none">Search matches</button></p>
-    <p routerLink="/socket" routerLinkActive="active">
-    <button mat-menu-item styles="text-decoration: none">Ver Websockets</button></p>
     <button mat-menu-item styles="text-decoration: none"*ngIf="(alreadyInMatch>0)" (click)="joinGameByWebSocket()">Join Game</button>
     <button mat-menu-item (click)="auth.logout()" *ngIf="auth.loggedIn">Log Out</button>
   </mat-menu>
