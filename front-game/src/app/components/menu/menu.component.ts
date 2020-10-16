@@ -77,16 +77,16 @@ export class MenuComponent implements OnInit, OnDestroy {
   //TODO: Trasladar método a interfaz donde se interactúa con el mapa
   passTurn(): void {
     let jsonBody = {
-      "userId" : this.activeUser
+      userId : this.activeUser
     }
     this.matchService.passTurn(this.alreadyInMatch,jsonBody).subscribe()
 
-    //this.messageService.sendMessage()
+    this.messageService.sendMessage("Le toca al otro player!")
 
   }
 
   joinGameByWebSocket(): void {
-    this.messageService.connect(this.alreadyInMatch);    
+    this.messageService.connect(this.alreadyInMatch, this.activeUser);    
   }
 
 
