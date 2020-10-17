@@ -57,6 +57,8 @@ export class MenuComponent implements OnInit, OnDestroy {
       this.auth.isAuthenticated$.subscribe((isAuth) => {
         if(isAuth){
           this.auth.userProfile$.subscribe((userProfile) => {
+            this.user.id = userProfile.sub;
+            this.user.username = userProfile.nickname;
               this.activeUser = userProfile.sub;
               this.matchService.getUserAlreadyInMatch(userProfile.sub)
               .subscribe(
