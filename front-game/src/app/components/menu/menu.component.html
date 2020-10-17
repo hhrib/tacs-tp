@@ -28,10 +28,15 @@
 
   <mat-menu #menuOptions="matMenu">
     <button mat-menu-item (click)="openDialogCreateMatch()">New game</button>
-    <p routerLink="/searchMatches" routerLinkActive="active">
-    <button mat-menu-item styles="text-decoration: none">Search matches</button></p>
+    <button routerLink="/searchMatches" routerLinkActive="active" mat-menu-item styles="text-decoration: none">Search matches</button>
     <button mat-menu-item styles="text-decoration: none"*ngIf="(alreadyInMatch>0)" (click)="joinGameByWebSocket()">Join Game</button>
-    <button mat-menu-item (click)="auth.logout()" *ngIf="auth.loggedIn">Log Out</button>
+    <button mat-menu-item (click)="openMap()" *ngIf="matchOutput.id">Map</button>
+    <button mat-menu-item (click)="openDialogAtackMatch()" *ngIf="matchOutput.id">Atack</button>
+    <button mat-menu-item (click)="openDialogMoveMatch()" *ngIf="matchOutput.id">Move</button>
+    <button mat-menu-item (click)="openDialogStateMatch()" *ngIf="matchOutput.id">State</button>
+    <button mat-menu-item (click)="openDialogEndshiftMatch()" *ngIf="matchOutput.id">End turn</button>
+    <!-- <button mat-menu-item (click)="auth.logout()" *ngIf="auth.loggedIn">Log Out</button> -->
+    <button mat-menu-item (click)="auth.logout()" *ngIf="auth.loggedIn" style="margin-top: 5px;">Log Out</button>
   </mat-menu>
 </p>
 

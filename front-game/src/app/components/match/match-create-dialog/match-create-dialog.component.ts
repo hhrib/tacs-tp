@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import {MatDialogModule, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatSelectModule} from '@angular/material/select';
@@ -9,6 +9,9 @@ import {UserDTO} from '../../../models/user.dto';
 import {ProvinceDTO} from '../../../models/province.dto';
 import { ProvincesService } from 'src/app/services/provinces.service';
 import { UsersService } from 'src/app/services/users.service';
+import { MatchService } from 'src/app/services/matches.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { MatchResponse } from 'src/app/models/match.response';
 
 @Component({
   selector: 'app-match-create-dialog',
@@ -33,11 +36,17 @@ export class MatchCreateDialogComponent implements OnInit {
   ngOnInit(): void {
   }
   
+  clicked = false;
+
   constructor(
     public provinceService: ProvincesService,
     public userService: UsersService,
     public dialogRef: MatDialogRef<MatchCreateDialogComponent>,
-    public matchInput: MatchDTO)
+    public matchInput: MatchDTO,
+    public match: MatchResponse,
+    public matchService: MatchService,
+    public route: ActivatedRoute,
+    public router: Router)
     {
       this.provinceService.getProvincesForCreation().subscribe(
         response => this.provinceList = response,
@@ -53,14 +62,39 @@ export class MatchCreateDialogComponent implements OnInit {
   }
 
   onSubmit(form: NgForm){
-    
+    this.clicked = true;
+    this.dialogRef.disableClose = true;
     this.matchInput.municipalitiesQty = form.value.quantity;
     this.matchInput.provinceId = form.value.province;
     this.matchInput.userIds = form.value.players;
     this.matchInput.configs = form.value.mode;
     this.matchInput.configs.push(form.value.gauchosQty);
     //this.matchInput.configs = allConf;
-    this.dialogRef.close(this.matchInput)
+    this.matchService.createMatch(this.matchInput).subscribe(
+      response => {
+        console.log("CreateMatch");
+        this.match.id = response.id;
+        this.match.date = response.date;
+        this.match.config = response.config;
+        this.match.map = response.map;
+        this.match.state = response.state;
+        this.match.users = response.users;
+        console.log(this.match);
+        console.log("Fin CreateMatch");
+        this.matchService.newTurnMatch(this.match.id).subscribe(
+          response => {
+            console.log(response);
+            this.router.navigate(['/mapMatch/'+this.match.id]);
+            this.dialogRef.close(this.matchInput);
+          },
+          err => {
+            console.log(err);
+            this.clicked = false;
+          });
+      },
+      err => {
+        console.log(err);
+        this.clicked = false;
+      });
   }
-  
 }

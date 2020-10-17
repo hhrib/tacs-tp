@@ -121,8 +121,8 @@ public class MatchController {
     }
 
     @PatchMapping("/matches/{matchId}/municipalities/{muniId}/")
-    public ResponseEntity updateMunicipalityState(@PathVariable("matchId") String matchId, @PathVariable("muniId") String muniId, @RequestBody UpdateMunicipalityStateDTO dto) throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException {
-        this.matchService.updateMunicipalityState(matchId, muniId, dto);
+    public ResponseEntity updateMunicipalityState(@PathVariable("matchId") String matchId, @PathVariable("muniId") String muniId/*, @RequestBody UpdateMunicipalityStateDTO dto*/) throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException {
+        this.matchService.updateMunicipalityState(matchId, muniId/*, dto*/);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 

@@ -8,7 +8,7 @@ import net.tacs.game.mapper.MuniToStatsDTOMapper;
 import net.tacs.game.model.*;
 import net.tacs.game.model.dto.*;
 import net.tacs.game.model.enums.MatchState;
-import net.tacs.game.model.enums.MunicipalityState;
+// import net.tacs.game.model.enums.MunicipalityState;
 import net.tacs.game.model.websocket.ChatMessage;
 import net.tacs.game.repositories.MatchRepository;
 import net.tacs.game.repositories.ProvinceRepository;
@@ -209,7 +209,7 @@ public class MatchServiceImpl implements MatchService {
             //Crear Municipalidades
             for(int i = 1; i <= newMatchBean.getMunicipalitiesQty(); i++)
             {
-                Municipality muni = new Municipality();
+                Municipality muni = new Municipality(newConfig.getMultDefense(), newConfig.getMultGauchosProduction(), newConfig.getMultGauchosDefense());
 
                 int selectedMuniIndex = random.nextInt(tempMunicipalities.size());
                 while(selectedIndexes.contains(selectedMuniIndex))
@@ -223,9 +223,6 @@ public class MatchServiceImpl implements MatchService {
                 muni.setCentroide(tempMunicipalities.get(selectedMuniIndex).getCentroide());
 
                 muni.setGauchosQty(newMatch.getConfig().getInitialGauchos());
-
-                //Por defecto se pone en defensa
-                muni.setState(MunicipalityState.DEFENSE);
 
                 newProvince.addMunicipality(muni);
             }
@@ -369,7 +366,7 @@ public class MatchServiceImpl implements MatchService {
     }
 
     @Override
-    public void updateMunicipalityState(String matchIdString, String muniIdString, UpdateMunicipalityStateDTO dto) throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException {
+    public void updateMunicipalityState(String matchIdString, String muniIdString/*, UpdateMunicipalityStateDTO dto*/) throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException {
         Long matchId = validateAndGetIdLong(matchIdString, "MATCH");
         Integer muniId = validateAndGetIdLong(muniIdString, "MUNICIPALITY").intValue();
         Optional<Match> matchOptional = matchRepository.findById(matchId);
@@ -387,7 +384,8 @@ public class MatchServiceImpl implements MatchService {
         if(muni.isBlocked())
             throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(MUNICIPALITY_DESTINY_BLOCKED_CODE, MUNICIPALITY_DESTINY_BLOCKED_DETAIL)));
 
-        muni.setState(dto.getNewState());
+        //muni.setState(dto.getNewState());
+        muni.nextState();
 
         matchRepository.update(match);
     }

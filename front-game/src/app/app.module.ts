@@ -33,6 +33,20 @@ import { MatchService } from './services/matches.service';
 
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { InterceptorService } from './services/interceptor.service';
+import { StatisticsPanelComponent } from './components/match/statistics-panel/statistics-panel.component';
+import {WebSocketService} from "./services/web-socket.service";
+
+import { MatchMapComponent } from './components/match/match-map/match-map.component';
+import { MarkerService } from './services/marker.service';
+import { PopUpService } from './services/pop-up.service';
+
+import { LeafletModule } from '@asymmetrik/ngx-leaflet';
+import { MatchResponse } from './models/match.response';
+import { MatchAtackDialogComponent } from './components/match/match-atack-dialog/match-atack-dialog.component';
+import { MatchMoveDialogComponent } from './components/match/match-move-dialog/match-move-dialog.component';
+import { MatchStateDialogComponent } from './components/match/match-state-dialog/match-state-dialog.component';
+import { MatchEndshiftDialogComponent } from './components/match/match-endshift-dialog/match-endshift-dialog.component';
+import { User } from './models/user';
 
 
 @NgModule({
@@ -42,7 +56,13 @@ import { InterceptorService } from './services/interceptor.service';
     HomeComponent,
     MatchCreateDialogComponent,
     MatchSearchComponent,
-    SocketComponent
+    SocketComponent,
+    StatisticsPanelComponent,
+    MatchMapComponent,
+    MatchAtackDialogComponent,
+    MatchMoveDialogComponent,
+    MatchStateDialogComponent,
+    MatchEndshiftDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -64,12 +84,29 @@ import { InterceptorService } from './services/interceptor.service';
     MatSortModule,
     MatProgressBarModule,
     AppRoutes,
+<<<<<<< HEAD
+=======
+    HttpClientModule,
+    LeafletModule
+>>>>>>> origin/font-map
   ],
   entryComponents: [
     MatchCreateDialogComponent,
-    MatchSearchComponent
+    MatchSearchComponent,
+    StatisticsPanelComponent,
+    MatchMapComponent,
+    MatchAtackDialogComponent,
+    MatchMoveDialogComponent,
+    MatchStateDialogComponent,
+    MatchEndshiftDialogComponent
   ],
+<<<<<<< HEAD
   providers: [MatchDTO, FindMatchDTO, MatchService, { provide: HTTP_INTERCEPTORS, useClass: InterceptorService, multi: true }],
+=======
+  providers: [MatchDTO, MatchResponse, FindMatchDTO, MatchService, MarkerService, PopUpService, WebSocketService, User,
+    { provide: HTTP_INTERCEPTORS, useClass: InterceptorService, multi: true }],
+    
+>>>>>>> origin/font-map
   bootstrap: [AppComponent]
 })
 export class AppModule { }
