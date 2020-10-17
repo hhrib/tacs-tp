@@ -38,6 +38,13 @@ Para ejecuacion
 6. Si un jugador abandona ANTES de que empieze la partida, esta se considera cancelada, de lo contrario, la partida continua con los jugadores restantes.
 
 -----
+# Cómo jugar?:
+1. Crear una partida: Menú -> New Match
+2. Una vez creada la partida: Menú -> Join Game
+3. Durante su turno, puede Atacar/Mover tropas/Cambiar estado municipio.
+4. Cuando lo decida, finalice su turno: Menú -> End Turn
+
+-----
 # CI/CD:
 Imagenes creadas con actions de github y publicas en :
 * Back: https://hub.docker.com/repository/docker/hhrib/tacs_server
