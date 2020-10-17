@@ -84,11 +84,7 @@ import { User } from './models/user';
     MatSortModule,
     MatProgressBarModule,
     AppRoutes,
-<<<<<<< HEAD
-=======
-    HttpClientModule,
     LeafletModule
->>>>>>> origin/font-map
   ],
   entryComponents: [
     MatchCreateDialogComponent,
@@ -100,13 +96,9 @@ import { User } from './models/user';
     MatchStateDialogComponent,
     MatchEndshiftDialogComponent
   ],
-<<<<<<< HEAD
-  providers: [MatchDTO, FindMatchDTO, MatchService, { provide: HTTP_INTERCEPTORS, useClass: InterceptorService, multi: true }],
-=======
   providers: [MatchDTO, MatchResponse, FindMatchDTO, MatchService, MarkerService, PopUpService, WebSocketService, User,
     { provide: HTTP_INTERCEPTORS, useClass: InterceptorService, multi: true }],
     
->>>>>>> origin/font-map
   bootstrap: [AppComponent]
 })
 export class AppModule { }

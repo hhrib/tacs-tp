@@ -14,8 +14,8 @@ const appRoutes: Routes = [
     { path: 'socket', component: SocketComponent},
     { path:'searchMatches', component: MatchSearchComponent, canActivate: [AuthGuard]},
     { path:'mapMatch/:id', component: MatchMapComponent, canActivate: [AuthGuard]},
-    { path: '**', redirectTo: 'home' },
     { path:'getStatistics', component: StatisticsPanelComponent, canActivate: [AuthGuard]},
+    { path: '**', redirectTo: 'home' },
 ];
 
 export const AppRoutes = RouterModule.forRoot(appRoutes);

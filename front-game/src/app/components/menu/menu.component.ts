@@ -43,8 +43,12 @@ export class MenuComponent implements OnInit, OnDestroy {
     public matchService: MatchService,
     public dialog: MatDialog,
     public auth: AuthService,
-<<<<<<< HEAD
     public messageService: MessageService, //TODO: Retirar, se usó para probar el passTurn que debe ir en otro componente.
+    public user: User,
+    public match: MatchDTO,
+    public matchOutput: MatchResponse,
+    public route: ActivatedRoute,
+    public router: Router,
     ){}
 
   ngOnInit(): void {
@@ -64,21 +68,6 @@ export class MenuComponent implements OnInit, OnDestroy {
       })
       
     }, 2000);
-=======
-    public user: User,
-    public match: MatchDTO,
-    public matchOutput: MatchResponse,
-    public route: ActivatedRoute,
-    public router: Router,
-    ) { }
-
-  ngOnInit(): void {
-    this.auth.userProfile$.subscribe(result=> {
-      console.log("Menu - userProfile", result);
-      this.user.id = result?.sub;
-      this.user.username = result?.nickname;
-    });
->>>>>>> origin/font-map
   }
 
   ngOnDestroy(): void {
@@ -94,13 +83,6 @@ export class MenuComponent implements OnInit, OnDestroy {
     dialogRef.afterClosed().subscribe(result => {
       console.log('The dialog was closed');
       console.log(result);
-<<<<<<< HEAD
-
-      this.matchService.createMatch(result).subscribe(
-        response => console.log(response),
-        err => console.log(err)
-      );
-
       setTimeout(() => {
         this.matchService.getUserAlreadyInMatch(this.activeUser).subscribe(
           (res) => {
@@ -111,7 +93,6 @@ export class MenuComponent implements OnInit, OnDestroy {
           }
         )
       }, 2000); 
-=======
     });
   }
 
@@ -160,7 +141,6 @@ export class MenuComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe(result => {
       console.log('The dialog was closed');
->>>>>>> origin/font-map
     });
   }
 
@@ -169,13 +149,14 @@ export class MenuComponent implements OnInit, OnDestroy {
     let jsonBody = {
       userId : this.activeUser
     }
-    this.matchService.passTurn(this.alreadyInMatch,jsonBody).subscribe()
+     this.matchService.passTurn(this.alreadyInMatch,jsonBody).subscribe()
 
     this.messageService.sendMessage("Le toca al otro player!")
 
   }
 
   joinGameByWebSocket(): void {
+    this.router.navigate(['/mapMatch/'+this.alreadyInMatch]);
     this.messageService.connect(this.alreadyInMatch, this.activeUser);
   }
 

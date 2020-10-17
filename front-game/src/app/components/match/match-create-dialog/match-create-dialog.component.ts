@@ -84,7 +84,7 @@ export class MatchCreateDialogComponent implements OnInit {
         this.matchService.newTurnMatch(this.match.id).subscribe(
           response => {
             console.log(response);
-            this.router.navigate(['/mapMatch/'+this.match.id]);
+            // this.router.navigate(['/mapMatch/'+this.match.id]);
             this.dialogRef.close(this.matchInput);
           },
           err => {

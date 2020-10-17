@@ -93,4 +93,8 @@ export class MatchService {
     public newTurnMatch(matchId: any): any {
         return this.http.patch<any>(`${MATCH_URL}/${matchId}/start/`, null, {responseType: 'json'});
     }
+
+    public passTurn(matchId: any, userId: any): Observable<any> {
+        return this.http.patch<any>(`${MATCH_URL}/${matchId}/passTurn`,userId);
+    }
 }

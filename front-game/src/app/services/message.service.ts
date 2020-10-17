@@ -10,6 +10,7 @@ import * as Stomp from 'stompjs';
 export class MessageService {
   socket: any;
   stompClient: any;
+  actualUserIdTurn: any;
 
   endTurns: EndTurnModel[] = [];
 
@@ -40,11 +41,11 @@ export class MessageService {
       //   console.log(this.chats);
       // }
 
-      let actualUserIdTurn = (JSON.parse(turnResponse.body)).userId
-      console.log("El usuario que continúa es: " + actualUserIdTurn)
+      this.actualUserIdTurn = (JSON.parse(turnResponse.body)).userId
+      console.log("El usuario que continúa es: " + this.actualUserIdTurn)
 
-      if (actualUserIdTurn == user) {
-        console.log("Es tu turno fiera!");
+      if (this.actualUserIdTurn == user) {
+        console.log("Es tu turno!");
       }else {
         console.log("No podés jugar. No es tu turno!");
       }
@@ -61,5 +62,9 @@ export class MessageService {
 
   private onDisconnectCallback() {
     console.log('Websocket connection failed');
+  }
+
+  public getActualUserIdTurn(){
+    return this.actualUserIdTurn;
   }
 }

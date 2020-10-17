@@ -12,6 +12,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatchResponse } from 'src/app/models/match.response';
 import { PassTurnDto } from 'src/app/models/passTurn.dto';
 import { User } from 'src/app/models/user';
+import { MessageService } from 'src/app/services/message.service';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-match-endshift-dialog',
@@ -21,6 +23,7 @@ import { User } from 'src/app/models/user';
 export class MatchEndshiftDialogComponent implements OnInit {
 
   playersList : UserDTO[] = null;
+  activeUser: any = 0;
 
 
   ngOnInit(): void {
@@ -33,15 +36,19 @@ export class MatchEndshiftDialogComponent implements OnInit {
     public userService: UsersService,
     public dialogRef: MatDialogRef<MatchEndshiftDialogComponent>,
     public user: User,
+
     public match: MatchResponse,
     public matchService: MatchService,
     public route: ActivatedRoute,
-    public router: Router)
+    public router: Router,
+    public messageService: MessageService,
+    public auth: AuthService)
     {
-      this.userService.getAllUsers().subscribe(
-        response => this.playersList = response,
-        err => console.log(err));
+      this.auth.userProfile$.subscribe(
+        (userProfile) => this.activeUser = userProfile.sub
+      )
     }
+    
 
   onNoClick(): void {
     this.dialogRef.close();
@@ -50,14 +57,25 @@ export class MatchEndshiftDialogComponent implements OnInit {
   onSubmit(form: NgForm){
     let passTurn = new PassTurnDto();
     passTurn.userId = this.user.id;
-    this.matchService.passTurnMatch(this.match.id, passTurn).subscribe(
-      response => {
-        console.log(response);
-        this.router.navigate(['/mapMatch/'+this.match.id]);
-        this.dialogRef.close();
-      },
-      err => {console.log(err)}
-    );
+
+      let jsonBody = {
+        userId : this.activeUser
+      }
+       this.matchService.passTurn(this.match.id,jsonBody).subscribe()
+  
+      this.messageService.sendMessage("Le toca al otro player!")
+  
+    
+
+    // this.matchService.passTurnMatch(this.match.id, passTurn).subscribe(
+    //   response => {
+    //     console.log(response);
+    //     this.router.navigate(['/mapMatch/'+this.match.id]);
+    //     this.dialogRef.close();
+    //   },
+    //   err => {console.log(err)}
+    // );
+    this.messageService.sendMessage("Terminó un turno")
     this.dialogRef.close();
   }
 }
