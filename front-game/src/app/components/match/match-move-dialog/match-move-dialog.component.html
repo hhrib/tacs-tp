@@ -1,0 +1,32 @@
+<div class="container" style="text-align: center;">
+    <form #matchCreation="ngForm" (ngSubmit)="onSubmit(matchCreation)">
+    <h1 mat-dialog-title style="text-align: center;">Move Gauchos</h1>
+    <div mat-dialog-content style="overflow: hidden;">
+        <mat-form-field>
+            <mat-label>From</mat-label>
+                <mat-select name="municipalityOri" ngModel [disabled]="clicked">
+                    <mat-option *ngFor="let municipality of municipalityList" [value]="municipality.id">{{municipality.nombre}}</mat-option>
+                </mat-select>
+        </mat-form-field>
+        
+        <mat-form-field>
+            <mat-label>To</mat-label>
+            <mat-select name="municipalityDest" ngModel [disabled]="clicked">
+                <mat-option *ngFor="let municipality of municipalityList" [value]="municipality.id">{{municipality.nombre}}</mat-option> 
+            </mat-select>
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>Quantity</mat-label>
+                <mat-select name="gauchosQty" ngModel [disabled]="clicked">
+                    <mat-option *ngFor="let gauchosQty of gauchosQtyList" [value]="gauchosQty">{{gauchosQty}}</mat-option>
+                </mat-select>
+        </mat-form-field>
+
+        <div mat-dialog-actions style="display: block;">
+            <button mat-button (click)="onNoClick()" [disabled]="clicked">Cancel</button>
+            <button mat-button type="submit" [disabled]="clicked">Ok</button>
+        </div>
+    </div>
+</form>
+</div>

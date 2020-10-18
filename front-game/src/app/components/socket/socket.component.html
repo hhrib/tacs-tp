@@ -1,0 +1,23 @@
+<div class="container">
+  <ul class="list-group mt-5">
+    <li class="list-group-item text-white bg-success">Chat App</li>
+
+    <li class="list-group-item" *ngFor="let endTurn of endTurns">
+      <span class="font-weight-bolder mr-2">Terminó el turno. El próximo será: {{ endTurn.userId }}</span>
+    </li>
+
+  </ul>
+
+  <div class="row mt-3" [formGroup]="form">
+    <div class="col-sm-2">
+      <input type="text" class="form-control" placeholder="Send by" formControlName="sender">
+    </div>
+    <div class="col-sm-8">
+      <input type="text" class="form-control" placeholder="Message here..." formControlName="message">
+    </div>
+    <div class="col-sm-2">
+      <button class="btn btn-success btn-block" (click)="send()" [disabled]="form.invalid">Send</button>
+    </div>
+  </div>
+
+</div>

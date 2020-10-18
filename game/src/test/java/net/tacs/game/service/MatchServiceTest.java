@@ -18,7 +18,9 @@ import net.tacs.game.model.*;
 import net.tacs.game.model.dto.RetireDTO;
 import net.tacs.game.model.dto.UpdateMunicipalityStateDTO;
 import net.tacs.game.model.enums.MatchState;
-import net.tacs.game.model.enums.MunicipalityState;
+//import net.tacs.game.model.enums.MunicipalityState;
+import net.tacs.game.model.interfaces.MunicipalityDefense;
+import net.tacs.game.model.interfaces.MunicipalityProduction;
 import net.tacs.game.repositories.MatchRepository;
 import net.tacs.game.repositories.ProvinceRepository;
 import net.tacs.game.repositories.UserRepository;
@@ -74,6 +76,8 @@ public class MatchServiceTest {
     private Municipality lomas;
     private Municipality matanza;
     private MatchConfiguration configuration;
+    private MunicipalityDefense defenseState;
+    private MunicipalityProduction prodState;
 
     @Before
     public void setUp() {
@@ -88,6 +92,10 @@ public class MatchServiceTest {
         lomas = new Municipality("Lomas de Zamora");
         matanza = new Municipality("La Matanza");
         configuration = new MatchConfiguration();
+        defenseState = new MunicipalityDefense();
+        prodState = new MunicipalityProduction();
+        defenseState.createState(1.25D, 10D, prodState);
+        prodState.createState(1D, 15D, defenseState);
     }
 
     @Test
@@ -446,17 +454,17 @@ public class MatchServiceTest {
 
         lanus.setId(98765);
         lanus.setOwner(user2);
-        lanus.setState(MunicipalityState.DEFENSE);
+        lanus.setState(defenseState);
         tigre.setId(56789);
 
         Mockito.when(matchRepository.findById(123456L)).thenReturn(java.util.Optional.of(match));
 
-        UpdateMunicipalityStateDTO dto = new UpdateMunicipalityStateDTO();
-        dto.setNewState(MunicipalityState.PRODUCTION);
+        //UpdateMunicipalityStateDTO dto = new UpdateMunicipalityStateDTO();
+        //dto.setNewState(prodState);
 
-        matchService.updateMunicipalityState("123456", "98765", dto);
+        matchService.updateMunicipalityState("123456", "98765"/*, dto*/);
 
-        assertEquals(MunicipalityState.PRODUCTION, lanus.getState());
+        assertEquals(prodState, lanus.getState());
     }
 
     @Test (expected = MatchNotPlayerTurnException.class)
@@ -474,15 +482,15 @@ public class MatchServiceTest {
 
         lanus.setId(98765);
         lanus.setOwner(user2);
-        lanus.setState(MunicipalityState.DEFENSE);
+        lanus.setState(defenseState);
         tigre.setId(56789);
 
         Mockito.when(matchRepository.findById(123456L)).thenReturn(java.util.Optional.of(match));
 
-        UpdateMunicipalityStateDTO dto = new UpdateMunicipalityStateDTO();
-        dto.setNewState(MunicipalityState.PRODUCTION);
+        //UpdateMunicipalityStateDTO dto = new UpdateMunicipalityStateDTO();
+        //dto.setNewState(prodState);
 
-        matchService.updateMunicipalityState("123456", "98765", dto);
+        matchService.updateMunicipalityState("123456", "98765"/*, dto*/);
     }
 
     @Test (expected = MatchNotStartedException.class)
@@ -493,10 +501,10 @@ public class MatchServiceTest {
 
         Mockito.when(matchRepository.findById(123456L)).thenReturn(java.util.Optional.of(match));
 
-        UpdateMunicipalityStateDTO dto = new UpdateMunicipalityStateDTO();
-        dto.setNewState(MunicipalityState.PRODUCTION);
+        //UpdateMunicipalityStateDTO dto = new UpdateMunicipalityStateDTO();
+        //dto.setNewState(prodState);
 
-        matchService.updateMunicipalityState("123456", "98765", dto);
+        matchService.updateMunicipalityState("123456", "98765"/*, dto*/);
     }
 
     @Test

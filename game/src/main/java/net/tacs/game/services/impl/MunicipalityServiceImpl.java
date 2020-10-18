@@ -10,8 +10,6 @@ import net.tacs.game.model.*;
 import net.tacs.game.model.dto.AttackMuniDTO;
 import net.tacs.game.model.dto.AttackResultDTO;
 import net.tacs.game.model.dto.MoveGauchosDTO;
-import net.tacs.game.model.dto.UpdateMunicipalityStateDTO;
-import net.tacs.game.repositories.MatchRepository;
 import net.tacs.game.repositories.MunicipalityRepository;
 import net.tacs.game.services.MatchService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,8 +88,8 @@ public class MunicipalityServiceImpl implements MunicipalityService {
 	public AttackResultDTO attackMunicipality(String matchId, AttackMuniDTO attackMuniDTO) throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException {
         Match match = matchService.getMatchById(matchId);
 
-        matchService.CheckMatchNotStarted(match);
-        matchService.CheckMatchFinished(match);
+        matchService.checkMatchNotStarted(match);
+        matchService.checkMatchFinished(match);
 
         if(attackMuniDTO.getMuniAttackingId() == (attackMuniDTO.getMuniDefendingId()))
         {
@@ -135,6 +133,9 @@ public class MunicipalityServiceImpl implements MunicipalityService {
             if(muniAtk.getOwner().equals(muniDef.getOwner()))
                 throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(SAME_OWNER_MUNIS_CODE, SAME_OWNER_MUNIS_DETAIL)));
 
+            if(muniAtk.getGauchosQty() < attackMuniDTO.getGauchosQty())
+                throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(NOT_ENOUGH_GAUCHOS_CODE, NOT_ENOUGH_GAUCHOS_DETAIL)));
+
             result = muniAtk.attack(muniDef, match.getConfig(), attackMuniDTO.getGauchosQty());
 
             muniAtk.setBlocked(true);
@@ -165,8 +166,8 @@ public class MunicipalityServiceImpl implements MunicipalityService {
     public List<Municipality> moveGauchos(String matchId, MoveGauchosDTO requestBean) throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException {
         Match match = matchService.getMatchById(matchId);
 
-        matchService.CheckMatchNotStarted(match);
-        matchService.CheckMatchFinished(match);
+        matchService.checkMatchNotStarted(match);
+        matchService.checkMatchFinished(match);
 
         if(requestBean.getIdOriginMuni().equals(requestBean.getIdDestinyMuni()))
         {

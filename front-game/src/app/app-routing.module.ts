@@ -2,27 +2,25 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { HomeComponent } from './components/home/home.component';
 import { MatchSearchComponent } from './components/match/match-search/match-search.component';
+import { SocketComponent } from "./components/socket/socket.component";
+import { StatisticsPanelComponent } from './components/match/statistics-panel/statistics-panel.component';
+import { AuthGuard } from './services/auth.guard';
+import { MatchMapComponent } from './components/match/match-map/match-map.component';
+
 
 const appRoutes: Routes = [
     //Ejemplo: { path: 'home', component: HomeComponent}
     { path: 'home', component: HomeComponent },
-    { path:'searchMatches', component: MatchSearchComponent},
+    { path: 'socket', component: SocketComponent},
+    { path:'searchMatches', component: MatchSearchComponent, canActivate: [AuthGuard]},
+    { path:'mapMatch/:id', component: MatchMapComponent, canActivate: [AuthGuard]},
+    { path:'getStatistics', component: StatisticsPanelComponent, canActivate: [AuthGuard]},
     { path: '**', redirectTo: 'home' },
 ];
 
 export const AppRoutes = RouterModule.forRoot(appRoutes);
 
-/*
-import { Routes, RouterModule } from '@angular/router';
-import { HomeComponent } from './components/home.component/home.component';
-// <imports>
-import { SuscriptionsComponent } from './components/suscription/suscriptions/suscriptions.component';
-import { PublicationsComponent } from './components/publication/publications/publications.component';
-import { DispatchersComponent } from './components/dispatcher/dispatchers/dispatchers.component';
-import { DevicesComponent } from './components/device/devices/devices.component';
-import { MeasuresComponent } from './components/measure/measures/measures.component';
-import { MeasurepacketsComponent } from './components/measurepacket/measurepackets/measurepackets.component';
-import { AuthGuard } from './authGuard';
+/*import { AuthGuard } from './authGuard';
 // </imports>
 
 const appRoutes: Routes = [

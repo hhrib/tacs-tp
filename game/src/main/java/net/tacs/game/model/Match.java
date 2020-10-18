@@ -8,11 +8,13 @@ import net.tacs.game.model.dto.AttackMuniDTO;
 import net.tacs.game.model.dto.AttackResultDTO;
 import net.tacs.game.model.enums.MatchState;
 
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
 public class Match {
+
     private static long idCounter = 0;
     private Long id;
 

@@ -1,6 +1,7 @@
 package net.tacs.game.model.dto;
 
-import net.tacs.game.model.enums.MunicipalityState;
+//import net.tacs.game.model.enums.MunicipalityState;
+import net.tacs.game.model.interfaces.MunicipalityState;
 
 import java.util.Objects;
 

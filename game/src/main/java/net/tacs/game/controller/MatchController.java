@@ -9,6 +9,12 @@ import net.tacs.game.exceptions.MatchNotStartedException;
 import net.tacs.game.mapper.MatchToDTOMapper;
 import net.tacs.game.model.ApiError;
 import net.tacs.game.model.Match;
+import net.tacs.game.model.dto.CreateMatchDTO;
+import net.tacs.game.model.dto.MatchDTOResponse;
+import net.tacs.game.model.dto.MuniStatisticsDTOResponse;
+import net.tacs.game.model.dto.UpdateMunicipalityStateDTO;
+// import net.tacs.game.model.enums.MunicipalityState;
+import net.tacs.game.model.websocket.ChatMessage;
 import net.tacs.game.model.Municipality;
 import net.tacs.game.model.dto.*;
 import net.tacs.game.services.MatchService;
@@ -23,6 +29,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 @RestController
@@ -114,8 +121,8 @@ public class MatchController {
     }
 
     @PatchMapping("/matches/{matchId}/municipalities/{muniId}/")
-    public ResponseEntity updateMunicipalityState(@PathVariable("matchId") String matchId, @PathVariable("muniId") String muniId, @RequestBody UpdateMunicipalityStateDTO dto) throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException {
-        this.matchService.updateMunicipalityState(matchId, muniId, dto);
+    public ResponseEntity updateMunicipalityState(@PathVariable("matchId") String matchId, @PathVariable("muniId") String muniId/*, @RequestBody UpdateMunicipalityStateDTO dto*/) throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException {
+        this.matchService.updateMunicipalityState(matchId, muniId/*, dto*/);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
@@ -129,6 +136,14 @@ public class MatchController {
     public ResponseEntity abandonMatch(@PathVariable("matchId") String matchId, @RequestBody RetireDTO retireDTO) throws MatchException {
         this.matchService.retireFromMatch(matchId, retireDTO);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping("/matches/users/{userId}")
+    public ResponseEntity<MatchIdDTO> getMatchForUser(@PathVariable("userId") String userId) throws MatchException {
+        Match match = this.matchService.getMatchForUserId(userId);
+        MatchIdDTO matchIdDTO = new MatchIdDTO();
+        matchIdDTO.setMatchId(match.getId());
+        return new ResponseEntity<>(matchIdDTO, HttpStatus.OK);
     }
 
     /**
