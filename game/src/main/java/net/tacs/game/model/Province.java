@@ -1,11 +1,15 @@
 package net.tacs.game.model;
 
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import net.tacs.game.model.serializers.ProvinceSerializer;
+
 import java.security.SecureRandom;
 import java.util.*;
 
 //@Entity
 //@Table(name = "province")
+@JsonSerialize(using = ProvinceSerializer.class)
 public class Province {
 
 //    @Id
