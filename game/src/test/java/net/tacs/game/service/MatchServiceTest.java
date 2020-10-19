@@ -1,24 +1,18 @@
 package net.tacs.game.service;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.doNothing;
-
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import net.tacs.game.exceptions.MatchNotPlayerTurnException;
 import net.tacs.game.exceptions.MatchNotStartedException;
 import net.tacs.game.model.*;
+import net.tacs.game.model.dto.MatchesStatisticsDTO;
 import net.tacs.game.model.dto.RetireDTO;
-import net.tacs.game.model.dto.UpdateMunicipalityStateDTO;
 import net.tacs.game.model.enums.MatchState;
-//import net.tacs.game.model.enums.MunicipalityState;
 import net.tacs.game.model.interfaces.MunicipalityDefense;
 import net.tacs.game.model.interfaces.MunicipalityProduction;
 import net.tacs.game.repositories.MatchRepository;
@@ -26,7 +20,7 @@ import net.tacs.game.repositories.ProvinceRepository;
 import net.tacs.game.repositories.UserRepository;
 import net.tacs.game.services.MunicipalityService;
 import net.tacs.game.GameApplication;
-import org.mockito.ArgumentCaptor;
+import net.tacs.game.services.UserService;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import net.tacs.game.services.SecurityProviderService;
@@ -64,6 +58,9 @@ public class MatchServiceTest {
     private ProvinceRepository provinceRepository;
 
     @MockBean
+    private UserService userService;
+
+    @MockBean
     private UserRepository userRepository;
 
     private User user1;
@@ -86,11 +83,17 @@ public class MatchServiceTest {
         user2 = new User("Paula");
         buenosAires = new Province("Buenos Aires");
         lanus = new Municipality("Lanus");
+        lanus.setId(11111);
         avellaneda = new Municipality("Avellaneda");
+        avellaneda.setId(22222);
         quilmes = new Municipality("Quilmes");
+        quilmes.setId(33333);
         tigre = new Municipality("Tigre");
+        tigre.setId(44444);
         lomas = new Municipality("Lomas de Zamora");
+        lomas.setId(55555);
         matanza = new Municipality("La Matanza");
+        matanza.setId(66666);
         configuration = new MatchConfiguration();
         defenseState = new MunicipalityDefense();
         prodState = new MunicipalityProduction();
@@ -110,16 +113,8 @@ public class MatchServiceTest {
         provinceRepository.add(buenosAires);
         userRepository.setUsers(Arrays.asList(user1,user2));
 
-        List<Municipality> municipalityList = new ArrayList<>();
-        municipalityList.add(lanus);
-        municipalityList.add(quilmes);
-        municipalityList.add(avellaneda);
-        municipalityList.add(tigre);
-        municipalityList.add(lomas);
-        municipalityList.add(matanza);
-
         buenosAires.setId(99999997L);
-        buenosAires.setMunicipalities(municipalityList);
+        buenosAires.setMunicipalities(Arrays.asList(lanus, avellaneda, quilmes, tigre, lomas, matanza));
 
         user1.setId("ABC1");
         user2.setId("ABC2");
@@ -131,7 +126,13 @@ public class MatchServiceTest {
         lomas.setCentroide(new Centroide("4", "4"));
         matanza.setCentroide(new Centroide("5", "5"));
 
-        Double[] elevations = {1D, 2D, 3D, 4D, 5D, 6D};
+        Map<Integer, Double> elevations = new HashMap<>();
+        elevations.put(1, 1D);
+        elevations.put(2, 2D);
+        elevations.put(3, 3D);
+        elevations.put(4, 4D);
+        elevations.put(5, 5D);
+        elevations.put(6, 6D);
 
         Mockito.when(userRepository.findById("ABC1")).thenReturn(java.util.Optional.ofNullable(user1));
         Mockito.when(userRepository.findById("ABC2")).thenReturn(java.util.Optional.ofNullable(user2));
@@ -144,16 +145,16 @@ public class MatchServiceTest {
         assertEquals("Pepe" , match.getUsers().get(0).getUsername());
         assertEquals("Paula" , match.getUsers().get(1).getUsername());
         assertEquals("Buenos Aires", match.getMap().getNombre());
-        assertTrue(match.getMap().getMunicipalities().contains(lanus));
-        assertTrue(match.getMap().getMunicipalities().contains(avellaneda));
-        assertTrue(match.getMap().getMunicipalities().contains(quilmes));
-        assertTrue(match.getMap().getMunicipalities().contains(tigre));
-        assertTrue(match.getMap().getMunicipalities().contains(lomas));
-        assertTrue(match.getMap().getMunicipalities().contains(matanza));
+        assertTrue(match.getMap().getMunicipalities().containsValue(lanus));
+        assertTrue(match.getMap().getMunicipalities().containsValue(avellaneda));
+        assertTrue(match.getMap().getMunicipalities().containsValue(quilmes));
+        assertTrue(match.getMap().getMunicipalities().containsValue(tigre));
+        assertTrue(match.getMap().getMunicipalities().containsValue(lomas));
+        assertTrue(match.getMap().getMunicipalities().containsValue(matanza));
 
         //chequea que cada usuario tenga la misma cantidad de municipios
-        assertEquals(3, user1.municipalitiesOwning(match.getMap().getMunicipalities()));
-        assertEquals(3, user2.municipalitiesOwning(match.getMap().getMunicipalities()));
+        assertEquals(3, user1.municipalitiesOwning(new ArrayList<>(match.getMap().getMunicipalities().values())));
+        assertEquals(3, user2.municipalitiesOwning(new ArrayList<>(match.getMap().getMunicipalities().values())));
     }
 
     @Test
@@ -450,12 +451,12 @@ public class MatchServiceTest {
         match.setTurnPlayer(user2);
         match.setMap(buenosAires);
 
-        buenosAires.setMunicipalities(Arrays.asList(lanus, tigre));
-
         lanus.setId(98765);
         lanus.setOwner(user2);
         lanus.setState(defenseState);
         tigre.setId(56789);
+
+        buenosAires.setMunicipalities(Arrays.asList(lanus, tigre));
 
         Mockito.when(matchRepository.findById(123456L)).thenReturn(java.util.Optional.of(match));
 
@@ -478,12 +479,12 @@ public class MatchServiceTest {
         match.setTurnPlayer(user1);
         match.setMap(buenosAires);
 
-        buenosAires.setMunicipalities(Arrays.asList(lanus, tigre));
-
         lanus.setId(98765);
         lanus.setOwner(user2);
         lanus.setState(defenseState);
         tigre.setId(56789);
+
+        buenosAires.setMunicipalities(Arrays.asList(lanus, tigre));
 
         Mockito.when(matchRepository.findById(123456L)).thenReturn(java.util.Optional.of(match));
 
@@ -589,9 +590,9 @@ public class MatchServiceTest {
 
         matchService.retireFromMatch("123456", retireDTO);
 
-        assertEquals(3, user1.municipalitiesOwning(match.getMap().getMunicipalities()));
-        assertEquals(3, user2.municipalitiesOwning(match.getMap().getMunicipalities()));
-        assertEquals(0, user3.municipalitiesOwning(match.getMap().getMunicipalities()));
+        assertEquals(3, user1.municipalitiesOwning(new ArrayList<>(match.getMap().getMunicipalities().values())));
+        assertEquals(3, user2.municipalitiesOwning(new ArrayList<>(match.getMap().getMunicipalities().values())));
+        assertEquals(0, user3.municipalitiesOwning(new ArrayList<>(match.getMap().getMunicipalities().values())));
         assertFalse(match.getConfig().getPlayersTurns().contains(user3));
     }
 
@@ -637,5 +638,81 @@ public class MatchServiceTest {
         Mockito.when(userRepository.findById("ABC123")).thenReturn(java.util.Optional.of(user1));
 
         matchService.retireFromMatch("123456", retireDTO);
+    }
+
+    @Test
+    public void getStatisticsForMatchesByDatesOK() throws MatchException {
+        Match match = new Match();
+        match.setId(1234L);
+        match.setState(MatchState.CREATED);
+        match.setDate(LocalDateTime.of(2020, 9, 10, 0, 0));
+
+        Match match2 = new Match();
+        match2.setId(1235L);
+        match2.setState(MatchState.CANCELLED);
+        match2.setDate(LocalDateTime.of(2020, 9, 11, 0, 0));
+
+        Match match3 = new Match();
+        match3.setId(1236L);
+        match3.setState(MatchState.IN_PROGRESS);
+        match3.setDate(LocalDateTime.of(2020, 9, 12, 0, 0));
+
+        Match match4 = new Match();
+        match4.setId(1237L);
+        match4.setState(MatchState.IN_PROGRESS);
+        match4.setDate(LocalDateTime.of(2020, 9, 13, 0, 0));
+
+        Match match5 = new Match();
+        match5.setId(1238L);
+        match5.setState(MatchState.FINISHED);
+        match5.setDate(LocalDateTime.of(2020, 9, 9, 0, 0));
+
+        Mockito.when(matchRepository.getMatches()).thenReturn(Arrays.asList(match, match2, match3, match4, match5));
+        LocalDate dateFrom = LocalDate.of(2020, 9, 10);
+        LocalDate dateTo = LocalDate.of(2020, 9, 20);
+
+        MatchesStatisticsDTO dto = matchService.getStatisticsForMatches(dateFrom.format(DateTimeFormatter.ISO_LOCAL_DATE), dateTo.format(DateTimeFormatter.ISO_LOCAL_DATE));
+
+        assertEquals(1, dto.getCreatedMatches());
+        assertEquals(1, dto.getCancelledMatches());
+        assertEquals(2, dto.getInProgressMatches());
+        assertEquals(0, dto.getFinishedMatches());
+    }
+
+    @Test
+    public void getStatisticsForMatchesDatesNotProvidedOK() throws MatchException {
+        Match match = new Match();
+        match.setId(1234L);
+        match.setState(MatchState.CREATED);
+        match.setDate(LocalDateTime.of(2020, 9, 10, 0, 0));
+
+        Match match2 = new Match();
+        match2.setId(1235L);
+        match2.setState(MatchState.CANCELLED);
+        match2.setDate(LocalDateTime.of(2020, 9, 11, 0, 0));
+
+        Match match3 = new Match();
+        match3.setId(1236L);
+        match3.setState(MatchState.IN_PROGRESS);
+        match3.setDate(LocalDateTime.of(2020, 9, 12, 0, 0));
+
+        Match match4 = new Match();
+        match4.setId(1237L);
+        match4.setState(MatchState.IN_PROGRESS);
+        match4.setDate(LocalDateTime.of(2020, 9, 13, 0, 0));
+
+        Match match5 = new Match();
+        match5.setId(1238L);
+        match5.setState(MatchState.FINISHED);
+        match5.setDate(LocalDateTime.of(2020, 9, 9, 0, 0));
+
+        Mockito.when(matchRepository.getMatches()).thenReturn(Arrays.asList(match, match2, match3, match4, match5));
+
+        MatchesStatisticsDTO dto = matchService.getStatisticsForMatches(null, null);
+
+        assertEquals(1, dto.getCreatedMatches());
+        assertEquals(1, dto.getCancelledMatches());
+        assertEquals(2, dto.getInProgressMatches());
+        assertEquals(1, dto.getFinishedMatches());
     }
 }

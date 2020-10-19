@@ -4,12 +4,11 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
-import net.tacs.game.model.dto.AttackMuniDTO;
-import net.tacs.game.model.dto.AttackResultDTO;
 import net.tacs.game.model.enums.MatchState;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -143,8 +142,8 @@ public class Match {
         return false;
     }
 
-    public void checkVictory(User player) {
-        int playerMunis = player.municipalitiesOwning(this.getMap().getMunicipalities());
+    public boolean checkVictory(User player) {
+        int playerMunis = player.municipalitiesOwning(new ArrayList<>(this.getMap().getMunicipalities().values()));
 
         if(playerMunis == 0)
         {
@@ -155,7 +154,10 @@ public class Match {
         {
             this.winner = this.getConfig().getPlayersTurns().get(0);
             this.setState(MatchState.FINISHED);
+            return true;
         }
+
+        return false;
     }
 
     public boolean playerCanAttack(User player) {

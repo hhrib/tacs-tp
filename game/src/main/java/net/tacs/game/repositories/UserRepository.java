@@ -25,6 +25,10 @@ public class UserRepository {
         return users.stream().filter(u -> u.getId().equals(id)).findFirst();
     }
 
+    public Optional<User> findByUsername(String username) {
+        return users.stream().filter(u -> u.getUsername().equals(username)).findFirst();
+    }
+
     public static List<User> getUsers() {
         return users;
     }

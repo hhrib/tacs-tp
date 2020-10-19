@@ -12,6 +12,7 @@ import net.tacs.game.model.dto.AttackResultDTO;
 import net.tacs.game.model.dto.MoveGauchosDTO;
 import net.tacs.game.repositories.MunicipalityRepository;
 import net.tacs.game.services.MatchService;
+import net.tacs.game.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +38,9 @@ public class MunicipalityServiceImpl implements MunicipalityService {
     private MatchService matchService;
 
 	@Autowired
+    private UserService userService;
+
+	@Autowired
     private MunicipalityRepository municipalityRepository;
 	
 	public synchronized Double getElevation(Centroide location) {
@@ -51,8 +55,8 @@ public class MunicipalityServiceImpl implements MunicipalityService {
 		return elevation;
 	}
 
-    public synchronized Double[] getElevations(List<Municipality> municipalities) {
-	    Double[] elevationsResponse = new Double[municipalities.size()];
+    public synchronized Map<Integer, Double> getElevations(List<Municipality> municipalities) {
+	    Map<Integer, Double> elevationsResponse = new HashMap<>();
 	    List<Municipality> munisWithoutElevation = new ArrayList<>();
 	    String elevationsQuery = "";
 
@@ -65,7 +69,7 @@ public class MunicipalityServiceImpl implements MunicipalityService {
                 munisWithoutElevation.add(aMuni);
                 elevationsQuery = elevationsQuery.concat(aMuni.getCentroide().toString() + "|");
             } else {
-                elevationsResponse[municipalities.indexOf(aMuni)] = elevation;
+                elevationsResponse.put(aMuni.getId(), elevation);
             }
         }
 
@@ -78,7 +82,7 @@ public class MunicipalityServiceImpl implements MunicipalityService {
 
         for(int i = 0; i < munisWithoutElevation.size(); i++)
         {
-            elevationsResponse[municipalities.indexOf(munisWithoutElevation.get(i))] = response.getBody().getResults()[i].getElevation();
+            elevationsResponse.put(munisWithoutElevation.get(i).getId(), response.getBody().getResults()[i].getElevation());
         }
 
         return elevationsResponse;
@@ -96,31 +100,12 @@ public class MunicipalityServiceImpl implements MunicipalityService {
             throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(SAME_ORIGIN_DESTINY_CODE, SAME_ORIGIN_DESTINY_DETAIL)));
         }
 
-	    boolean bMuniAttackFound = false;
-        boolean bMuniDefenseFound = false;
-
-        Municipality muniAtk = null;
-        Municipality muniDef = null;
-        User rival = null;
-
         int result = -2;
 
-	    for(Municipality aMuni : match.getMap().getMunicipalities())
-        {
-            if(attackMuniDTO.getMuniAttackingId() == aMuni.getId())
-            {
-                muniAtk = aMuni;
-                bMuniAttackFound = true;
-            }
-            if(attackMuniDTO.getMuniDefendingId() == aMuni.getId())
-            {
-                muniDef = aMuni;
-                rival = aMuni.getOwner();
-                bMuniDefenseFound = true;
-            }
-        }
+        Municipality muniAtk = match.getMap().getMunicipalities().get(attackMuniDTO.getMuniAttackingId());
+        Municipality muniDef = match.getMap().getMunicipalities().get(attackMuniDTO.getMuniDefendingId());
 
-	    if(bMuniAttackFound && bMuniDefenseFound)
+	    if(muniAtk != null && muniDef != null)
 	    {
             if(!match.playerCanAttack(muniAtk.getOwner()))
                 throw new MatchNotPlayerTurnException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(PLAYER_DOESNT_HAVE_TURN_CODE, PLAYER_DOESNT_HAVE_TURN_DETAIL)));
@@ -136,12 +121,14 @@ public class MunicipalityServiceImpl implements MunicipalityService {
             if(muniAtk.getGauchosQty() < attackMuniDTO.getGauchosQty())
                 throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(NOT_ENOUGH_GAUCHOS_CODE, NOT_ENOUGH_GAUCHOS_DETAIL)));
 
+            User rival = muniDef.getOwner();
+
             result = muniAtk.attack(muniDef, match.getConfig(), attackMuniDTO.getGauchosQty());
 
             muniAtk.setBlocked(true);
 
-            if(result == 1) //si el rival perdio el municipio chequear si perdio la partida
-                match.checkVictory(rival);
+            if(match.checkVictory(rival)) //si el rival perdio el municipio chequear si perdio la partida
+                userService.setWinnerAndLosersStats(match);
 
             return new AttackResultDTO(result, muniAtk, muniDef);
 	    }
@@ -153,12 +140,12 @@ public class MunicipalityServiceImpl implements MunicipalityService {
 
 	@Override
 	public void produceGauchos(Match match, User user) {
-		for (Municipality municipality : match.getMap().getMunicipalities()) {
-			if(municipality.getOwner().equals(user))
+		for (Map.Entry<Integer, Municipality> municipality : match.getMap().getMunicipalities().entrySet()) {
+			if(municipality.getValue().getOwner().equals(user))
 			{
 			    //Desbloquear municipio y producir gauchos
-                municipality.setBlocked(false);
-				municipality.produceGauchos(match.getConfig());
+                municipality.getValue().setBlocked(false);
+				municipality.getValue().produceGauchos(match.getConfig());
 			}
 		}
 	}
@@ -174,26 +161,16 @@ public class MunicipalityServiceImpl implements MunicipalityService {
             throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(SAME_ORIGIN_DESTINY_CODE, SAME_ORIGIN_DESTINY_DETAIL)));
         }
 
-        Municipality muniOrigin = null;
-        Municipality muniDestiny = null;
-
         List<Integer> idsNotFound = new ArrayList<>();
-        idsNotFound.add(0, requestBean.getIdOriginMuni());
-        idsNotFound.add(1, requestBean.getIdDestinyMuni());
 
-        for (Municipality aMuni : match.getMap().getMunicipalities())
-        {
-            if (aMuni.getId().equals(requestBean.getIdOriginMuni()))
-            {
-                muniOrigin = aMuni;
-                idsNotFound.removeIf(id -> id.equals(aMuni.getId()));
-            }
-            if (aMuni.getId().equals(requestBean.getIdDestinyMuni()))
-            {
-                muniDestiny = aMuni;
-                idsNotFound.removeIf(id -> id.equals(aMuni.getId()));
-            }
-        }
+        Municipality muniOrigin = match.getMap().getMunicipalities().get(requestBean.getIdOriginMuni());
+        if(muniOrigin == null)
+            idsNotFound.add(0, requestBean.getIdOriginMuni());
+
+        Municipality muniDestiny = match.getMap().getMunicipalities().get(requestBean.getIdDestinyMuni());
+        if(muniDestiny == null)
+            idsNotFound.add(1, requestBean.getIdDestinyMuni());
+
 
         if(idsNotFound.isEmpty())
         {

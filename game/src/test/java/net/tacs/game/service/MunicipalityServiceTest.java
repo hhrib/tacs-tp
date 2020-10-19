@@ -9,10 +9,8 @@ import net.tacs.game.model.dto.AttackMuniDTO;
 import net.tacs.game.model.dto.AttackResultDTO;
 import net.tacs.game.model.dto.MoveGauchosDTO;
 import net.tacs.game.model.enums.MatchState;
-//import net.tacs.game.model.enums.MunicipalityState;
 import net.tacs.game.model.interfaces.MunicipalityDefense;
 import net.tacs.game.model.interfaces.MunicipalityProduction;
-import net.tacs.game.repositories.MatchRepository;
 import net.tacs.game.services.MatchService;
 import net.tacs.game.services.MunicipalityService;
 import org.junit.Before;
@@ -25,7 +23,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 
@@ -80,7 +77,6 @@ public class MunicipalityServiceTest {
         match.setId(111111L);
         match.setState(MatchState.IN_PROGRESS);
         match.setMap(buenosAires);
-        match.getMap().setMunicipalities(Arrays.asList(Lanus, Avellaneda, Quilmes));
 
         Mockito.when(matchService.getMatchById("111111")).thenReturn(match);
 
@@ -115,6 +111,8 @@ public class MunicipalityServiceTest {
         Avellaneda.setGauchosQty(100);
         Avellaneda.setState(defenseState);
 
+        buenosAires.setMunicipalities(Arrays.asList(Lanus, Avellaneda, Quilmes));
+
         AttackMuniDTO attackMuniDTO = new AttackMuniDTO();
         attackMuniDTO.setGauchosQty(250);
         attackMuniDTO.setMuniAttackingId(999999);
@@ -131,7 +129,6 @@ public class MunicipalityServiceTest {
         match.setId(111111L);
         match.setState(MatchState.IN_PROGRESS);
         match.setMap(buenosAires);
-        match.getMap().setMunicipalities(Arrays.asList(Lanus, Avellaneda));
 
         Mockito.when(matchService.getMatchById("111111")).thenReturn(match);
 
@@ -163,6 +160,8 @@ public class MunicipalityServiceTest {
         Lanus.setGauchosQty(100);
         Avellaneda.setGauchosQty(100);
         Avellaneda.setState(prodState);
+
+        buenosAires.setMunicipalities(Arrays.asList(Lanus, Avellaneda));
 
         AttackMuniDTO attackMuniDTO = new AttackMuniDTO();
         attackMuniDTO.setGauchosQty(100);
@@ -214,7 +213,6 @@ public class MunicipalityServiceTest {
         match.setMap(buenosAires);
         match.setConfig(configuration);
         match.setTurnPlayer(user2);
-        buenosAires.setMunicipalities(Arrays.asList(Lanus, Avellaneda, Quilmes));
 
         Lanus.setId(77777);
         Lanus.setOwner(user1);
@@ -228,6 +226,8 @@ public class MunicipalityServiceTest {
         Quilmes.setGauchosQty(1500);
 
         Quilmes.setBlocked(false);
+
+        buenosAires.setMunicipalities(Arrays.asList(Lanus, Avellaneda, Quilmes));
 
         Mockito.when(matchService.getMatchById("1235")).thenReturn(match);
 
@@ -309,7 +309,6 @@ public class MunicipalityServiceTest {
         match.setMap(buenosAires);
         match.setConfig(configuration);
         match.setTurnPlayer(user1);
-        buenosAires.setMunicipalities(Arrays.asList(Avellaneda, Quilmes));
 
         Avellaneda.setId(99999);
         Avellaneda.setOwner(user2);
@@ -318,6 +317,8 @@ public class MunicipalityServiceTest {
 
         Avellaneda.setGauchosQty(2500);
         Quilmes.setGauchosQty(1500);
+
+        buenosAires.setMunicipalities(Arrays.asList(Avellaneda, Quilmes));
 
         Mockito.when(matchService.getMatchById("1235")).thenReturn(match);
 
@@ -337,7 +338,6 @@ public class MunicipalityServiceTest {
         match.setState(MatchState.IN_PROGRESS);
         match.setMap(buenosAires);
         match.setConfig(configuration);
-        buenosAires.setMunicipalities(Arrays.asList(Lanus, Avellaneda, Quilmes, Tigre, Matanza, Lomas));
 
         Lanus.setId(77777);
         Avellaneda.setId(99999);
@@ -372,6 +372,8 @@ public class MunicipalityServiceTest {
         Quilmes.setElevation(1500D);
         Quilmes.setState(prodState);
 
+        buenosAires.setMunicipalities(Arrays.asList(Lanus, Avellaneda, Quilmes, Tigre, Matanza, Lomas));
+
         municipalityService.produceGauchos(match, user1);
 
         assertEquals(7, Lanus.getGauchosQty());
@@ -388,7 +390,6 @@ public class MunicipalityServiceTest {
         match.setId(111111L);
         match.setState(MatchState.IN_PROGRESS);
         match.setMap(buenosAires);
-        match.getMap().setMunicipalities(Arrays.asList(Lanus, Avellaneda));
 
         Mockito.when(matchService.getMatchById("111111")).thenReturn(match);
 
@@ -422,6 +423,8 @@ public class MunicipalityServiceTest {
 
         Avellaneda.setState(defenseState);
 
+        buenosAires.setMunicipalities(Arrays.asList(Lanus, Avellaneda));
+
         AttackMuniDTO attackMuniDTO = new AttackMuniDTO();
         attackMuniDTO.setGauchosQty(250);
         attackMuniDTO.setMuniAttackingId(999999);
@@ -439,7 +442,6 @@ public class MunicipalityServiceTest {
         match.setId(111111L);
         match.setState(MatchState.IN_PROGRESS);
         match.setMap(buenosAires);
-        match.getMap().setMunicipalities(Arrays.asList(Lanus, Avellaneda));
         match.setTurnPlayer(user1);
 
         Mockito.when(matchService.getMatchById("111111")).thenReturn(match);
@@ -449,6 +451,8 @@ public class MunicipalityServiceTest {
         Lanus.setBlocked(false);
         Avellaneda.setId(888888);
         Avellaneda.setOwner(user1);
+
+        buenosAires.setMunicipalities(Arrays.asList(Lanus, Avellaneda));
 
         AttackMuniDTO attackMuniDTO = new AttackMuniDTO();
         attackMuniDTO.setGauchosQty(250);
@@ -464,7 +468,6 @@ public class MunicipalityServiceTest {
         match.setId(111111L);
         match.setState(MatchState.IN_PROGRESS);
         match.setMap(buenosAires);
-        match.getMap().setMunicipalities(Arrays.asList(Lanus, Avellaneda));
         match.setTurnPlayer(user1);
 
         Mockito.when(matchService.getMatchById("111111")).thenReturn(match);
@@ -474,6 +477,8 @@ public class MunicipalityServiceTest {
         Lanus.setBlocked(true);
         Avellaneda.setId(888888);
         Avellaneda.setOwner(user1);
+
+        buenosAires.setMunicipalities(Arrays.asList(Lanus, Avellaneda));
 
         AttackMuniDTO attackMuniDTO = new AttackMuniDTO();
         attackMuniDTO.setGauchosQty(250);
@@ -489,7 +494,6 @@ public class MunicipalityServiceTest {
         match.setId(111111L);
         match.setState(MatchState.IN_PROGRESS);
         match.setMap(buenosAires);
-        match.getMap().setMunicipalities(Arrays.asList(Lanus, Avellaneda));
         match.setTurnPlayer(user1);
 
         Mockito.when(matchService.getMatchById("111111")).thenReturn(match);
@@ -501,6 +505,8 @@ public class MunicipalityServiceTest {
 
         Avellaneda.setId(888888);
         Avellaneda.setOwner(user2);
+
+        buenosAires.setMunicipalities(Arrays.asList(Lanus, Avellaneda));
 
         AttackMuniDTO attackMuniDTO = new AttackMuniDTO();
         attackMuniDTO.setGauchosQty(250);
