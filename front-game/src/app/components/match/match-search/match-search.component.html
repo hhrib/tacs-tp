@@ -33,6 +33,15 @@
 		<span *ngFor="let user of element.users">{{user.username}} </span>
 	  </td>
 	</ng-container>
+	<ng-container matColumnDef="view">
+		<th mat-header-cell *matHeaderCellDef mat-sort-header> View map </th>
+		<td mat-cell *matCellDef="let element">
+			<button mat-button matSuffix mat-icon-button aria-label="View" (click)="viewDetail(element)">
+				<mat-icon>preview</mat-icon>
+			  </button>
+		</td>
+	  </ng-container>
+	
 
 	<!-- Starting date Column -->
 	<ng-container matColumnDef="date">
@@ -59,7 +68,29 @@
   <mat-paginator [pageSizeOptions]="[5, 10, 25, 50]" [pageSize]="5" showFirstLastButtons></mat-paginator>
   
 </div>
-  
+  <div>
+	<div *ngFor="let muni of municipalities">
+        {{muni.muniId}}, {{muni.muniName}}
+        <button class="btn btn-success" (click)="viewDetailMuni(muni)">View</button>
+    </div>
+	  <statistics-panel municipalities={{municipalities}}></statistics-panel>
+  </div>
+
+
+  <div>
+	<div *ngFor="let p of pagePhoto?.hits" class="col-md-3 ">
+		<div class="panel panel-primary cadre">
+			<div class="panel-heading">{{p.tags}}</div>
+			<div class="panel-body">
+			  <div>
+				<p>User : {{p.user}}</p>
+			  </div>
+			  <img src="{{p.previewURL}}" >
+			</div>
+		</div>
+	  </div>
+	  <statistics-panel municipalities={{municipalities}}></statistics-panel>
+  </div>
   <!-- Copyright 2020 Google LLC. All Rights Reserved.
 	  Use of this source code is governed by an MIT-style license that
 	  can be found in the LICENSE file at http://angular.io/license -->

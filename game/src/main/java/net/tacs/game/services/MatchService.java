@@ -4,6 +4,10 @@ import net.tacs.game.exceptions.MatchException;
 import net.tacs.game.exceptions.MatchNotPlayerTurnException;
 import net.tacs.game.exceptions.MatchNotStartedException;
 import net.tacs.game.model.Match;
+import net.tacs.game.model.dto.CreateMatchDTO;
+import net.tacs.game.model.dto.MuniStatisticsDTOResponse;
+import net.tacs.game.model.dto.UpdateMunicipalityStateDTO;
+import net.tacs.game.model.websocket.ChatMessage;
 import net.tacs.game.model.dto.*;
 
 import java.util.List;
@@ -34,7 +38,10 @@ public interface MatchService {
 
     public void retireFromMatch(String matchId, RetireDTO retireDTO) throws MatchException;
 
-    public void CheckMatchNotStarted(Match match) throws MatchNotStartedException;
+    public void checkMatchNotStarted(Match match) throws MatchNotStartedException;
 
-    public void CheckMatchFinished(Match match) throws MatchException;
+    public void checkMatchFinished(Match match) throws MatchException;
+
+    public Match getMatchForUserId(String userId) throws MatchException;
+
 }

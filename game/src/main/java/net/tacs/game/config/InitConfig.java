@@ -51,7 +51,6 @@ public class InitConfig {
             List<AuthUserResponse> authUsers = securityProviderService.getUsers(authToken);
             userRepository.setUsers(AuthUserToUserMapper.mapUsers(authUsers));
             GameApplication.setToken(authToken);
-
         };
     }
 }

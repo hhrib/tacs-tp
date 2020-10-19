@@ -1,0 +1,17 @@
+<div>
+    <!--div *ngFor="let muni of municipalities">
+        {{muni}}
+        <button class="btn btn-success" (click)="viewDetail(muni)">View</button>
+    </div-->
+    <!--li *ngFor="#muni of municipalities">
+        {{ muni.id }}
+    </li-->
+    <input class="form-control" type="text" placeholder="message" [(ngModel)]="input">
+    <button class="btn btn-success" (click)="sendMessage()">Send</button>
+    <div class="content">
+        <div *ngFor="let msg of webSocketService.msg">
+            {{msg}}
+        </div>
+    </div>
+</div>
+

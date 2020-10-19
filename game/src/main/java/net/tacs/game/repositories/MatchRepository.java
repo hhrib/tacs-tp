@@ -1,10 +1,7 @@
 package net.tacs.game.repositories;
 
-import net.tacs.game.GameApplication;
 import net.tacs.game.model.Match;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,5 +39,10 @@ public class MatchRepository {//extends JpaRepository<Match, Long> {
     public void add(Match newMatch)
     {
         matches.add(newMatch);
+    }
+
+    public Optional<Match> findForUserId(String userId) {
+        return matches.stream().filter(match -> match.getUsers().stream().anyMatch(user -> user.getId().equals(userId)))
+                               .findFirst();
     }
 }

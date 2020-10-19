@@ -1,46 +1,45 @@
 <div class="container" style="text-align: center;">
     <form #matchCreation="ngForm" (ngSubmit)="onSubmit(matchCreation)">
     <h1 mat-dialog-title style="text-align: center;">Settings</h1>
-    <div mat-dialog-content>
+    <div mat-dialog-content style="overflow: hidden;">
         <mat-form-field>
             <mat-label>Province</mat-label>
-                <mat-select name="province" ngModel>
+                <mat-select name="province" ngModel [disabled]="clicked">
                     <mat-option *ngFor="let province of provinceList" [value]="province.id">{{province.name}}</mat-option>
                 </mat-select>
         </mat-form-field>
         
         <mat-form-field>
             <mat-label>Players</mat-label>
-            <mat-select multiple name="players" ngModel>
+            <mat-select multiple name="players" ngModel [disabled]="clicked">
                 <mat-option *ngFor="let player of playersList" [value]="player.id">{{player.name}}</mat-option> 
             </mat-select>
         </mat-form-field>
 
         <mat-form-field>
             <mat-label>Number of municipalities</mat-label>
-                <mat-select name="quantity" ngModel >
+                <mat-select name="quantity" ngModel [disabled]="clicked">
                     <mat-option *ngFor="let quantity of quantityList" [value]="quantity">{{quantity}}</mat-option>
                 </mat-select>
         </mat-form-field>
 
         <mat-form-field>
             <mat-label>Gauchos Pop</mat-label>
-                <mat-select name="gauchosQty" ngModel >
+                <mat-select name="gauchosQty" ngModel [disabled]="clicked">
                     <mat-option *ngFor="let gauchosQty of gauchosQtyList" [value]="gauchosQty">{{gauchosQty}}</mat-option>
                 </mat-select>
         </mat-form-field>
 
         <mat-form-field>
             <mat-label>Mode</mat-label>
-                <mat-select name="mode" ngModel >
+                <mat-select name="mode" ngModel [disabled]="clicked">
                     <mat-option *ngFor="let mode of modeList" [value]="mode.logicNums">{{mode.name}}</mat-option>
                 </mat-select>
         </mat-form-field>
 
-
         <div mat-dialog-actions style="display: block;">
-            <button mat-button (click)="onNoClick()">Cancel</button>
-            <button mat-button type="submit">Ok</button>
+            <button mat-button (click)="onNoClick()" [disabled]="clicked">Cancel</button>
+            <button mat-button type="submit" [disabled]="clicked">Ok</button>
         </div>
     </div>
 </form>
