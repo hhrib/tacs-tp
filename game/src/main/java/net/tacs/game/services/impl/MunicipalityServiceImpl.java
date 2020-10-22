@@ -7,15 +7,14 @@ import net.tacs.game.exceptions.MatchException;
 import net.tacs.game.exceptions.MatchNotPlayerTurnException;
 import net.tacs.game.exceptions.MatchNotStartedException;
 import net.tacs.game.model.*;
-import net.tacs.game.model.dto.AttackMuniDTO;
-import net.tacs.game.model.dto.AttackResultDTO;
-import net.tacs.game.model.dto.MoveGauchosDTO;
+import net.tacs.game.model.dto.*;
 import net.tacs.game.repositories.MunicipalityRepository;
 import net.tacs.game.services.MatchService;
 import net.tacs.game.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -42,6 +41,9 @@ public class MunicipalityServiceImpl implements MunicipalityService {
 
 	@Autowired
     private MunicipalityRepository municipalityRepository;
+
+    @Autowired
+    private SimpMessagingTemplate template;
 	
 	public synchronized Double getElevation(Centroide location) {
 		Double elevation = elevations.get(location);
@@ -127,7 +129,13 @@ public class MunicipalityServiceImpl implements MunicipalityService {
 
             muniAtk.setBlocked(true);
 
-            if(match.checkVictory(rival)) //si el rival perdio el municipio chequear si perdio la partida
+            if (match.rivalDefeated(rival)) {
+                PlayerDefeatedDTO playerDefeatedSocketMessage = new PlayerDefeatedDTO();
+                playerDefeatedSocketMessage.setUserId(rival.getId());
+                template.convertAndSend("/topic/" + matchId +"/defeated_player", playerDefeatedSocketMessage);
+            }
+
+            if(match.checkVictory()) //si el rival perdio el municipio chequear si perdio la partida
                 userService.setWinnerAndLosersStats(match);
 
             return new AttackResultDTO(result, muniAtk, muniDef);

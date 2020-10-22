@@ -142,13 +142,19 @@ public class Match {
         return false;
     }
 
-    public boolean checkVictory(User player) {
+    public boolean rivalDefeated(User player) {
         int playerMunis = player.municipalitiesOwning(new ArrayList<>(this.getMap().getMunicipalities().values()));
 
         if(playerMunis == 0)
         {
             this.getConfig().removePlayer(player);
+            return true;
         }
+
+        return false;
+    }
+
+    public boolean checkVictory() {
 
         if(getConfig().getPlayersTurns().size() == 1) //solo quedo un jugador
         {
