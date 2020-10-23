@@ -5,13 +5,7 @@ Segundo Cuatrimestre 2020 - UTN FRBA - El Mejor Grupo :)
 
 
 # Docker:
-
-Para build:
-1. Ejecutar docker-compose -f docker-compose-build.yml start
-2. Entrar en el browser a localhost:4200
-Para ejecuacion
-1. Ejecutar docker-compose up
-2. Entrar en el browser a localhost:4200
+Una vez dentro del directorio principal, ejecutar docker-compose up
 
 # Swagger UI - Ver especificación de la API Rest:
 * Se puede verificar ingresando por navegador al endpoint /swagger-ui.html <br />
