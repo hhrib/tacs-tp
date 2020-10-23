@@ -35,11 +35,6 @@ export class MessageService {
   }
   private onConnectCallback(matchId: any, user: any) {
     this.stompClient.subscribe(`/topic/${matchId}/turn_end`, (turnResponse) => {
-      // if (frame.body) {
-      //   let chat = JSON.parse(frame.body);
-      //   this.chats.push(new EndTurnModel(chat.sender, chat.message));
-      //   console.log(this.chats);
-      // }
 
       this.actualUserIdTurn = (JSON.parse(turnResponse.body)).userId
       console.log("El usuario que continúa es: " + this.actualUserIdTurn)
@@ -52,11 +47,6 @@ export class MessageService {
 
       console.log("La respuesta a la suscripción dió...")
       console.log(turnResponse);
-      /* if (frame.body) {
-        let endTurn = JSON.parse(frame.body);
-        this.endTurns.push(new EndTurnModel(endTurn.userId));
-        console.log(this.endTurns);
-      } */
     });
   }
 

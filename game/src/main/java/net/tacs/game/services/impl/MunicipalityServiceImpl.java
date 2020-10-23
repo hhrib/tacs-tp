@@ -129,13 +129,13 @@ public class MunicipalityServiceImpl implements MunicipalityService {
 
             muniAtk.setBlocked(true);
 
-            if (match.rivalDefeated(rival)) {
+            if (match.rivalDefeated(rival)) { //si el rival perdio el municipio chequear si perdio la partida
                 PlayerDefeatedDTO playerDefeatedSocketMessage = new PlayerDefeatedDTO();
-                playerDefeatedSocketMessage.setUserId(rival.getId());
+                playerDefeatedSocketMessage.setUsername(rival.getUsername());
                 template.convertAndSend("/topic/" + matchId +"/defeated_player", playerDefeatedSocketMessage);
             }
 
-            if(match.checkVictory()) //si el rival perdio el municipio chequear si perdio la partida
+            if(match.checkVictory())
                 userService.setWinnerAndLosersStats(match);
 
             return new AttackResultDTO(result, muniAtk, muniDef);

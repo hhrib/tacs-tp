@@ -4,14 +4,14 @@ import java.util.Objects;
 
 public class NextUserTurnDTO {
 
-    private String userId;
+    private String username;
 
-    public String getUserId() {
-        return userId;
+    public String getUsername() {
+        return username;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     @Override
@@ -19,18 +19,18 @@ public class NextUserTurnDTO {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         NextUserTurnDTO that = (NextUserTurnDTO) o;
-        return userId.equals(that.userId);
+        return username.equals(that.username);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(userId);
+        return Objects.hash(username);
     }
 
     @Override
     public String toString() {
         return "NextUserTurnDTO{" +
-                "userId='" + userId + '\'' +
+                "username='" + username + '\'' +
                 '}';
     }
 }

@@ -9,7 +9,6 @@ import net.tacs.game.model.*;
 import net.tacs.game.model.dto.*;
 import net.tacs.game.model.enums.MatchState;
 // import net.tacs.game.model.enums.MunicipalityState;
-import net.tacs.game.model.websocket.ChatMessage;
 import net.tacs.game.repositories.MatchRepository;
 import net.tacs.game.repositories.ProvinceRepository;
 import net.tacs.game.repositories.UserRepository;
@@ -457,7 +456,7 @@ public class MatchServiceImpl implements MatchService {
             match.setTurnPlayer(nextPlayer);
             municipalityService.produceGauchos(match, nextPlayer);
             NextUserTurnDTO endTurnSocketMessage = new NextUserTurnDTO();
-            endTurnSocketMessage.setUserId(nextPlayer.getId());
+            endTurnSocketMessage.setUsername(nextPlayer.getUsername());
             template.convertAndSend("/topic/" + matchIdString +"/turn_end", endTurnSocketMessage);
         }
         else //el jugador no tiene el turno
