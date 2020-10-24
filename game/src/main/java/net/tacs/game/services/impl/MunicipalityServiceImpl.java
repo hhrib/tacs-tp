@@ -89,9 +89,7 @@ public class MunicipalityServiceImpl implements MunicipalityService {
     }
 
 	@Override
-	public AttackResultDTO attackMunicipality(String matchId, AttackMuniDTO attackMuniDTO) throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException {
-        Match match = matchService.getMatchById(matchId);
-
+	public AttackResultDTO attackMunicipality(Match match, AttackMuniDTO attackMuniDTO) throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException {
         matchService.checkMatchNotStarted(match);
         matchService.checkMatchFinished(match);
 
@@ -150,9 +148,7 @@ public class MunicipalityServiceImpl implements MunicipalityService {
 		}
 	}
 
-    public List<Municipality> moveGauchos(String matchId, MoveGauchosDTO requestBean) throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException {
-        Match match = matchService.getMatchById(matchId);
-
+    public List<Municipality> moveGauchos(Match match, MoveGauchosDTO requestBean) throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException {
         matchService.checkMatchNotStarted(match);
         matchService.checkMatchFinished(match);
 

@@ -38,7 +38,7 @@ public class UserServiceImpl implements UserService {
 //        return getUsers();
     }
 
-    @Override
+    /*@Override
     public User getUserById(String id)
     {
         Optional<User> userOptional = userRepository.findById(id);
@@ -50,11 +50,11 @@ public class UserServiceImpl implements UserService {
     {
         Optional<User> userOptional = userRepository.findByUsername(userName);
         return userOptional.orElseThrow(() -> new UserNotFoundException(userName));
-    }
+    }*/
 
-    public UserStats getUserStatistics(String id){
+    /*public UserStats getUserStatistics(String id){
         return userStatisticsRepository.getById(id);
-    }
+    }*/
 
     public Scoreboard getScoreboard()
     {

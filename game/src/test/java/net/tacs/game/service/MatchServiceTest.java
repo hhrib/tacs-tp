@@ -319,6 +319,7 @@ public class MatchServiceTest {
         List<Match> matches = matchService.findMatchesByDate("dummyTest", "dummyTest");
     }
 
+    /*
     @Test
     public void getMatchByIdOKTest() throws MatchException {
         Match match = new Match();
@@ -338,6 +339,7 @@ public class MatchServiceTest {
     public void getMatchByIdFailByNumberFormatTest() throws MatchException {
         Match matchRetrieved = matchService.getMatchById("wrongNumberFormat");
     }
+    */
 
     @Test
     public void passTurnPlayerLastOnTheList() throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException {
@@ -356,7 +358,7 @@ public class MatchServiceTest {
 
         Mockito.when(matchRepository.findById(123456L)).thenReturn(java.util.Optional.of(match));
 
-        matchService.passTurn("123456", "ABC2");
+        matchService.passTurn(match, "ABC2");
 
         assertEquals(user1, match.getTurnPlayer());
     }
@@ -381,7 +383,7 @@ public class MatchServiceTest {
 
         Mockito.when(matchRepository.findById(123456L)).thenReturn(java.util.Optional.of(match));
 
-        matchService.passTurn("123456", "ABC2");
+        matchService.passTurn(match, "ABC2");
 
         assertEquals(user3, match.getTurnPlayer());
     }
@@ -406,7 +408,7 @@ public class MatchServiceTest {
 
         Mockito.when(matchRepository.findById(123456L)).thenReturn(java.util.Optional.of(match));
 
-        matchService.passTurn("123456", "ABC3");
+        matchService.passTurn(match, "ABC3");
     }
 
     @Test(expected = MatchNotPlayerTurnException.class)
@@ -426,7 +428,7 @@ public class MatchServiceTest {
 
         Mockito.when(matchRepository.findById(123456L)).thenReturn(java.util.Optional.of(match));
 
-        matchService.passTurn("123456", "ABC1");
+        matchService.passTurn(match, "ABC1");
     }
 
     @Test (expected = MatchNotStartedException.class)
@@ -437,7 +439,7 @@ public class MatchServiceTest {
 
         Mockito.when(matchRepository.findById(123456L)).thenReturn(java.util.Optional.of(match));
 
-        matchService.passTurn("123456", "ABC1");
+        matchService.passTurn(match, "ABC1");
     }
 
     @Test
@@ -460,10 +462,7 @@ public class MatchServiceTest {
 
         Mockito.when(matchRepository.findById(123456L)).thenReturn(java.util.Optional.of(match));
 
-        //UpdateMunicipalityStateDTO dto = new UpdateMunicipalityStateDTO();
-        //dto.setNewState(prodState);
-
-        matchService.updateMunicipalityState("123456", "98765"/*, dto*/);
+        matchService.updateMunicipalityState(match, "98765");
 
         assertEquals(prodState, lanus.getState());
     }
@@ -488,10 +487,7 @@ public class MatchServiceTest {
 
         Mockito.when(matchRepository.findById(123456L)).thenReturn(java.util.Optional.of(match));
 
-        //UpdateMunicipalityStateDTO dto = new UpdateMunicipalityStateDTO();
-        //dto.setNewState(prodState);
-
-        matchService.updateMunicipalityState("123456", "98765"/*, dto*/);
+        matchService.updateMunicipalityState(match, "98765");
     }
 
     @Test (expected = MatchNotStartedException.class)
@@ -502,10 +498,7 @@ public class MatchServiceTest {
 
         Mockito.when(matchRepository.findById(123456L)).thenReturn(java.util.Optional.of(match));
 
-        //UpdateMunicipalityStateDTO dto = new UpdateMunicipalityStateDTO();
-        //dto.setNewState(prodState);
-
-        matchService.updateMunicipalityState("123456", "98765"/*, dto*/);
+        matchService.updateMunicipalityState(match, "98765");
     }
 
     @Test
@@ -527,7 +520,7 @@ public class MatchServiceTest {
         Mockito.when(matchRepository.findById(123456L)).thenReturn(java.util.Optional.of(match));
         Mockito.when(userRepository.findById("ABC123")).thenReturn(java.util.Optional.of(user1));
 
-        matchService.retireFromMatch("123456", retireDTO);
+        matchService.retireFromMatch(match, retireDTO);
 
         assertEquals(MatchState.FINISHED, match.getState());
     }
@@ -551,7 +544,7 @@ public class MatchServiceTest {
         Mockito.when(matchRepository.findById(123456L)).thenReturn(java.util.Optional.of(match));
         Mockito.when(userRepository.findById("ABC123")).thenReturn(java.util.Optional.of(user1));
 
-        matchService.retireFromMatch("123456", retireDTO);
+        matchService.retireFromMatch(match, retireDTO);
 
         assertEquals(MatchState.CANCELLED, match.getState());
     }
@@ -588,7 +581,7 @@ public class MatchServiceTest {
         Mockito.when(matchRepository.findById(123456L)).thenReturn(java.util.Optional.of(match));
         Mockito.when(userRepository.findById("BBB222")).thenReturn(java.util.Optional.of(user3));
 
-        matchService.retireFromMatch("123456", retireDTO);
+        matchService.retireFromMatch(match, retireDTO);
 
         assertEquals(3, user1.municipalitiesOwning(new ArrayList<>(match.getMap().getMunicipalities().values())));
         assertEquals(3, user2.municipalitiesOwning(new ArrayList<>(match.getMap().getMunicipalities().values())));
@@ -615,7 +608,7 @@ public class MatchServiceTest {
         Mockito.when(matchRepository.findById(123456L)).thenReturn(java.util.Optional.of(match));
         Mockito.when(userRepository.findById("BBB222")).thenReturn(java.util.Optional.of(user3));
 
-        matchService.retireFromMatch("123456", retireDTO);
+        matchService.retireFromMatch(match, retireDTO);
     }
 
     @Test (expected = MatchException.class)
@@ -637,7 +630,7 @@ public class MatchServiceTest {
         Mockito.when(matchRepository.findById(123456L)).thenReturn(java.util.Optional.of(match));
         Mockito.when(userRepository.findById("ABC123")).thenReturn(java.util.Optional.of(user1));
 
-        matchService.retireFromMatch("123456", retireDTO);
+        matchService.retireFromMatch(match, retireDTO);
     }
 
     @Test
