@@ -108,7 +108,8 @@ public class MatchServiceTest {
         dto.setConfigs(Arrays.asList(1.25D, 15D, 10D, 2D, 2D, 3000D));
 
         provinceRepository.add(buenosAires);
-        userRepository.setUsers(Arrays.asList(user1,user2));
+//        userRepository.setUsers(Arrays.asList(user1,user2));
+        //FIXME implementar esta parte con la persistencia en mongo
 
         List<Municipality> municipalityList = new ArrayList<>();
         municipalityList.add(lanus);
@@ -220,8 +221,9 @@ public class MatchServiceTest {
         buenosAires.setMunicipalities(municipalityList);
         user1.setId("user1");
         user2.setId("user2");
-        userRepository.setUsers(Arrays.asList(user1,user2));
+//        userRepository.setUsers(Arrays.asList(user1,user2));
 
+      //FIXME implementar esta parte con la persistencia en mongo
         Mockito.when(provinceRepository.findById(99999997L)).thenReturn(java.util.Optional.ofNullable(buenosAires));
         Mockito.when(userRepository.findById("ABC1")).thenReturn(java.util.Optional.empty());
         Mockito.when(userRepository.findById("ABC2")).thenReturn(java.util.Optional.empty());
@@ -270,8 +272,8 @@ public class MatchServiceTest {
         user2.setId("ABC2");
         lanus.setElevation(3D);
         lanus.setGauchosQty(300);
-        userRepository.setUsers(Arrays.asList(user1, user2));
-
+//        userRepository.setUsers(Arrays.asList(user1, user2));
+      //FIXME implementar esta parte con la persistencia en mongo
         Mockito.when(provinceRepository.findById(99999997L)).thenReturn(java.util.Optional.ofNullable(buenosAires));
 
         matchService.createMatch(dto);
@@ -282,7 +284,8 @@ public class MatchServiceTest {
         Match match = new Match();
         match.setId(1234L);
         match.setDate(LocalDateTime.of(2020, 9, 10, 0, 0));
-        Mockito.when(matchRepository.getMatches()).thenReturn(Arrays.asList(match));
+//        Mockito.when(matchRepository.getMatches()).thenReturn(Arrays.asList(match));
+      //FIXME implementar esta parte con la persistencia en mongo
         LocalDate dateFrom = LocalDate.of(2020, 9, 10);
         LocalDate dateTo = LocalDate.of(2020, 9, 20);
 
@@ -306,7 +309,8 @@ public class MatchServiceTest {
         Match match = new Match();
         match.setId(1234L);
         match.setDate(LocalDateTime.of(2020, 9, 10, 0, 0));
-        Mockito.when(matchRepository.getMatches()).thenReturn(Arrays.asList(match));
+//        Mockito.when(matchRepository.getMatches()).thenReturn(Arrays.asList(match));
+      //FIXME implementar esta parte con la persistencia en mongo
         LocalDate dateTo = LocalDate.of(2020, 9, 10);
         LocalDate dateFrom = LocalDate.of(2020, 9, 20);
 

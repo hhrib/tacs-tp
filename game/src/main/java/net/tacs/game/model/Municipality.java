@@ -2,6 +2,8 @@ package net.tacs.game.model;
 
 import java.util.Objects;
 
+import org.springframework.data.annotation.Transient;
+
 //import net.tacs.game.model.enums.MunicipalityState;
 import net.tacs.game.model.interfaces.MunicipalityDefense;
 import net.tacs.game.model.interfaces.MunicipalityProduction;
@@ -19,9 +21,11 @@ public class Municipality {
     private Centroide centroide;
     
     private Double elevation;
-
+    @Transient
     private MunicipalityState state;
+    @Transient
     private final MunicipalityProduction productionState = new MunicipalityProduction();
+    @Transient
     private final MunicipalityDefense defenseState = new MunicipalityDefense();
 
     private User owner;

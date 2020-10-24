@@ -13,7 +13,7 @@ public interface MunicipalityState {
     public String getName();
 
     public Double getDefenseMultiplier();
-
+    
     public MunicipalityState nextState();
 
     public boolean equals(Object o);

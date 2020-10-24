@@ -1,21 +1,35 @@
 package net.tacs.game.services.impl;
 
-import net.tacs.game.controller.MatchController;
-import net.tacs.game.exceptions.MatchException;
-import net.tacs.game.exceptions.MatchNotPlayerTurnException;
-import net.tacs.game.exceptions.MatchNotStartedException;
-import net.tacs.game.mapper.MuniToStatsDTOMapper;
-import net.tacs.game.model.*;
-import net.tacs.game.model.dto.*;
-import net.tacs.game.model.enums.MatchState;
-// import net.tacs.game.model.enums.MunicipalityState;
-import net.tacs.game.model.websocket.ChatMessage;
-import net.tacs.game.repositories.MatchRepository;
-import net.tacs.game.repositories.ProvinceRepository;
-import net.tacs.game.repositories.UserRepository;
-import net.tacs.game.services.MatchService;
-import net.tacs.game.services.ProvinceService;
-import net.tacs.game.services.MunicipalityService;
+import static net.tacs.game.constants.Constants.MATCH_FINISHED_CODE;
+import static net.tacs.game.constants.Constants.MATCH_FINISHED_DETAIL;
+import static net.tacs.game.constants.Constants.MATCH_NOT_FOUND_CODE;
+import static net.tacs.game.constants.Constants.MATCH_NOT_FOUND_DETAIL;
+import static net.tacs.game.constants.Constants.MATCH_NOT_FOUND_FOR_USER_CODE;
+import static net.tacs.game.constants.Constants.MATCH_NOT_FOUND_FOR_USER_DETAIL;
+import static net.tacs.game.constants.Constants.MATCH_NOT_STARTED_CODE;
+import static net.tacs.game.constants.Constants.MATCH_NOT_STARTED_DETAIL;
+import static net.tacs.game.constants.Constants.MUNICIPALITY_DESTINY_BLOCKED_CODE;
+import static net.tacs.game.constants.Constants.MUNICIPALITY_DESTINY_BLOCKED_DETAIL;
+import static net.tacs.game.constants.Constants.MUNICIPALITY_NOT_FOUND_CODE;
+import static net.tacs.game.constants.Constants.MUNICIPALITY_NOT_FOUND_DETAIL;
+import static net.tacs.game.constants.Constants.PLAYER_DOESNT_HAVE_TURN_CODE;
+import static net.tacs.game.constants.Constants.PLAYER_DOESNT_HAVE_TURN_DETAIL;
+import static net.tacs.game.constants.Constants.PLAYER_NOT_IN_MATCH_CODE;
+import static net.tacs.game.constants.Constants.PLAYER_NOT_IN_MATCH_DETAIL;
+import static net.tacs.game.constants.Constants.USER_NOT_FOUND_CODE;
+import static net.tacs.game.constants.Constants.USER_NOT_FOUND_DETAIL;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.Random;
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,16 +37,28 @@ import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-
-import static net.tacs.game.constants.Constants.*;
-import static net.tacs.game.constants.Constants.MUNICIPALITY_NOT_FOUND_DETAIL;
+import net.tacs.game.controller.MatchController;
+import net.tacs.game.exceptions.MatchException;
+import net.tacs.game.exceptions.MatchNotPlayerTurnException;
+import net.tacs.game.exceptions.MatchNotStartedException;
+import net.tacs.game.mapper.MuniToStatsDTOMapper;
+import net.tacs.game.model.ApiError;
+import net.tacs.game.model.Match;
+import net.tacs.game.model.MatchConfiguration;
+import net.tacs.game.model.Municipality;
+import net.tacs.game.model.Province;
+import net.tacs.game.model.User;
+import net.tacs.game.model.dto.CreateMatchDTO;
+import net.tacs.game.model.dto.MuniStatisticsDTOResponse;
+import net.tacs.game.model.dto.NextUserTurnDTO;
+import net.tacs.game.model.dto.RetireDTO;
+import net.tacs.game.model.enums.MatchState;
+import net.tacs.game.repositories.MatchRepository;
+import net.tacs.game.repositories.ProvinceRepository;
+import net.tacs.game.repositories.UserRepository;
+import net.tacs.game.services.MatchService;
+import net.tacs.game.services.MunicipalityService;
+import net.tacs.game.services.ProvinceService;
 
 @Service("matchService")
 public class MatchServiceImpl implements MatchService {
@@ -59,7 +85,7 @@ public class MatchServiceImpl implements MatchService {
 
     @Override
     public List<Match> findAll() {
-        List<Match> matches = matchRepository.getMatches();
+        List<Match> matches = (List<Match>) matchRepository.findAll();
         return matches;
     }
 
@@ -86,7 +112,7 @@ public class MatchServiceImpl implements MatchService {
             List<LocalDateTime> dates = validateDatesToSearch(isoDateFrom, isoDateTo);
             LocalDateTime dateFrom = dates.get(0);
             LocalDateTime dateTo = dates.get(1);
-            List<Match> matches = matchRepository.getMatches();
+            List<Match> matches = (List<Match>) matchRepository.findAll();
 
             if (matches == null || matches.isEmpty()) {
                 throw new MatchException(HttpStatus.NOT_FOUND, Arrays.asList(new ApiError("MATCHES_NOT_FOUND", "Matches not found for dates")));
@@ -110,7 +136,7 @@ public class MatchServiceImpl implements MatchService {
         newMatch.setState(MatchState.CREATED);
         LOGGER.info(newMatchBean.toString());
 
-        matchRepository.add(newMatch);
+        matchRepository.save(newMatch);
 
         return newMatch;
     }
@@ -387,7 +413,7 @@ public class MatchServiceImpl implements MatchService {
         //muni.setState(dto.getNewState());
         muni.nextState();
 
-        matchRepository.update(match);
+        matchRepository.save(match);
     }
 
     @Override
@@ -546,7 +572,7 @@ public class MatchServiceImpl implements MatchService {
 
     @Override
     public Match getMatchForUserId(String userId) throws MatchException {
-        Optional<Match> optionalMatch = matchRepository.findForUserId(userId);
+        Optional<Match> optionalMatch = Optional.of(matchRepository.findByUsersId(userId));
         if (!optionalMatch.isPresent()) {
             throw new MatchException(HttpStatus.NOT_FOUND, Arrays.asList(new ApiError(MATCH_NOT_FOUND_FOR_USER_CODE, MATCH_NOT_FOUND_FOR_USER_DETAIL)));
         }
