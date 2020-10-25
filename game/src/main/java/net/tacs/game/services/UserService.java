@@ -12,11 +12,11 @@ public interface UserService {
 
     public List<User> findAll() throws Exception;
 
-    public User getUserById(String id);
+    //public User getUserById(String id);
 
-    public User getUserByUserName(String userName);
+    //public User getUserByUserName(String userName);
 
-    public UserStats getUserStatistics(String username);
+    //public UserStats getUserStatistics(String username);
 
     public Scoreboard getScoreboard();
 
