@@ -1,11 +1,7 @@
 package net.tacs.game.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
+import net.tacs.game.model.enums.MatchState;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -34,6 +30,7 @@ public class User {
     //@Id @GeneratedValue
     private String id;
     private String username;
+    private boolean playing;
 
     public String getId() {
         return id;
@@ -105,5 +102,17 @@ public class User {
         }
 
         return owningMunis;
+    }
+
+    public boolean isAvailable(List<Match> matches)
+    {
+        //si el jugador esta en una partida en progreso
+        for (Match aMatch : matches) {
+            if(aMatch.getUsers().contains(this))
+                return false;
+        }
+
+        //si el jugador esta disponible para una nueva partida
+        return true;
     }
 }
