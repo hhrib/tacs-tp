@@ -50,11 +50,17 @@ public class UserController {
 		return new ResponseEntity<>(UserToDTOMapper.mapUsers(users), HttpStatus.OK);
 	}
 
-	@GetMapping("/users/id/{id}")
-	public ResponseEntity<User> getUserById(@PathVariable("id") String id) throws UserNotFoundException {
-		Optional<User> userOptional = userRepository.findById(id);
-		User user = userOptional.orElseThrow(() -> new UserNotFoundException(HttpStatus.NOT_FOUND,
-				Arrays.asList(new ApiError(USER_NOT_FOUND_CODE, USER_NOT_FOUND_DETAIL))));
+    @GetMapping("/users/available")
+    public ResponseEntity<List<UserDTOResponse>> getAllUsersNotInMatches() throws Exception {
+        List<User> users = userService.findAllAvailable();
+
+        return new ResponseEntity<>(UserToDTOMapper.mapUsers(users), HttpStatus.OK);
+    }
+
+    @GetMapping("/users/id/{id}")
+    public ResponseEntity<User> getUserById(@PathVariable("id") String id) throws UserNotFoundException {
+        Optional<User> userOptional = userRepository.findById(id);
+        User user = userOptional.orElseThrow(() -> new UserNotFoundException(HttpStatus.NOT_FOUND, Arrays.asList(new ApiError(USER_NOT_FOUND_CODE, USER_NOT_FOUND_DETAIL))));
 
 		return new ResponseEntity<>(user, HttpStatus.OK);
 	}

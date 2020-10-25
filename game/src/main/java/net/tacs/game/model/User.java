@@ -29,6 +29,7 @@ public class User {
     //@Id @GeneratedValue
     private String id;
     private String username;
+    private boolean playing;
 
     public String getId() {
         return id;
@@ -100,5 +101,17 @@ public class User {
         }
 
         return owningMunis;
+    }
+
+    public boolean isAvailable(List<Match> matches)
+    {
+        //si el jugador esta en una partida en progreso
+        for (Match aMatch : matches) {
+            if(aMatch.getUsers().contains(this))
+                return false;
+        }
+
+        //si el jugador esta disponible para una nueva partida
+        return true;
     }
 }

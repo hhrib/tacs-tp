@@ -7,6 +7,8 @@ import net.tacs.game.model.Match;
 import net.tacs.game.model.User;
 import net.tacs.game.model.UserStats;
 import net.tacs.game.model.dto.Scoreboard;
+import net.tacs.game.model.enums.MatchState;
+import net.tacs.game.repositories.MatchRepository;
 import net.tacs.game.repositories.UserRepository;
 import net.tacs.game.repositories.UserStatisticsRepository;
 import net.tacs.game.services.SecurityProviderService;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Service("userService")
@@ -31,30 +34,24 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserStatisticsRepository userStatisticsRepository;
 
+    @Autowired
+    private MatchRepository matchRepository;
+
     @Override
     public List<User> findAll() throws Exception {
         //Se va temporalmente a api de Auth0 hasta que resolvamos el Webhook que nos avise del registro de un nuevo usuario
         return AuthUserToUserMapper.mapUsers(securityProviderService.getUsers(GameApplication.getToken()));
-//        return getUsers();
-    }
-
-    /*@Override
-    public User getUserById(String id)
-    {
-        Optional<User> userOptional = userRepository.findById(id);
-        return userOptional.orElseThrow(() -> new UserNotFoundException(id));
+        //return getUsers();
     }
 
     @Override
-    public User getUserByUserName(String userName)
-    {
-        Optional<User> userOptional = userRepository.findByUsername(userName);
-        return userOptional.orElseThrow(() -> new UserNotFoundException(userName));
-    }*/
+    public List<User> findAllAvailable() throws Exception {
+        //Se va temporalmente a api de Auth0 hasta que resolvamos el Webhook que nos avise del registro de un nuevo usuario
+        List<User> allUsers = AuthUserToUserMapper.mapUsers(securityProviderService.getUsers(GameApplication.getToken()));
+        List<Match> matchesInProgress = matchRepository.findAll();
 
-    /*public UserStats getUserStatistics(String id){
-        return userStatisticsRepository.getById(id);
-    }*/
+        return allUsers.stream().filter(user -> user.isAvailable(matchesInProgress)).collect(Collectors.toList());
+    }
 
     public Scoreboard getScoreboard()
     {
