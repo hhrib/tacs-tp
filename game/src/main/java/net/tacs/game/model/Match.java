@@ -4,13 +4,20 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import net.tacs.game.exceptions.MatchException;
+import net.tacs.game.exceptions.MatchNotPlayerTurnException;
+import net.tacs.game.exceptions.MatchNotStartedException;
 import net.tacs.game.model.enums.MatchState;
+import org.springframework.http.HttpStatus;
 
-import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+
+import static net.tacs.game.constants.Constants.*;
+import static net.tacs.game.constants.Constants.MATCH_FINISHED_DETAIL;
 
 public class Match {
 
@@ -160,7 +167,19 @@ public class Match {
         return false;
     }
 
-    public boolean playerCanAttack(User player) {
-        return player.equals(turnPlayer);
+    public void checkMatchNotStarted() throws MatchNotStartedException {
+        if(this.state.equals(MatchState.CREATED))
+            throw new MatchNotStartedException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(MATCH_NOT_STARTED_CODE, MATCH_NOT_STARTED_DETAIL)));
+    }
+
+    public void checkMatchFinished() throws MatchException {
+        if(this.state.equals(MatchState.FINISHED) || this.state.equals(MatchState.CANCELLED))
+            throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(MATCH_FINISHED_CODE, MATCH_FINISHED_DETAIL)));
+    }
+
+    public void validatePlayerHasTurn(User player) throws MatchNotPlayerTurnException {
+        if (!player.equals(turnPlayer)) {
+            throw new MatchNotPlayerTurnException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(PLAYER_DOESNT_HAVE_TURN_CODE, PLAYER_DOESNT_HAVE_TURN_DETAIL)));
+        }
     }
 }

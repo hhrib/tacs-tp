@@ -90,11 +90,10 @@ public class MunicipalityServiceImpl implements MunicipalityService {
 
 	@Override
 	public AttackResultDTO attackMunicipality(Match match, AttackMuniDTO attackMuniDTO) throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException {
-        matchService.checkMatchNotStarted(match);
-        matchService.checkMatchFinished(match);
+	    match.checkMatchNotStarted();
+	    match.checkMatchFinished();
 
-        if(attackMuniDTO.getMuniAttackingId() == (attackMuniDTO.getMuniDefendingId()))
-        {
+        if(attackMuniDTO.getMuniAttackingId() == (attackMuniDTO.getMuniDefendingId())) {
             throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(SAME_ORIGIN_DESTINY_CODE, SAME_ORIGIN_DESTINY_DETAIL)));
         }
 
@@ -103,37 +102,25 @@ public class MunicipalityServiceImpl implements MunicipalityService {
         Municipality muniAtk = match.getMap().getMunicipalities().get(attackMuniDTO.getMuniAttackingId());
         Municipality muniDef = match.getMap().getMunicipalities().get(attackMuniDTO.getMuniDefendingId());
 
-	    if(muniAtk != null && muniDef != null)
-	    {
-            if(!match.playerCanAttack(muniAtk.getOwner()))
-                throw new MatchNotPlayerTurnException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(PLAYER_DOESNT_HAVE_TURN_CODE, PLAYER_DOESNT_HAVE_TURN_DETAIL)));
-
-            if(muniAtk.isBlocked())
-            {
-                throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(MUNICIPALITY_DESTINY_BLOCKED_CODE, MUNICIPALITY_DESTINY_BLOCKED_DETAIL)));
-            }
-
-            if(muniAtk.getOwner().equals(muniDef.getOwner()))
-                throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(SAME_OWNER_MUNIS_CODE, SAME_OWNER_MUNIS_DETAIL)));
-
-            if(muniAtk.getGauchosQty() < attackMuniDTO.getGauchosQty())
-                throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(NOT_ENOUGH_GAUCHOS_CODE, NOT_ENOUGH_GAUCHOS_DETAIL)));
-
-            User rival = muniDef.getOwner();
-
-            result = muniAtk.attack(muniDef, match.getConfig(), attackMuniDTO.getGauchosQty());
-
-            muniAtk.setBlocked(true);
-
-            if(match.checkVictory(rival)) //si el rival perdio el municipio chequear si perdio la partida
-                userService.setWinnerAndLosersStats(match);
-
-            return new AttackResultDTO(result, muniAtk, muniDef);
-	    }
-	    else
-        {
+        if(muniAtk == null || muniDef == null) {
             throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(MUNICIPALITY_NOT_FOUND_CODE, MUNICIPALITY_NOT_FOUND_DETAIL)));
         }
+
+        match.validatePlayerHasTurn(muniAtk.getOwner());
+        muniAtk.validateAttack(muniDef, attackMuniDTO.getGauchosQty());
+
+        User rival = muniDef.getOwner();
+
+        result = muniAtk.attack(muniDef, match.getConfig(), attackMuniDTO.getGauchosQty());
+
+        //TODO El setBlocked(true) se puede mover al método attack de Municipality? O hay alguna razón para hacerlo acá afuera.
+        muniAtk.setBlocked(true);
+
+        if(match.checkVictory(rival)) { //si el rival perdio el municipio chequear si perdio la partida
+            userService.setWinnerAndLosersStats(match);
+        }
+
+        return new AttackResultDTO(result, muniAtk, muniDef);
 	}
 
 	@Override
@@ -149,8 +136,9 @@ public class MunicipalityServiceImpl implements MunicipalityService {
 	}
 
     public List<Municipality> moveGauchos(Match match, MoveGauchosDTO requestBean) throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException {
-        matchService.checkMatchNotStarted(match);
-        matchService.checkMatchFinished(match);
+
+	    match.checkMatchNotStarted();
+	    match.checkMatchFinished();
 
         if(requestBean.getIdOriginMuni().equals(requestBean.getIdDestinyMuni()))
         {
@@ -167,37 +155,21 @@ public class MunicipalityServiceImpl implements MunicipalityService {
         if(muniDestiny == null)
             idsNotFound.add(1, requestBean.getIdDestinyMuni());
 
-
-        if(idsNotFound.isEmpty())
-        {
-            if(!match.playerCanAttack(muniOrigin.getOwner()))
-                throw new MatchNotPlayerTurnException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(PLAYER_DOESNT_HAVE_TURN_CODE, PLAYER_DOESNT_HAVE_TURN_DETAIL)));
-
-            if(!muniOrigin.getOwner().equals(muniDestiny.getOwner()))
-                throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(PLAYER_DOESNT_OWN_MUNIS_CODE, PLAYER_DOESNT_OWN_MUNIS_DETAIL)));
-
-            if(muniDestiny.isBlocked())
-            {
-                throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(MUNICIPALITY_DESTINY_BLOCKED_CODE, MUNICIPALITY_DESTINY_BLOCKED_DETAIL)));
-            }
-
-            if(muniOrigin.getGauchosQty() < requestBean.getQty())
-            {
-                throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(NOT_ENOUGH_GAUCHOS_CODE, NOT_ENOUGH_GAUCHOS_DETAIL)));
-            }
-
-            muniOrigin.addGauchos(-requestBean.getQty());
-
-            //El municipio destino se bloquea
-            muniDestiny.addGauchos(requestBean.getQty());
-            muniDestiny.setBlocked(true);
-        }
-        else
-        {
-            //No se encontró por lo menos alguno de los ids
+        //No se encontró por lo menos alguno de los ids
+        if(!idsNotFound.isEmpty()) {
             String idsNotFoundCommaSeparated = idsNotFound.stream().map(id -> id.toString()).collect(Collectors.joining(","));
             throw new MatchException(HttpStatus.NOT_FOUND, Arrays.asList(new ApiError(MUNI_NOT_FOUND_CODE, String.format(MUNI_NOT_FOUND_DETAIL, idsNotFoundCommaSeparated))));
         }
+
+        match.validatePlayerHasTurn(muniOrigin.getOwner());
+        muniOrigin.validateMoveGauchos(muniDestiny, requestBean.getQty());
+        muniDestiny.validateReceiveGauchos();
+
+        muniOrigin.addGauchos(-requestBean.getQty());
+
+        //El municipio destino se bloquea
+        muniDestiny.addGauchos(requestBean.getQty());
+        muniDestiny.setBlocked(true);
 
         return Arrays.asList(muniOrigin, muniDestiny);
     }

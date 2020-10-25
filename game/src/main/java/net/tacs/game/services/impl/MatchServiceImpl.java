@@ -387,8 +387,7 @@ public class MatchServiceImpl implements MatchService {
 
     @Override
     public void start(Match match) throws MatchException {
-        checkMatchFinished(match);
-
+        match.checkMatchFinished();
         match.setState(MatchState.IN_PROGRESS);
     }
 
@@ -396,8 +395,8 @@ public class MatchServiceImpl implements MatchService {
     public void updateMunicipalityState(Match match, String muniIdString) throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException {
         Integer muniId = validateAndGetIdLong(muniIdString, "MUNICIPALITY").intValue();
 
-        checkMatchNotStarted(match);
-        checkMatchFinished(match);
+        match.checkMatchNotStarted();
+        match.checkMatchFinished();
 
         Optional<Municipality> muniOptional = Optional.ofNullable(match.getMap().getMunicipalities().get(muniId));
         Municipality muni = muniOptional.orElseThrow(() -> new MatchException(HttpStatus.NOT_FOUND, Arrays.asList(new ApiError(MUNICIPALITY_NOT_FOUND_CODE, MUNICIPALITY_NOT_FOUND_DETAIL))));
@@ -415,8 +414,8 @@ public class MatchServiceImpl implements MatchService {
 
     @Override
     public void passTurn(Match match, String playerId) throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException {
-        checkMatchNotStarted(match);
-        checkMatchFinished(match);
+        match.checkMatchNotStarted();
+        match.checkMatchFinished();
 
         //si el jugador pertence a la partida
         if(!match.userIsInMatch(playerId))
@@ -545,18 +544,6 @@ public class MatchServiceImpl implements MatchService {
             if(playerIndex >= playerLeft.size())
                 playerIndex = 0;
         }
-    }
-
-    @Override
-    public void checkMatchNotStarted(Match match) throws MatchNotStartedException {
-        if(match.getState().equals(MatchState.CREATED))
-            throw new MatchNotStartedException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(MATCH_NOT_STARTED_CODE, MATCH_NOT_STARTED_DETAIL)));
-    }
-
-    @Override
-    public void checkMatchFinished(Match match) throws MatchException {
-        if(match.getState().equals(MatchState.FINISHED) || match.getState().equals(MatchState.CANCELLED))
-            throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(MATCH_FINISHED_CODE, MATCH_FINISHED_DETAIL)));
     }
 
     @Override

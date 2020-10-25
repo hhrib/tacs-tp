@@ -1,11 +1,17 @@
 package net.tacs.game.model;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 //import net.tacs.game.model.enums.MunicipalityState;
+import net.tacs.game.exceptions.MatchException;
 import net.tacs.game.model.interfaces.MunicipalityDefense;
 import net.tacs.game.model.interfaces.MunicipalityProduction;
 import net.tacs.game.model.interfaces.MunicipalityState;
+import org.springframework.http.HttpStatus;
+
+import static net.tacs.game.constants.Constants.*;
+import static net.tacs.game.constants.Constants.NOT_ENOUGH_GAUCHOS_DETAIL;
 
 //@Entity
 //@Table(name = "municipality")
@@ -122,6 +128,33 @@ public class Municipality {
 
     public void setBlocked(boolean bBlocked) {
         this.bBlocked = bBlocked;
+    }
+
+    public void validateMoveGauchos(Municipality muniDestiny, Integer qty) throws MatchException {
+        if (!this.owner.equals(muniDestiny.getOwner())) {
+            throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(PLAYER_DOESNT_OWN_MUNIS_CODE, PLAYER_DOESNT_OWN_MUNIS_DETAIL)));
+        }
+        if (this.gauchosQty < qty) {
+            throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(NOT_ENOUGH_GAUCHOS_CODE, NOT_ENOUGH_GAUCHOS_DETAIL)));
+        }
+    }
+
+    public void validateReceiveGauchos() throws MatchException {
+        if(this.isBlocked()) {
+            throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(MUNICIPALITY_DESTINY_BLOCKED_CODE, MUNICIPALITY_DESTINY_BLOCKED_DETAIL)));
+        }
+    }
+
+    public void validateAttack(Municipality muniDef, Integer attackGauchosQty) throws MatchException {
+        if (this.isBlocked()) {
+            throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(MUNICIPALITY_DESTINY_BLOCKED_CODE, MUNICIPALITY_DESTINY_BLOCKED_DETAIL)));
+        }
+        if (this.owner.equals(muniDef.getOwner())) {
+            throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(SAME_OWNER_MUNIS_CODE, SAME_OWNER_MUNIS_DETAIL)));
+        }
+        if (this.gauchosQty < attackGauchosQty) {
+            throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(NOT_ENOUGH_GAUCHOS_CODE, NOT_ENOUGH_GAUCHOS_DETAIL)));
+        }
     }
 
     @Override

@@ -36,10 +36,6 @@ public interface MatchService {
 
     public void retireFromMatch(Match match, RetireDTO retireDTO) throws MatchException;
 
-    public void checkMatchNotStarted(Match match) throws MatchNotStartedException;
-
-    public void checkMatchFinished(Match match) throws MatchException;
-
     public Match getMatchForUserId(String userId) throws MatchException;
 
 }
