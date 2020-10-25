@@ -1,7 +1,30 @@
+<ng-container
+ *ngIf="nextTurn; then textNextTurn; else textFirstTurn">
+</ng-container>
+
+<ng-template #textNextTurn>
+  <div>
+    <h1 style="text-align: center;">
+      Es turno de: {{nextTurn}}
+    </h1>
+  </div>
+</ng-template>
+
+<ng-template #textFirstTurn>
+  <div>
+    <h1 style="text-align: center;">
+      Es turno de: {{firstTurn}}
+    </h1>
+  </div>
+</ng-template>
+
 <div class="map-container">
     <div class="map-frame">
       <div id="map"></div>
     </div>
 </div>
+
+
+
 
 <!-- <mat-label value="actualUserIdTurn">ES TURNO DE: {{actualUserIdTurn}}</mat-label> -->

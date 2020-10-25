@@ -2,6 +2,7 @@ import { EndTurnModel } from '../models/endTurnModel';
 import { Injectable } from '@angular/core';
 import * as SockJS from 'sockjs-client';
 import * as Stomp from 'stompjs';
+import { of } from 'rxjs';
 
 
 @Injectable({
@@ -12,7 +13,7 @@ export class MessageService {
   stompClient: any;
   actualUserIdTurn: any;
 
-  endTurns: EndTurnModel[] = [];
+  // endTurns: EndTurnModel[] = [];
 
   connect(matchId: any, user: any) {
     this.socket = new SockJS('http://localhost:8080/socket');
@@ -41,7 +42,7 @@ export class MessageService {
       //   console.log(this.chats);
       // }
 
-      this.actualUserIdTurn = (JSON.parse(turnResponse.body)).userId
+      this.actualUserIdTurn = (JSON.parse(turnResponse.body)).userId //TODO: CON LO DE ALE, CAMBIAR A USERNAME
       console.log("El usuario que continúa es: " + this.actualUserIdTurn)
 
       if (this.actualUserIdTurn == user) {
@@ -65,6 +66,6 @@ export class MessageService {
   }
 
   public getActualUserIdTurn(){
-    return this.actualUserIdTurn;
+    return of(this.actualUserIdTurn);
   }
 }
