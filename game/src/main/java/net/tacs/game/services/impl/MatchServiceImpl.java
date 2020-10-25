@@ -389,6 +389,7 @@ public class MatchServiceImpl implements MatchService {
         checkMatchFinished(match);
 
         match.setState(MatchState.IN_PROGRESS);
+        matchRepository.save(match);
     }
 
     @Override

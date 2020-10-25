@@ -1,20 +1,10 @@
 package net.tacs.game.service;
 
-import net.tacs.game.GameApplication;
-import net.tacs.game.exceptions.MatchException;
-import net.tacs.game.exceptions.MatchNotPlayerTurnException;
-import net.tacs.game.exceptions.MatchNotStartedException;
-import net.tacs.game.model.*;
-import net.tacs.game.model.dto.AttackMuniDTO;
-import net.tacs.game.model.dto.AttackResultDTO;
-import net.tacs.game.model.dto.MoveGauchosDTO;
-import net.tacs.game.model.enums.MatchState;
-//import net.tacs.game.model.enums.MunicipalityState;
-import net.tacs.game.model.interfaces.MunicipalityDefense;
-import net.tacs.game.model.interfaces.MunicipalityProduction;
-import net.tacs.game.repositories.MatchRepository;
-import net.tacs.game.services.MatchService;
-import net.tacs.game.services.MunicipalityService;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.Arrays;
+import java.util.LinkedList;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,11 +15,25 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-
-import static org.junit.jupiter.api.Assertions.*;
+import net.tacs.game.GameApplication;
+import net.tacs.game.exceptions.MatchException;
+import net.tacs.game.exceptions.MatchNotPlayerTurnException;
+import net.tacs.game.exceptions.MatchNotStartedException;
+import net.tacs.game.model.Centroide;
+import net.tacs.game.model.Match;
+import net.tacs.game.model.MatchConfiguration;
+import net.tacs.game.model.Municipality;
+import net.tacs.game.model.Province;
+import net.tacs.game.model.User;
+import net.tacs.game.model.dto.AttackMuniDTO;
+import net.tacs.game.model.dto.AttackResultDTO;
+import net.tacs.game.model.dto.MoveGauchosDTO;
+import net.tacs.game.model.enums.MatchState;
+//import net.tacs.game.model.enums.MunicipalityState;
+import net.tacs.game.model.interfaces.MunicipalityDefense;
+import net.tacs.game.model.interfaces.MunicipalityProduction;
+import net.tacs.game.services.MatchService;
+import net.tacs.game.services.MunicipalityService;
 
 @RunWith(SpringRunner.class)
 @ActiveProfiles("test")
@@ -68,10 +72,8 @@ public class MunicipalityServiceTest {
         Lomas = new Municipality("Lomas de Zamora");
         Matanza = new Municipality("La Matanza");
         configuration = new MatchConfiguration();
-        defenseState = new MunicipalityDefense();
-        prodState = new MunicipalityProduction();
-        defenseState.createState(1.25D, 10D, prodState);
-        prodState.createState(1D, 15D, defenseState);
+		defenseState = new MunicipalityDefense();
+		prodState = new MunicipalityProduction();
     }
 
     @Test
