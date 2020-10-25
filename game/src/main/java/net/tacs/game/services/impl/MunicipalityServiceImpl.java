@@ -10,6 +10,7 @@ import net.tacs.game.model.*;
 import net.tacs.game.model.dto.AttackMuniDTO;
 import net.tacs.game.model.dto.AttackResultDTO;
 import net.tacs.game.model.dto.MoveGauchosDTO;
+import net.tacs.game.repositories.MatchRepository;
 import net.tacs.game.repositories.MunicipalityRepository;
 import net.tacs.game.services.MatchService;
 import net.tacs.game.services.UserService;
@@ -36,6 +37,9 @@ public class MunicipalityServiceImpl implements MunicipalityService {
 
 	@Autowired
     private MatchService matchService;
+	
+	@Autowired
+    private MatchRepository matchRepository;
 
 	@Autowired
     private UserService userService;
@@ -199,6 +203,7 @@ public class MunicipalityServiceImpl implements MunicipalityService {
             throw new MatchException(HttpStatus.NOT_FOUND, Arrays.asList(new ApiError(MUNI_NOT_FOUND_CODE, String.format(MUNI_NOT_FOUND_DETAIL, idsNotFoundCommaSeparated))));
         }
 
+		matchRepository.save(match);
         return Arrays.asList(muniOrigin, muniDestiny);
     }
 }
