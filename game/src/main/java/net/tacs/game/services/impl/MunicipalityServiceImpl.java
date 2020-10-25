@@ -7,7 +7,11 @@ import net.tacs.game.exceptions.MatchException;
 import net.tacs.game.exceptions.MatchNotPlayerTurnException;
 import net.tacs.game.exceptions.MatchNotStartedException;
 import net.tacs.game.model.*;
-import net.tacs.game.model.dto.*;
+import net.tacs.game.model.dto.AttackMuniDTO;
+import net.tacs.game.model.dto.AttackResultDTO;
+import net.tacs.game.model.dto.MoveGauchosDTO;
+import net.tacs.game.model.dto.PlayerDefeatedDTO;
+import net.tacs.game.repositories.MatchRepository;
 import net.tacs.game.repositories.MunicipalityRepository;
 import net.tacs.game.services.MatchService;
 import net.tacs.game.services.UserService;
@@ -35,6 +39,9 @@ public class MunicipalityServiceImpl implements MunicipalityService {
 
 	@Autowired
     private MatchService matchService;
+	
+	@Autowired
+    private MatchRepository matchRepository;
 
 	@Autowired
     private UserService userService;
@@ -91,9 +98,7 @@ public class MunicipalityServiceImpl implements MunicipalityService {
     }
 
 	@Override
-	public AttackResultDTO attackMunicipality(String matchId, AttackMuniDTO attackMuniDTO) throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException {
-        Match match = matchService.getMatchById(matchId);
-
+	public AttackResultDTO attackMunicipality(Match match, AttackMuniDTO attackMuniDTO) throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException {
         matchService.checkMatchNotStarted(match);
         matchService.checkMatchFinished(match);
 
@@ -132,7 +137,7 @@ public class MunicipalityServiceImpl implements MunicipalityService {
             if (match.rivalDefeated(rival)) { //si el rival perdio el municipio chequear si perdio la partida
                 PlayerDefeatedDTO playerDefeatedSocketMessage = new PlayerDefeatedDTO();
                 playerDefeatedSocketMessage.setUsername(rival.getUsername());
-                template.convertAndSend("/topic/" + matchId +"/defeated_player", playerDefeatedSocketMessage);
+                template.convertAndSend("/topic/" + match.getId().toString() +"/defeated_player", playerDefeatedSocketMessage);
             }
 
             if(match.checkVictory())
@@ -158,9 +163,7 @@ public class MunicipalityServiceImpl implements MunicipalityService {
 		}
 	}
 
-    public List<Municipality> moveGauchos(String matchId, MoveGauchosDTO requestBean) throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException {
-        Match match = matchService.getMatchById(matchId);
-
+    public List<Municipality> moveGauchos(Match match, MoveGauchosDTO requestBean) throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException {
         matchService.checkMatchNotStarted(match);
         matchService.checkMatchFinished(match);
 
@@ -211,6 +214,7 @@ public class MunicipalityServiceImpl implements MunicipalityService {
             throw new MatchException(HttpStatus.NOT_FOUND, Arrays.asList(new ApiError(MUNI_NOT_FOUND_CODE, String.format(MUNI_NOT_FOUND_DETAIL, idsNotFoundCommaSeparated))));
         }
 
+		matchRepository.save(match);
         return Arrays.asList(muniOrigin, muniDestiny);
     }
 }

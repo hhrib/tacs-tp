@@ -17,6 +17,7 @@ import net.tacs.game.model.dto.UpdateMunicipalityStateDTO;
 import net.tacs.game.model.websocket.ChatMessage;
 import net.tacs.game.model.Municipality;
 import net.tacs.game.model.dto.*;
+import net.tacs.game.repositories.MatchRepository;
 import net.tacs.game.services.MatchService;
 import net.tacs.game.services.MunicipalityService;
 import net.tacs.game.services.UserService;
@@ -28,8 +29,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+
+import static net.tacs.game.constants.Constants.MATCH_NOT_FOUND_CODE;
+import static net.tacs.game.constants.Constants.MATCH_NOT_FOUND_DETAIL;
 
 
 @RestController
@@ -46,6 +51,9 @@ public class MatchController {
 
     @Autowired
     private MunicipalityService municipalityService;
+
+    @Autowired
+    private MatchRepository matchRepository;
 
     @ApiOperation(value = "Buscar partidas", produces = "application/json")
     @ApiResponses(value = {
@@ -86,7 +94,10 @@ public class MatchController {
     })
     @GetMapping("/matches/{id}")
     public ResponseEntity<Match> getMatchById(@PathVariable("id") String id) throws MatchException {
-        Match match = this.matchService.getMatchById(id);
+        Long idLong = validateAndGetIdLong(id, "MATCH");
+        Optional<Match> matchToRetrieve = matchRepository.findById(idLong);
+        Match match = matchToRetrieve.orElseThrow(() -> new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(MATCH_NOT_FOUND_CODE, MATCH_NOT_FOUND_DETAIL))));
+
         return new ResponseEntity<>(match, HttpStatus.OK);
     }
 
@@ -104,44 +115,72 @@ public class MatchController {
 
     @GetMapping("/matches/{id}/municipalities/statistics")
     public ResponseEntity<List<MuniStatisticsDTOResponse>> getAllStatistics(@PathVariable("id") String id) throws MatchException {
-        List<MuniStatisticsDTOResponse> stats = this.matchService.getAllStatisticsForMatch(id);
+        Long idLong = validateAndGetIdLong(id, "MATCH");
+        Optional<Match> matchToRetrieve = matchRepository.findById(idLong);
+        Match match = matchToRetrieve.orElseThrow(() -> new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(MATCH_NOT_FOUND_CODE, MATCH_NOT_FOUND_DETAIL))));
+
+        List<MuniStatisticsDTOResponse> stats = this.matchService.getAllStatisticsForMatch(match);
         return new ResponseEntity<>(stats, HttpStatus.OK);
     }
 
     @PatchMapping("/matches/{matchId}/start")
-    public ResponseEntity updateMatchTurn(@PathVariable("matchId") String matchId) throws MatchException {
-        this.matchService.start(matchId);
+    public ResponseEntity updateMatchTurn(@PathVariable("matchId") String matchStringId) throws MatchException {
+        Long matchId = validateAndGetIdLong(matchStringId, "MATCH");
+        Optional<Match> matchOptional = matchRepository.findById(matchId);
+        Match match = matchOptional.orElseThrow(() -> new MatchException(HttpStatus.NOT_FOUND, Arrays.asList(new ApiError(MATCH_NOT_FOUND_CODE, MATCH_NOT_FOUND_DETAIL))));
+
+        this.matchService.start(match);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
     @PostMapping("/matches/{id}/municipalities/gauchos")
     public ResponseEntity<List<Municipality>> moveGauchos(@PathVariable("id") String id, @RequestBody MoveGauchosDTO dto) throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException {
-        List<Municipality> municipalities = municipalityService.moveGauchos(id, dto);
+        Long matchId = validateAndGetIdLong(id, "MATCH");
+        Optional<Match> matchOptional = matchRepository.findById(matchId);
+        Match match = matchOptional.orElseThrow(() -> new MatchException(HttpStatus.NOT_FOUND, Arrays.asList(new ApiError(MATCH_NOT_FOUND_CODE, MATCH_NOT_FOUND_DETAIL))));
+
+        List<Municipality> municipalities = municipalityService.moveGauchos(match, dto);
         return new ResponseEntity<>(municipalities, HttpStatus.OK);
     }
 
     //User story 3
     @PostMapping(value = "/matches/{id}/municipalities/attack")
     public ResponseEntity<AttackResultDTO> attackMunicipalities(@PathVariable("id") String id, @RequestBody AttackMuniDTO attackMuniDTO) throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException {
-        AttackResultDTO resultDTO = municipalityService.attackMunicipality(id, attackMuniDTO);
+        Long matchId = validateAndGetIdLong(id, "MATCH");
+        Optional<Match> matchOptional = matchRepository.findById(matchId);
+        Match match = matchOptional.orElseThrow(() -> new MatchException(HttpStatus.NOT_FOUND, Arrays.asList(new ApiError(MATCH_NOT_FOUND_CODE, MATCH_NOT_FOUND_DETAIL))));
+
+        AttackResultDTO resultDTO = municipalityService.attackMunicipality(match, attackMuniDTO);
         return new ResponseEntity<>(resultDTO, HttpStatus.OK);
     }
 
     @PatchMapping("/matches/{matchId}/municipalities/{muniId}/")
-    public ResponseEntity updateMunicipalityState(@PathVariable("matchId") String matchId, @PathVariable("muniId") String muniId/*, @RequestBody UpdateMunicipalityStateDTO dto*/) throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException {
-        this.matchService.updateMunicipalityState(matchId, muniId/*, dto*/);
+    public ResponseEntity updateMunicipalityState(@PathVariable("matchId") String id, @PathVariable("muniId") String muniId/*, @RequestBody UpdateMunicipalityStateDTO dto*/) throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException {
+        Long matchId = validateAndGetIdLong(id, "MATCH");
+        Optional<Match> matchOptional = matchRepository.findById(matchId);
+        Match match = matchOptional.orElseThrow(() -> new MatchException(HttpStatus.NOT_FOUND, Arrays.asList(new ApiError(MATCH_NOT_FOUND_CODE, MATCH_NOT_FOUND_DETAIL))));
+
+        this.matchService.updateMunicipalityState(match, muniId);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
     @PatchMapping("/matches/{matchId}/passTurn")
-    public ResponseEntity updateMatchTurn(@PathVariable("matchId") String matchId, @RequestBody PassTurnDTO passTurnDTO) throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException {
-        this.matchService.passTurn(matchId, passTurnDTO.getUserId());
+    public ResponseEntity updateMatchTurn(@PathVariable("matchId") String id, @RequestBody PassTurnDTO passTurnDTO) throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException {
+        Long matchId = validateAndGetIdLong(id, "MATCH");
+        Optional<Match> matchOptional = matchRepository.findById(matchId);
+        Match match = matchOptional.orElseThrow(() -> new MatchException(HttpStatus.NOT_FOUND, Arrays.asList(new ApiError(MATCH_NOT_FOUND_CODE, MATCH_NOT_FOUND_DETAIL))));
+
+        this.matchService.passTurn(match, passTurnDTO.getUserId());
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
     @PostMapping("/matches/{matchId}/retire")
-    public ResponseEntity abandonMatch(@PathVariable("matchId") String matchId, @RequestBody RetireDTO retireDTO) throws MatchException {
-        this.matchService.retireFromMatch(matchId, retireDTO);
+    public ResponseEntity abandonMatch(@PathVariable("matchId") String id, @RequestBody RetireDTO retireDTO) throws MatchException {
+        Long matchId = validateAndGetIdLong(id, "MATCH");
+        Optional<Match> matchOptional = matchRepository.findById(matchId);
+        Match match = matchOptional.orElseThrow(() -> new MatchException(HttpStatus.NOT_FOUND, Arrays.asList(new ApiError(MATCH_NOT_FOUND_CODE, MATCH_NOT_FOUND_DETAIL))));
+
+        this.matchService.retireFromMatch(match, retireDTO);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
@@ -150,7 +189,22 @@ public class MatchController {
         Match match = this.matchService.getMatchForUserId(userId);
         MatchIdDTO matchIdDTO = new MatchIdDTO();
         matchIdDTO.setMatchId(match.getId());
+
         return new ResponseEntity<>(matchIdDTO, HttpStatus.OK);
+    }
+
+    private Long validateAndGetIdLong(String idString, String entity) throws MatchException {
+        Long idLong;
+        if (idString == null || idString.isEmpty()) {
+            throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(entity.concat("_ID_EMPTY"), "Must provide an id")));
+        }
+        try {
+            idLong = Long.valueOf(idString);
+        } catch (NumberFormatException e) {
+            LOGGER.error("Invalid " + entity + " number id", e);
+            throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(entity.concat("_ID_INVALID"), "Must provide a valid id")));
+        }
+        return idLong;
     }
 
     /**
