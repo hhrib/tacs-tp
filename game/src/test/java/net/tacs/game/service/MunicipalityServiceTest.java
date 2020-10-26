@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Arrays;
 import java.util.LinkedList;
 
+import net.tacs.game.repositories.MatchRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,6 +46,9 @@ public class MunicipalityServiceTest {
     @MockBean
     private MatchService matchService;
 
+    @MockBean
+    private MatchRepository matchRepository;
+
     private User user1;
     private User user2;
     private Province buenosAires;
@@ -62,7 +66,9 @@ public class MunicipalityServiceTest {
     public void setUp() {
         GameApplication.setToken("");
         user1 = new User("Pepe");
+        user1.setId("ABC1");
         user2 = new User("Paula");
+        user2.setId("ABC2");
         buenosAires = new Province("Buenos Aires");
         Lanus = new Municipality("Lanus");
         Avellaneda = new Municipality("Avellaneda");
@@ -81,8 +87,6 @@ public class MunicipalityServiceTest {
         match.setId(111111L);
         match.setState(MatchState.IN_PROGRESS);
         match.setMap(buenosAires);
-
-        //Mockito.when(matchService.getMatchById("111111")).thenReturn(match);
 
         MatchConfiguration Config = new MatchConfiguration();
         match.setConfig(Config);
@@ -133,8 +137,6 @@ public class MunicipalityServiceTest {
         match.setId(111111L);
         match.setState(MatchState.IN_PROGRESS);
         match.setMap(buenosAires);
-
-        //Mockito.when(matchService.getMatchById("111111")).thenReturn(match);
 
         MatchConfiguration Config = new MatchConfiguration();
         match.setConfig(Config);
@@ -233,8 +235,6 @@ public class MunicipalityServiceTest {
 
         buenosAires.setMunicipalities(Arrays.asList(Lanus, Avellaneda, Quilmes));
 
-        //Mockito.when(matchService.getMatchById("1235")).thenReturn(match);
-
         MoveGauchosDTO dto = new MoveGauchosDTO();
         dto.setIdOriginMuni(99999);
         dto.setIdDestinyMuni(88888);
@@ -267,8 +267,6 @@ public class MunicipalityServiceTest {
 
         Quilmes.setBlocked(true);
 
-        //Mockito.when(matchService.getMatchById("1235")).thenReturn(match);
-
         MoveGauchosDTO dto = new MoveGauchosDTO();
         dto.setIdOriginMuni(99999);
         dto.setIdDestinyMuni(88888);
@@ -294,8 +292,6 @@ public class MunicipalityServiceTest {
 
         Avellaneda.setGauchosQty(2500);
         Quilmes.setGauchosQty(1500);
-
-        //Mockito.when(matchService.getMatchById("1235")).thenReturn(match);
 
         MoveGauchosDTO dto = new MoveGauchosDTO();
         dto.setIdOriginMuni(99999);
@@ -323,8 +319,6 @@ public class MunicipalityServiceTest {
         Quilmes.setGauchosQty(1500);
 
         buenosAires.setMunicipalities(Arrays.asList(Avellaneda, Quilmes));
-
-        //Mockito.when(matchService.getMatchById("1235")).thenReturn(match);
 
         MoveGauchosDTO dto = new MoveGauchosDTO();
         dto.setIdOriginMuni(99999);
@@ -395,8 +389,6 @@ public class MunicipalityServiceTest {
         match.setState(MatchState.IN_PROGRESS);
         match.setMap(buenosAires);
 
-        //Mockito.when(matchService.getMatchById("111111")).thenReturn(match);
-
         MatchConfiguration Config = new MatchConfiguration();
         match.setConfig(Config);
         match.setUsers(Arrays.asList(user1, user2));
@@ -448,8 +440,6 @@ public class MunicipalityServiceTest {
         match.setMap(buenosAires);
         match.setTurnPlayer(user1);
 
-        //Mockito.when(matchService.getMatchById("111111")).thenReturn(match);
-
         Lanus.setId(999999);
         Lanus.setOwner(user1);
         Lanus.setBlocked(false);
@@ -474,8 +464,6 @@ public class MunicipalityServiceTest {
         match.setMap(buenosAires);
         match.setTurnPlayer(user1);
 
-        //Mockito.when(matchService.getMatchById("111111")).thenReturn(match);
-
         Lanus.setId(999999);
         Lanus.setOwner(user1);
         Lanus.setBlocked(true);
@@ -499,8 +487,6 @@ public class MunicipalityServiceTest {
         match.setState(MatchState.IN_PROGRESS);
         match.setMap(buenosAires);
         match.setTurnPlayer(user1);
-
-        //Mockito.when(matchService.getMatchById("111111")).thenReturn(match);
 
         Lanus.setId(999999);
         Lanus.setOwner(user1);
