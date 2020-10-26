@@ -47,6 +47,11 @@ import { MatchMoveDialogComponent } from './components/match/match-move-dialog/m
 import { MatchStateDialogComponent } from './components/match/match-state-dialog/match-state-dialog.component';
 import { MatchEndshiftDialogComponent } from './components/match/match-endshift-dialog/match-endshift-dialog.component';
 import { User } from './models/user';
+import { AdminComponent } from './components/admin/admin.component';
+import {MatGridListModule} from '@angular/material/grid-list';
+import { AdminMatchesComponent } from './components/admin/admin-matches/admin-matches.component';
+import { AdminUserStatsComponent } from './components/admin/admin-user-stats/admin-user-stats.component';
+import { AdminScoreboardComponent } from './components/admin/admin-scoreboard/admin-scoreboard.component';
 
 
 @NgModule({
@@ -62,7 +67,11 @@ import { User } from './models/user';
     MatchAtackDialogComponent,
     MatchMoveDialogComponent,
     MatchStateDialogComponent,
-    MatchEndshiftDialogComponent
+    MatchEndshiftDialogComponent,
+    AdminComponent,
+    AdminMatchesComponent,
+    AdminUserStatsComponent,
+    AdminScoreboardComponent
   ],
   imports: [
     BrowserModule,
@@ -83,6 +92,7 @@ import { User } from './models/user';
     MatProgressSpinnerModule,
     MatSortModule,
     MatProgressBarModule,
+    MatGridListModule,
     AppRoutes,
     LeafletModule
   ],

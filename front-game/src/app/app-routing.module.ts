@@ -6,6 +6,7 @@ import { SocketComponent } from "./components/socket/socket.component";
 import { StatisticsPanelComponent } from './components/match/statistics-panel/statistics-panel.component';
 import { AuthGuard } from './services/auth.guard';
 import { MatchMapComponent } from './components/match/match-map/match-map.component';
+import { AdminComponent } from './components/admin/admin.component';
 
 
 const appRoutes: Routes = [
@@ -13,6 +14,7 @@ const appRoutes: Routes = [
     { path: 'home', component: HomeComponent },
     { path: 'socket', component: SocketComponent},
     { path:'searchMatches', component: MatchSearchComponent, canActivate: [AuthGuard]},
+    { path:'admin', component: AdminComponent, canActivate: [AuthGuard]},
     { path:'mapMatch/:id', component: MatchMapComponent, canActivate: [AuthGuard]},
     { path:'getStatistics', component: StatisticsPanelComponent, canActivate: [AuthGuard]},
     { path: '**', redirectTo: 'home' },
