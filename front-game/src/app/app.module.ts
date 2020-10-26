@@ -1,6 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
+import {MatNativeDateModule, MatRippleModule} from '@angular/material/core';
 
 import { AppRoutes } from './app-routing.module';
 
@@ -53,6 +54,8 @@ import { AdminMatchesComponent } from './components/admin/admin-matches/admin-ma
 import { AdminUserStatsComponent } from './components/admin/admin-user-stats/admin-user-stats.component';
 import { AdminScoreboardComponent } from './components/admin/admin-scoreboard/admin-scoreboard.component';
 
+import {MatDatepickerModule} from '@angular/material/datepicker';
+
 
 @NgModule({
   declarations: [
@@ -93,6 +96,8 @@ import { AdminScoreboardComponent } from './components/admin/admin-scoreboard/ad
     MatSortModule,
     MatProgressBarModule,
     MatGridListModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
     AppRoutes,
     LeafletModule
   ],

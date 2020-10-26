@@ -1,1 +1,50 @@
-<p>admin-matches works!</p>
+<mat-form-field color="accent" appearance="fill" style="padding-right: 10px;">
+    <mat-label>From</mat-label>
+    <input matInput [matDatepicker]="pickerFrom" [formControl]="dateFrom">
+    <mat-datepicker-toggle matSuffix [for]="pickerFrom"></mat-datepicker-toggle>
+    <mat-datepicker #pickerFrom color="primary"></mat-datepicker>
+</mat-form-field>
+
+<mat-form-field color="accent" appearance="fill" style="padding-right: 10px;">
+    <mat-label>To</mat-label>
+    <input matInput [matDatepicker]="pickerTo" [formControl]="dateTo">
+    <mat-datepicker-toggle matSuffix [for]="pickerTo"></mat-datepicker-toggle>
+    <mat-datepicker #pickerTo color="primary"></mat-datepicker>
+</mat-form-field>
+
+<button mat-raised-button (click)="filterClick()">Filter</button>
+
+<ng-container *ngIf="dataCharged>0">
+    <div style="padding: 5px;">
+        <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" style="width:100%">
+            
+            <!-- Created Column -->
+            <ng-container matColumnDef="created">
+              <th mat-header-cell *matHeaderCellDef> Created </th>
+              <td mat-cell *matCellDef="let element"> {{element.createdMatches}} </td>
+            </ng-container>
+          
+            <!-- In Progress Column -->
+            <ng-container matColumnDef="progress">
+              <th mat-header-cell *matHeaderCellDef> In Progress </th>
+              <td mat-cell *matCellDef="let element"> {{element.inProgressMatches}} </td>
+            </ng-container>
+          
+            <!-- Finished Column -->
+            <ng-container matColumnDef="finished">
+              <th mat-header-cell *matHeaderCellDef> Finished </th>
+              <td mat-cell *matCellDef="let element"> {{element.finishedMatches}} </td>
+            </ng-container>
+        
+            <!-- Cancelled Column -->
+            <ng-container matColumnDef="cancelled">
+                <th mat-header-cell *matHeaderCellDef> Cancelled </th>
+                <td mat-cell *matCellDef="let element"> {{element.cancelledMatches}} </td>
+            </ng-container>
+          
+            <tr mat-header-row *matHeaderRowDef="displayedColumns" style="text-align: center;"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+    </div>
+</ng-container>
+  
