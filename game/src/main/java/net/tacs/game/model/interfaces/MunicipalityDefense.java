@@ -38,8 +38,7 @@ public class MunicipalityDefense implements MunicipalityState {
 
 	@Override
 	public MunicipalityState nextState() {
-		// TODO Auto-generated method stub
-		return null;
+		return new MunicipalityProduction();
 	}
 
 	@Override

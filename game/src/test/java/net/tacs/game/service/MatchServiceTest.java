@@ -463,7 +463,7 @@ public class MatchServiceTest {
 
         matchService.updateMunicipalityState(match, "98765");
 
-        assertEquals(prodState, lanus.getState());
+        assertEquals(prodState.getName(), lanus.getState().getName());
     }
 
     @Test (expected = MatchNotPlayerTurnException.class)
