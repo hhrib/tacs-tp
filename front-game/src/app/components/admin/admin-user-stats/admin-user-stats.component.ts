@@ -38,23 +38,24 @@ export class AdminUserStatsComponent implements OnInit {
   }
 
   filterClick(): void {
-    console.log("Click en filter de usuario!");
-    console.log(this.playerChoosed.value)
-
-    //TODO: DESCOMENTAR CUANDO EL ENDPOINT SE ARREGLE.
-    this.dataSource.data = TEST_DATA;
-    this.dataCharged = 1;
-    // this.userService.getUserStatsByUsername(this.playerChoosed.value)
-    // .subscribe(
-    //   (result) => {
-    //     console.log(result)
-    //     this.dataSource.data = [result]
-    //     this.dataCharged = 1;
-    //     console.log(this.dataSource.data);
-        
-    //   },
-    //   err => console.log(err)
-    //   )
+    this.userService.getUserStatsByUsername(this.playerChoosed.value)
+    .subscribe(
+      (result) => {
+        console.log(result)
+        this.dataSource.data = [result]
+        this.dataCharged = 1;
+        console.log(this.dataSource.data);
+      },
+      err => {
+        //Si el usuario todavía no perdió ni ganó
+        this.dataSource.data = [{
+          matchesLost: 0,
+          matchesWon: 0,
+          username:this.playerChoosed.value
+        }]
+        this.dataCharged = 1;
+      }
+    )
   }
 
 }

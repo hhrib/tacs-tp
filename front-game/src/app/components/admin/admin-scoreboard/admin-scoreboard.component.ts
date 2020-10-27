@@ -33,14 +33,15 @@ export class AdminScoreboardComponent implements AfterViewInit {
   ) {
   //TODO: DESCOMENTAR CUANDO EL ENDPOINT SE ARREGLE.
 
-    this.dataSource.data = TEST_DATA.scoreboard
+    // this.dataSource.data = TEST_DATA.scoreboard
 
-    // this.userService.getScoreboard()
-    // .subscribe(
-    //   (result) => {
-    //     this.dataSource.data = result.scoreboard
-    // },
-    // err => console.log(err))
+    this.userService.getScoreboard()
+    .subscribe(
+      (result) => {
+        console.log(result)
+        this.dataSource.data = result.scoreboard
+    },
+    err => console.log(err))
    }
 
   ngAfterViewInit(): void {
