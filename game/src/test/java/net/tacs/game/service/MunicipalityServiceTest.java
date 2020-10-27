@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 
 import net.tacs.game.repositories.MatchRepository;
+import net.tacs.game.repositories.UserStatisticsRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,6 +49,9 @@ public class MunicipalityServiceTest {
 
     @MockBean
     private MatchRepository matchRepository;
+
+    @MockBean
+    private UserStatisticsRepository userStatisticsRepository;
 
     private User user1;
     private User user2;

@@ -15,6 +15,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import net.tacs.game.repositories.UserStatisticsRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -75,6 +76,9 @@ public class MatchServiceTest {
 
     @MockBean
     private UserRepository userRepository;
+
+    @MockBean
+    private UserStatisticsRepository userStatisticsRepository;
 
     private User user1;
     private User user2;
