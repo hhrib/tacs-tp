@@ -3,7 +3,7 @@ package net.tacs.game.model.interfaces;
 import net.tacs.game.model.MatchConfiguration;
 
 public class MunicipalityDefense implements MunicipalityState {
-	private static final String NAME = "DEFENSE";
+	private final String NAME = "DEFENSE";
 
 
 	public MunicipalityDefense() {

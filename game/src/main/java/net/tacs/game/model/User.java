@@ -29,7 +29,6 @@ public class User {
     //@Id @GeneratedValue
     private String id;
     private String username;
-    private boolean playing;
 
     public String getId() {
         return id;
