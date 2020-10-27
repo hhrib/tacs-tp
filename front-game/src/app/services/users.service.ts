@@ -15,6 +15,17 @@ export class UsersService {
 
   public getAllUsers(): Observable<any> {
     return this.http.get<any>(`${MATCH_URL}`);
-  } 
+  }
 
+  public getAllUsersNotInMatch(): Observable<any> {
+    return this.http.get<any>(`${MATCH_URL}/available`);
+  }
+
+  public getScoreboard(): Observable<any> {
+    return this.http.get<any>(`${MATCH_URL}/scoreboard`);
+  }
+
+  public getUserStatsByUsername(username: string): Observable<any> {
+    return this.http.get<any>(`${MATCH_URL}/username/${username}/stats`);
+  }
 }

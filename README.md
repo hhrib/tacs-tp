@@ -19,8 +19,7 @@ Una vez dentro del directorio principal, ejecutar docker-compose up
 1. Spring-Boot
 2. Angular
 3. Maven
-4. DER: https://drive.google.com/file/d/1NlseerFxcISJEXySQQ5WB8tqhcmMn-Rl/view?usp=sharing
-5. Diagrama de Clases (Relación Partida-Provincia-Municipio): https://drive.google.com/file/d/1OYIo54e2kQI0-9aefVhQ_q7i0KizMqq9/view?usp=sharing
+4. Diagrama de Clases (Relación Partida-Provincia-Municipio): https://drive.google.com/file/d/1OYIo54e2kQI0-9aefVhQ_q7i0KizMqq9/view?usp=sharing
 
 -----
 # Suposiciones:
@@ -30,12 +29,6 @@ Una vez dentro del directorio principal, ejecutar docker-compose up
 4. Solo el municipio destino se bloquea al mover gauchos.
 5. No se puede cambiar la configuracion de la partida una vez creada.
 6. Si un jugador abandona ANTES de que empieze la partida, esta se considera cancelada, de lo contrario, la partida continua con los jugadores restantes.
-
-# Cómo jugar?:
-1. Crear una partida: Menú -> New Match
-2. Una vez creada la partida: Menú -> Join Game
-3. Durante su turno, puede Atacar/Mover tropas/Cambiar estado municipio.
-4. Cuando lo decida, finalice su turno: Menú -> End Turn
 
 -----
 # Cómo jugar?:

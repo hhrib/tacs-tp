@@ -1,5 +1,12 @@
 package net.tacs.game.model;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -10,15 +17,14 @@ import net.tacs.game.exceptions.MatchNotStartedException;
 import net.tacs.game.model.enums.MatchState;
 import org.springframework.http.HttpStatus;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
 
 import static net.tacs.game.constants.Constants.*;
 import static net.tacs.game.constants.Constants.MATCH_FINISHED_DETAIL;
 
+
+
+@Document(collection = "games")
 public class Match {
 
     private static long idCounter = 0;
@@ -149,13 +155,19 @@ public class Match {
         return false;
     }
 
-    public boolean checkVictory(User player) {
+    public boolean rivalDefeated(User player) {
         int playerMunis = player.municipalitiesOwning(new ArrayList<>(this.getMap().getMunicipalities().values()));
 
         if(playerMunis == 0)
         {
             this.getConfig().removePlayer(player);
+            return true;
         }
+
+        return false;
+    }
+
+    public boolean checkVictory() {
 
         if(getConfig().getPlayersTurns().size() == 1) //solo quedo un jugador
         {

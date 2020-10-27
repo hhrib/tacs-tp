@@ -6,7 +6,6 @@ import java.util.Objects;
 //import net.tacs.game.model.enums.MunicipalityState;
 import net.tacs.game.exceptions.MatchException;
 import net.tacs.game.model.interfaces.MunicipalityDefense;
-import net.tacs.game.model.interfaces.MunicipalityProduction;
 import net.tacs.game.model.interfaces.MunicipalityState;
 import org.springframework.http.HttpStatus;
 
@@ -25,29 +24,31 @@ public class Municipality {
     private Centroide centroide;
     
     private Double elevation;
-
+//    @Transient
     private MunicipalityState state;
-    private final MunicipalityProduction productionState = new MunicipalityProduction();
-    private final MunicipalityDefense defenseState = new MunicipalityDefense();
+//    @Transient
+//    private final MunicipalityProduction productionState = new MunicipalityProduction();
+//    @Transient
+//    private final MunicipalityDefense defenseState = new MunicipalityDefense();
 
     private User owner;
 
     private Integer gauchosQty;
 
-    private boolean bBlocked = false;
+    private boolean blocked = false;
 
 	public Municipality() {
 		super();
 		id = ++idCounter;
-		state = defenseState;
+		state = new MunicipalityDefense();
 	}
 
     public Municipality(Double defenseMultiplier, Double gauchosProdMultiplier, Double gauchosDefMultiplier) {
         super();
         id = ++idCounter;
-        defenseState.createState(defenseMultiplier, gauchosDefMultiplier, productionState);
-        productionState.createState(1D, gauchosProdMultiplier, defenseState);
-        state = defenseState;
+//        defenseState.createState(defenseMultiplier, gauchosDefMultiplier, productionState);
+//        productionState.createState(1D, gauchosProdMultiplier, defenseState);
+        state = new MunicipalityDefense();
     }
 
 	public Municipality(String nombre) {
@@ -123,11 +124,11 @@ public class Municipality {
     }
 
     public boolean isBlocked() {
-        return bBlocked;
+        return blocked;
     }
 
-    public void setBlocked(boolean bBlocked) {
-        this.bBlocked = bBlocked;
+    public void setBlocked(boolean blocked) {
+        this.blocked = blocked;
     }
 
     public void validateMoveGauchos(Municipality muniDestiny, Integer qty) throws MatchException {
@@ -196,21 +197,24 @@ public class Municipality {
     /**
      * @method attack
      * @param enemyMunicipality
-     * @param Config
+     * @param config
      * @return 1  --  attack successful
      *         0  --  attack repelled
      *        -1  --  attack incomplete?
      */
-    public int attack(Municipality enemyMunicipality, MatchConfiguration Config, int GauchosAttacking) {
+    public int attack(Municipality enemyMunicipality, MatchConfiguration config, int GauchosAttacking) {
 	    double distanciaEntreMunicipios = centroide.getDistance(enemyMunicipality.getCentroide());
 
-        double multDist = 1 - (distanciaEntreMunicipios - Config.getMinDist()) /
-                                (Config.getMultDistance() * (Config.getMaxDist() - Config.getMinDist()));
+        double multDist = 1 - (distanciaEntreMunicipios - config.getMinDist()) /
+                                (config.getMultDistance() * (config.getMaxDist() - config.getMinDist()));
 
-        double multAltura = (1 + (enemyMunicipality.getElevation() - Config.getMinHeight()) /
-                                (Config.getMultHeight() * (Config.getMaxHeight() - Config.getMinHeight())));
+        if(Double.isNaN(multDist))
+            multDist = 1;
 
-        double multDefensa = enemyMunicipality.getState().getDefenseMultiplier();
+        double multAltura = (1 + (enemyMunicipality.getElevation() - config.getMinHeight()) /
+                                (config.getMultHeight() * (config.getMaxHeight() - config.getMinHeight())));
+
+        double multDefensa = enemyMunicipality.getState().getDefenseMultiplier(config);
 
 	    int GauchosAtacantesFinal = (int) Math.round(Math.floor(GauchosAttacking * multDist -
                 enemyMunicipality.getGauchosQty() * multAltura * multDefensa));
@@ -218,16 +222,15 @@ public class Municipality {
 	    int GauchosDefensaFinal = (int) Math.round(Math.ceil((enemyMunicipality.getGauchosQty() * multAltura * multDefensa -
                 GauchosAttacking * multDist) / (multAltura * multDefensa)));
 
+        this.setBlocked(true);
+
 	    if(GauchosAtacantesFinal <= 0)
         {
             //falló el ataque
             enemyMunicipality.setGauchosQty(GauchosDefensaFinal);
             setGauchosQty(getGauchosQty() - GauchosAttacking);
             return 0;
-        }
-
-	    if(GauchosAtacantesFinal > 0 && GauchosDefensaFinal <= 0)
-        {
+        } else {
             //ataque victorioso
             enemyMunicipality.setGauchosQty(GauchosAtacantesFinal);
             enemyMunicipality.setOwner(getOwner());
@@ -235,12 +238,6 @@ public class Municipality {
             return 1;
         }
 
-	    if(GauchosAtacantesFinal > 0 && GauchosDefensaFinal > 0)
-        {
-            //TODO preguntar que pasa
-            return -1;
-        }
-
-	    return -2; //No deberia llegar nunca aqui
     }
+
 }

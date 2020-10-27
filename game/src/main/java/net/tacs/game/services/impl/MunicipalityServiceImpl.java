@@ -10,12 +10,15 @@ import net.tacs.game.model.*;
 import net.tacs.game.model.dto.AttackMuniDTO;
 import net.tacs.game.model.dto.AttackResultDTO;
 import net.tacs.game.model.dto.MoveGauchosDTO;
+import net.tacs.game.model.dto.PlayerDefeatedDTO;
+import net.tacs.game.repositories.MatchRepository;
 import net.tacs.game.repositories.MunicipalityRepository;
 import net.tacs.game.services.MatchService;
 import net.tacs.game.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -36,12 +39,18 @@ public class MunicipalityServiceImpl implements MunicipalityService {
 
 	@Autowired
     private MatchService matchService;
+	
+	@Autowired
+    private MatchRepository matchRepository;
 
 	@Autowired
     private UserService userService;
 
 	@Autowired
     private MunicipalityRepository municipalityRepository;
+
+    @Autowired
+    private SimpMessagingTemplate template;
 	
 	public synchronized Double getElevation(Centroide location) {
 		Double elevation = elevations.get(location);
@@ -113,13 +122,17 @@ public class MunicipalityServiceImpl implements MunicipalityService {
 
         result = muniAtk.attack(muniDef, match.getConfig(), attackMuniDTO.getGauchosQty());
 
-        //TODO El setBlocked(true) se puede mover al método attack de Municipality? O hay alguna razón para hacerlo acá afuera.
-        muniAtk.setBlocked(true);
+        if (match.rivalDefeated(rival)) { //si el rival perdio el municipio chequear si perdio la partida
+            PlayerDefeatedDTO playerDefeatedSocketMessage = new PlayerDefeatedDTO();
+            playerDefeatedSocketMessage.setUsername(rival.getUsername());
+            template.convertAndSend("/topic/" + match.getId().toString() +"/defeated_player", playerDefeatedSocketMessage);
+        }
 
-        if(match.checkVictory(rival)) { //si el rival perdio el municipio chequear si perdio la partida
+        if(match.checkVictory()) {
             userService.setWinnerAndLosersStats(match);
         }
 
+        matchRepository.save(match);
         return new AttackResultDTO(result, muniAtk, muniDef);
 	}
 
@@ -133,6 +146,8 @@ public class MunicipalityServiceImpl implements MunicipalityService {
 				municipality.getValue().produceGauchos(match.getConfig());
 			}
 		}
+
+        matchRepository.save(match);
 	}
 
     public List<Municipality> moveGauchos(Match match, MoveGauchosDTO requestBean) throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException {
@@ -171,6 +186,8 @@ public class MunicipalityServiceImpl implements MunicipalityService {
         muniDestiny.addGauchos(requestBean.getQty());
         muniDestiny.setBlocked(true);
 
-        return Arrays.asList(muniOrigin, muniDestiny);
+		matchRepository.save(match);
+
+		return Arrays.asList(muniOrigin, muniDestiny);
     }
 }

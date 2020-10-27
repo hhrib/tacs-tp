@@ -1,50 +1,42 @@
 package net.tacs.game.model.interfaces;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import net.tacs.game.model.MatchConfiguration;
 
-public class MunicipalityProduction implements MunicipalityState{
-    private Double defenseMultiplier;
-    private Double gauchosMultiplier;
-    private MunicipalityState nextState;
+public class MunicipalityProduction implements MunicipalityState {
+	private String name = "PRODUCTION";
 
-    @Override
-    public int produceGauchos(MatchConfiguration Config, Double elevation) {
-        return (int) Math.floor(gauchosMultiplier *
-                (1 - ((elevation - Config.getMinHeight()) /
-                        (Config.getMultHeight() * (Config.getMaxHeight() - Config.getMinHeight())))));
-    }
+	public MunicipalityProduction() {
+	}
 
-    @Override
-    public void createState(Double defenseMultiplier, Double gauchosMultiplier, MunicipalityState nextState) {
-        this.defenseMultiplier = defenseMultiplier;
-        this.gauchosMultiplier = gauchosMultiplier;
-        this.nextState = nextState;
-    }
+	@Override
+	public int produceGauchos(MatchConfiguration config, Double elevation) {
+		return (int) Math.floor(config.getMultGauchosProduction() * (1 - ((elevation - config.getMinHeight())
+				/ (config.getMultHeight() * (config.getMaxHeight() - config.getMinHeight())))));
+	}
 
-    @Override
-    public String getName() {
-        return "PRODUCTION";
-    }
+	@Override
+	public String getName() {
+		return name;
+	}
 
-    @Override
-    @JsonIgnore
-    public Double getDefenseMultiplier() {
-        return defenseMultiplier;
-    }
+	@Override
+	public void setName(String name){
+		this.name = name;
+	}
 
-    @Override
-    public MunicipalityState nextState() {
-        return nextState;
-    }
+	@Override
+	public MunicipalityState nextState() {
+		return new MunicipalityDefense();
+	}
 
-    @Override
-    public String toString() {
-        return "PRODUCTION";
-    }
+	@Override
+	public String toString() {
+		return getName();
+	}
 
-    @Override
-    public boolean equals(Object o) {
-        return this == o;
-    }
+	@Override
+	public double getDefenseMultiplier(MatchConfiguration config) {
+		return 1d;
+	}
+
 }

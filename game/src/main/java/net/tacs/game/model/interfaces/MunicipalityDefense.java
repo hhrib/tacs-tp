@@ -1,50 +1,50 @@
 package net.tacs.game.model.interfaces;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import net.tacs.game.model.MatchConfiguration;
 
 public class MunicipalityDefense implements MunicipalityState {
-    private Double defenseMultiplier;
-    private Double gauchosMultiplier;
-    private MunicipalityState nextState;
+	private String name = "DEFENSE";
 
-    @Override
-    public int produceGauchos(MatchConfiguration Config, Double elevation) {
-        return (int) Math.floor(gauchosMultiplier *
-                (1 - ((elevation - Config.getMinHeight()) /
-                        (Config.getMultHeight() * (Config.getMaxHeight() - Config.getMinHeight())))));
-    }
 
-    @Override
-    public void createState(Double defenseMultiplier, Double gauchosMultiplier, MunicipalityState nextState) {
-        this.defenseMultiplier = defenseMultiplier;
-        this.gauchosMultiplier = gauchosMultiplier;
-        this.nextState = nextState;
-    }
+	public MunicipalityDefense() {
+		super();
+	}
 
-    @Override
-    public String getName() {
-        return "DEFENSE";
-    }
+	/**
+	 * 
+	 */
+	@Override
+	public int produceGauchos(MatchConfiguration config, Double elevation) {
+		return (int) Math.floor(config.getMultGauchosDefense()*
+                (1 - ((elevation - config.getMinHeight()) /
+                        (config.getMultHeight() * (config.getMaxHeight() - config.getMinHeight())))));
+		
+	}
 
-    @Override
-    @JsonIgnore
-    public Double getDefenseMultiplier() {
-        return defenseMultiplier;
-    }
+	@Override
+	public void setName(String name){
+		this.name = name;
+	}
 
-    @Override
-    public MunicipalityState nextState() {
-        return nextState;
-    }
+	@Override
+	public String getName() {
+		return name;
+	}
 
-    @Override
-    public String toString() {
-        return "DEFENSE";
-    }
+	@Override
+	public String toString() {
+		return getName();
+	}
 
-    @Override
-    public boolean equals(Object o) {
-        return this == o;
-    }
+	@Override
+	public MunicipalityState nextState() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public double getDefenseMultiplier(MatchConfiguration config) {
+		return config.getMultDefense();
+	}
+
 }

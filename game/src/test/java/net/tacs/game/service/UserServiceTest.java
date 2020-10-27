@@ -53,10 +53,10 @@ public class UserServiceTest {
         match.setUsers(Arrays.asList(user1, user2));
         match.setWinner(user2);
 
-        UserStats pepeStats = new UserStats();
+        UserStats pepeStats = new UserStats("Pepe");
         pepeStats.setMatchesWon(5);
         pepeStats.setMatchesLost(68);
-        UserStats paulaStats = new UserStats();
+        UserStats paulaStats = new UserStats("Paula");
         paulaStats.setMatchesWon(9);
         paulaStats.setMatchesLost(0);
 
@@ -74,22 +74,19 @@ public class UserServiceTest {
     @Test
     public void getScoreboardOK()
     {
-        UserStats pepeStats = new UserStats();
-        pepeStats.setUsername("Pepe");
+        UserStats pepeStats = new UserStats("Pepe");
         pepeStats.setMatchesWon(5);
         pepeStats.setMatchesLost(68);
-        UserStats paolaStats = new UserStats();
-        paolaStats.setUsername("Paola");
+        UserStats paolaStats = new UserStats("Paola");
         paolaStats.setMatchesWon(2);
         paolaStats.setMatchesLost(7);
-        UserStats paulaStats = new UserStats();
-        paulaStats.setUsername("Paula");
+        UserStats paulaStats = new UserStats("Paula");
         paulaStats.setMatchesWon(9);
         paulaStats.setMatchesLost(0);
 
         List<UserStats> statsList = Arrays.asList(pepeStats, paolaStats, paulaStats);
 
-        Mockito.when(userStatisticsRepository.getAll()).thenReturn(statsList);
+        Mockito.when(userStatisticsRepository.findAll()).thenReturn(statsList);
 
         Scoreboard scoreboard = userService.getScoreboard();
 
