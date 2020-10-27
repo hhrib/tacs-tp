@@ -57,7 +57,7 @@ public class UserServiceImpl implements UserService {
     {
         Scoreboard scoreboard = new Scoreboard();
 
-        scoreboard.fillAndSort(userStatisticsRepository.getAll());
+        scoreboard.fillAndSort(userStatisticsRepository.findAll());
 
         return scoreboard;
     }
@@ -69,16 +69,20 @@ public class UserServiceImpl implements UserService {
 
         losers.remove(winner);
 
-        if(!userStatisticsRepository.contains(winner.getId()))
-            userStatisticsRepository.addNewUserStats(winner.getId(), winner.getUsername());
         UserStats winnerStats = userStatisticsRepository.getById(winner.getId());
+        if(winnerStats == null)
+            winnerStats = new UserStats(winner.getId(), winner.getUsername());
+
         winnerStats.addMatchesWon();
+        userStatisticsRepository.save(winnerStats);
 
         for (User aUser : losers) {
-            if(!userStatisticsRepository.contains(aUser.getId()))
-                userStatisticsRepository.addNewUserStats(aUser.getId(), aUser.getUsername());
             UserStats loserStats = userStatisticsRepository.getById(aUser.getId());
+            if(loserStats == null)
+                loserStats = new UserStats(aUser.getId(), aUser.getUsername());
+
             loserStats.addMatchesLost();
+            userStatisticsRepository.save(loserStats);
         }
     }
 }
