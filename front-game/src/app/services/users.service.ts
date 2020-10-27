@@ -26,6 +26,6 @@ export class UsersService {
   }
 
   public getUserStatsByUsername(username: string): Observable<any> {
-    return this.http.get<any>(`${MATCH_URL}/${username}/stats`);
+    return this.http.get<any>(`${MATCH_URL}/username/${username}/stats`);
   }
 }

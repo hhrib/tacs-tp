@@ -40,27 +40,21 @@ export class AdminMatchesComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.dataSource.data = []
   }
 
   filterClick(): void{
     console.log("Click filter matches!")
-    console.log(this.dateFrom.value)
     let dateFromString = this.dateFrom.value.toISOString(8601).substring(0,10)
     let dateToString = this.dateTo.value.toISOString(8601).substring(0,10)
-    console.log(dateFromString);
-    console.log(dateToString);
     
     this.dataCharged = 1;
     this.matchesService.getAllMatchesStatistics(dateFromString,dateToString)
     .subscribe(
       (result) => {
-        this.dataSource.data = result
+        this.dataSource.data = [result]      
       },
       err => this.dataSource.data = NO_DATA_FOUND
     )
-
-    // this.dataSource.data = TEST_DATA
   }
 
 }
