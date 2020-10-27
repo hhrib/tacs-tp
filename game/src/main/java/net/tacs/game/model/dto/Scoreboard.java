@@ -8,6 +8,10 @@ public class Scoreboard {
 
     private List<UserStats> scoreboard;
 
+    public List<UserStats> getScoreboard() {
+        return scoreboard;
+    }
+
     public UserStats getByIndex(int index)
     {
         return scoreboard.get(index);

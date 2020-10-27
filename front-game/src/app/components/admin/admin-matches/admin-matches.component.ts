@@ -13,6 +13,13 @@ const TEST_DATA = [{
   inProgressMatches:36
 }]
 
+const NO_DATA_FOUND = [{
+  cancelledMatches: 0,
+  createdMatches: 0,
+  finishedMatches: 0,
+  inProgressMatches:0
+}]
+
 
 @Component({
   selector: 'app-admin-matches',
@@ -39,21 +46,21 @@ export class AdminMatchesComponent implements OnInit {
   filterClick(): void{
     console.log("Click filter matches!")
     console.log(this.dateFrom.value)
-    let dateFromString = this.dateFrom.value.toLocaleDateString().replaceAll("/","-")
-    let dateToString = this.dateTo.value.toLocaleDateString().replaceAll("/","-")
+    let dateFromString = this.dateFrom.value.toISOString(8601).substring(0,10)
+    let dateToString = this.dateTo.value.toISOString(8601).substring(0,10)
     console.log(dateFromString);
     console.log(dateToString);
     
     this.dataCharged = 1;
-    // this.matchesService.getAllMatchesStatistics(dateFromString,dateToString)
-    // .subscribe(
-    //   (result) => {
-    //     this.dataSource.data = result
-    //   },
-    //   err => console.log(err)
-    // )
+    this.matchesService.getAllMatchesStatistics(dateFromString,dateToString)
+    .subscribe(
+      (result) => {
+        this.dataSource.data = result
+      },
+      err => this.dataSource.data = NO_DATA_FOUND
+    )
 
-    this.dataSource.data = TEST_DATA
+    // this.dataSource.data = TEST_DATA
   }
 
 }
