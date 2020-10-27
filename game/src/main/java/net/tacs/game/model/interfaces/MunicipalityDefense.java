@@ -3,7 +3,7 @@ package net.tacs.game.model.interfaces;
 import net.tacs.game.model.MatchConfiguration;
 
 public class MunicipalityDefense implements MunicipalityState {
-	private final String NAME = "DEFENSE";
+	private String name = "DEFENSE";
 
 
 	public MunicipalityDefense() {
@@ -21,10 +21,14 @@ public class MunicipalityDefense implements MunicipalityState {
 		
 	}
 
+	@Override
+	public void setName(String name){
+		this.name = name;
+	}
 
 	@Override
 	public String getName() {
-		return NAME;
+		return name;
 	}
 
 	@Override

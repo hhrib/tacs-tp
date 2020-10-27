@@ -9,6 +9,8 @@ public interface MunicipalityState {
 
     public String getName();
 
+    public void setName(String name);
+
     public MunicipalityState nextState();
 
     public boolean equals(Object o);
