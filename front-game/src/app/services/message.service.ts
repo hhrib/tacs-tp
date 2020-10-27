@@ -37,7 +37,7 @@ export class MessageService {
   private onConnectCallback(matchId: any, user: any) {
     this.stompClient.subscribe(`/topic/${matchId}/turn_end`, (turnResponse) => {
 
-      this.actualUserIdTurn = (JSON.parse(turnResponse.body)).userId //TODO: CON LO DE ALE, CAMBIAR A USERNAME
+      this.actualUserIdTurn = (JSON.parse(turnResponse.body)).username //TODO: CON LO DE ALE, CAMBIAR A USERNAME
       console.log("El usuario que continúa es: " + this.actualUserIdTurn)
 
       if (this.actualUserIdTurn == user) {
