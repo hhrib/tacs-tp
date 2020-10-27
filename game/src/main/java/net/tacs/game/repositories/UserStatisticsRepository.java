@@ -1,35 +1,13 @@
 package net.tacs.game.repositories;
 
 import net.tacs.game.model.UserStats;
-import org.springframework.stereotype.Component;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+@Repository("userStatisticsRepository")
+public interface UserStatisticsRepository extends MongoRepository<UserStats, String> {
 
-@Component("userStatisticsRepository")
-public class UserStatisticsRepository {
-    private static Map</*id*/String, UserStats> userStatistics = new HashMap<>();
-
-    public UserStats getById(String id)
-    {
-        return userStatistics.get(id);
-    }
-
-    public Collection<UserStats> getAll()
-    {
-        return userStatistics.values();
-    }
-
-    public void addNewUserStats(String id, String username)
-    {
-        UserStats userStats = new UserStats();
-        userStats.setUsername(username);
-        userStatistics.put(id, userStats);
-    }
-
-    public boolean contains(String username)
-    {
-        return userStatistics.containsKey(username);
-    }
+    @Query(value = "{{usersStats._id::?0}}")
+    UserStats getById(String id);
 }

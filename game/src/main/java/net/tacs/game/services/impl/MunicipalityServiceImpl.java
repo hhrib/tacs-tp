@@ -10,6 +10,7 @@ import net.tacs.game.model.*;
 import net.tacs.game.model.dto.AttackMuniDTO;
 import net.tacs.game.model.dto.AttackResultDTO;
 import net.tacs.game.model.dto.MoveGauchosDTO;
+import net.tacs.game.model.dto.PlayerDefeatedDTO;
 import net.tacs.game.repositories.MatchRepository;
 import net.tacs.game.repositories.MunicipalityRepository;
 import net.tacs.game.services.MatchService;
@@ -17,6 +18,7 @@ import net.tacs.game.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -46,6 +48,9 @@ public class MunicipalityServiceImpl implements MunicipalityService {
 
 	@Autowired
     private MunicipalityRepository municipalityRepository;
+
+    @Autowired
+    private SimpMessagingTemplate template;
 	
 	public synchronized Double getElevation(Centroide location) {
 		Double elevation = elevations.get(location);
@@ -129,9 +134,16 @@ public class MunicipalityServiceImpl implements MunicipalityService {
 
             muniAtk.setBlocked(true);
 
-            if(match.checkVictory(rival)) //si el rival perdio el municipio chequear si perdio la partida
+            if (match.rivalDefeated(rival)) { //si el rival perdio el municipio chequear si perdio la partida
+                PlayerDefeatedDTO playerDefeatedSocketMessage = new PlayerDefeatedDTO();
+                playerDefeatedSocketMessage.setUsername(rival.getUsername());
+                template.convertAndSend("/topic/" + match.getId().toString() +"/defeated_player", playerDefeatedSocketMessage);
+            }
+
+            if(match.checkVictory())
                 userService.setWinnerAndLosersStats(match);
 
+            matchRepository.save(match);
             return new AttackResultDTO(result, muniAtk, muniDef);
 	    }
 	    else
@@ -150,6 +162,8 @@ public class MunicipalityServiceImpl implements MunicipalityService {
 				municipality.getValue().produceGauchos(match.getConfig());
 			}
 		}
+
+        matchRepository.save(match);
 	}
 
     public List<Municipality> moveGauchos(Match match, MoveGauchosDTO requestBean) throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException {

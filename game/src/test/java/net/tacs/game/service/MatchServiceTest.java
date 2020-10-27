@@ -15,6 +15,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import net.tacs.game.repositories.UserStatisticsRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -76,6 +77,9 @@ public class MatchServiceTest {
     @MockBean
     private UserRepository userRepository;
 
+    @MockBean
+    private UserStatisticsRepository userStatisticsRepository;
+
     private User user1;
     private User user2;
     private Province buenosAires;
@@ -93,7 +97,9 @@ public class MatchServiceTest {
     public void setUp() {
         GameApplication.setToken("");
         user1 = new User("Pepe");
+        user1.setId("ABC1");
         user2 = new User("Paula");
+        user2.setId("ABC2");
         buenosAires = new Province("Buenos Aires");
         lanus = new Municipality("Lanus");
         lanus.setId(11111);
@@ -122,14 +128,9 @@ public class MatchServiceTest {
         dto.setConfigs(Arrays.asList(1.25D, 15D, 10D, 2D, 2D, 3000D));
 
         provinceRepository.add(buenosAires);
-//        userRepository.setUsers(Arrays.asList(user1,user2));
-        //FIXME implementar esta parte con la persistencia en mongo
 
         buenosAires.setId(99999997L);
         buenosAires.setMunicipalities(Arrays.asList(lanus, avellaneda, quilmes, tigre, lomas, matanza));
-
-        user1.setId("ABC1");
-        user2.setId("ABC2");
 
         lanus.setCentroide(new Centroide("0", "0"));
         avellaneda.setCentroide(new Centroide("1", "1"));
@@ -231,16 +232,12 @@ public class MatchServiceTest {
         municipalityList.add(lanus);
         buenosAires.setId(99999997L);
         buenosAires.setMunicipalities(municipalityList);
-        user1.setId("user1");
-        user2.setId("user2");
-//        userRepository.setUsers(Arrays.asList(user1,user2));
 
-      //FIXME implementar esta parte con la persistencia en mongo
         Mockito.when(provinceRepository.findById(99999997L)).thenReturn(java.util.Optional.ofNullable(buenosAires));
         Mockito.when(userRepository.findById("ABC1")).thenReturn(java.util.Optional.empty());
         Mockito.when(userRepository.findById("ABC2")).thenReturn(java.util.Optional.empty());
 
-        Match match = matchService.createMatch(dto);
+        matchService.createMatch(dto);
     }
 
     @Test(expected = MatchException.class)
@@ -280,13 +277,12 @@ public class MatchServiceTest {
         municipalityList.add(lanus);
         buenosAires.setId(99999997L);
         buenosAires.setMunicipalities(municipalityList);
-        user1.setId("ABC1");
-        user2.setId("ABC2");
         lanus.setElevation(3D);
         lanus.setGauchosQty(300);
-//        userRepository.setUsers(Arrays.asList(user1, user2));
-      //FIXME implementar esta parte con la persistencia en mongo
+
         Mockito.when(provinceRepository.findById(99999997L)).thenReturn(java.util.Optional.ofNullable(buenosAires));
+        Mockito.when(userRepository.findById("ABC1")).thenReturn(java.util.Optional.ofNullable(user1));
+        Mockito.when(userRepository.findById("ABC2")).thenReturn(java.util.Optional.ofNullable(user2));
 
         matchService.createMatch(dto);
     }
@@ -296,8 +292,9 @@ public class MatchServiceTest {
         Match match = new Match();
         match.setId(1234L);
         match.setDate(LocalDateTime.of(2020, 9, 10, 0, 0));
-//        Mockito.when(matchRepository.getMatches()).thenReturn(Arrays.asList(match));
-      //FIXME implementar esta parte con la persistencia en mongo
+
+        Mockito.when(matchRepository.findAll()).thenReturn(Arrays.asList(match));
+
         LocalDate dateFrom = LocalDate.of(2020, 9, 10);
         LocalDate dateTo = LocalDate.of(2020, 9, 20);
 
@@ -321,8 +318,9 @@ public class MatchServiceTest {
         Match match = new Match();
         match.setId(1234L);
         match.setDate(LocalDateTime.of(2020, 9, 10, 0, 0));
-//        Mockito.when(matchRepository.getMatches()).thenReturn(Arrays.asList(match));
-      //FIXME implementar esta parte con la persistencia en mongo
+
+        Mockito.when(matchRepository.findAll()).thenReturn(Arrays.asList(match));
+
         LocalDate dateTo = LocalDate.of(2020, 9, 10);
         LocalDate dateFrom = LocalDate.of(2020, 9, 20);
 
@@ -366,9 +364,6 @@ public class MatchServiceTest {
         match.setUsers(Arrays.asList(user1, user2));
         match.setTurnPlayer(user2);
 
-        user1.setId("ABC1");
-        user2.setId("ABC2");
-
         config.setPlayersTurns(Arrays.asList(user1, user2));
 
         Mockito.when(matchRepository.findById(123456L)).thenReturn(java.util.Optional.of(match));
@@ -388,9 +383,6 @@ public class MatchServiceTest {
         match.setTurnPlayer(user2);
 
         User user3 = new User("Laura");
-
-        user1.setId("ABC1");
-        user2.setId("ABC2");
         user3.setId("ABC3");
 
         match.setUsers(Arrays.asList(user1, user2, user3));
@@ -414,9 +406,6 @@ public class MatchServiceTest {
         match.setTurnPlayer(user2);
 
         User user3 = new User("Laura");
-
-        user1.setId("ABC1");
-        user2.setId("ABC2");
         user3.setId("ABC3");
 
         config.setPlayersTurns(Arrays.asList(user1, user2));
@@ -435,9 +424,6 @@ public class MatchServiceTest {
         match.setConfig(config);
         match.setUsers(Arrays.asList(user1, user2));
         match.setTurnPlayer(user2);
-
-        user1.setId("ABC1");
-        user2.setId("ABC2");
 
         config.setPlayersTurns(Arrays.asList(user1, user2));
 
@@ -475,8 +461,6 @@ public class MatchServiceTest {
 
         buenosAires.setMunicipalities(Arrays.asList(lanus, tigre));
 
-        Mockito.when(matchRepository.findById(123456L)).thenReturn(java.util.Optional.of(match));
-
         matchService.updateMunicipalityState(match, "98765");
 
         assertEquals(prodState, lanus.getState());
@@ -499,8 +483,6 @@ public class MatchServiceTest {
         tigre.setId(56789);
 
         buenosAires.setMunicipalities(Arrays.asList(lanus, tigre));
-
-        Mockito.when(matchRepository.findById(123456L)).thenReturn(java.util.Optional.of(match));
 
         matchService.updateMunicipalityState(match, "98765");
     }

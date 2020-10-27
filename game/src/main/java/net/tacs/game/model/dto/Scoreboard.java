@@ -30,4 +30,8 @@ public class Scoreboard {
             return b.getMatchesWon() - a.getMatchesWon();
         }
     }
+
+    public List<UserStats> getScoreboard() {
+        return scoreboard;
+    }
 }

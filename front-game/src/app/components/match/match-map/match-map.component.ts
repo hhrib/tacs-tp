@@ -1,5 +1,5 @@
 import { Message } from '@angular/compiler/src/i18n/i18n_ast';
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import * as L from 'leaflet';
 import { Observable } from 'rxjs';
@@ -33,13 +33,17 @@ export class MatchMapComponent implements OnInit {
 
   private map;
   private idMatch;
+  public nextTurn: string;
+  public firstTurn: string;
 
   constructor(
     private actRoute: ActivatedRoute, 
     private matchService: MatchService, 
     private markerService: MarkerService, 
-    private match: MatchResponse) {
+    private match: MatchResponse,
+    private messageService: MessageService) {
 
+      this.nextTurn = messageService.actualUserIdTurn;
   }
 
   ngOnInit(): void {
@@ -54,8 +58,12 @@ export class MatchMapComponent implements OnInit {
           this.match.map = response.map;
           this.match.state = response.state;
           this.match.users = response.users;
+          this.firstTurn = response.turnPlayer.username;
           console.log(this.match);
           console.log("Fin Match-Map");
+          console.log("primer turno: ", this.firstTurn)
+          console.log(this.nextTurn)
+
           this.initMap(this.match.map?.centroide?.lat,this.match.map?.centroide?.lon);
           this.markerService.makeMunicipalitiesMarkers(this.map);
         },

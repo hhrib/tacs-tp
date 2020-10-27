@@ -2,7 +2,7 @@ package net.tacs.game.model.dto;
 
 import java.util.Objects;
 
-public class NextUserTurnDTO {
+public class PlayerDefeatedDTO {
 
     private String username;
 
@@ -18,7 +18,7 @@ public class NextUserTurnDTO {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        NextUserTurnDTO that = (NextUserTurnDTO) o;
+        PlayerDefeatedDTO that = (PlayerDefeatedDTO) o;
         return username.equals(that.username);
     }
 
@@ -29,7 +29,7 @@ public class NextUserTurnDTO {
 
     @Override
     public String toString() {
-        return "NextUserTurnDTO{" +
+        return "PlayerDefeatedDTO{" +
                 "username='" + username + '\'' +
                 '}';
     }
