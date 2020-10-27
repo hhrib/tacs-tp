@@ -27,6 +27,9 @@ public class Constants {
     public static final String USER_NOT_FOUND_CODE = "USER_NOT_FOUND";
     public static final String USER_NOT_FOUND_DETAIL = "User not found for provided id";
 
+    public static final String USER_STATS_NOT_FOUND_CODE = "USER_STATS_NOT_FOUND";
+    public static final String USER_STATS_NOT_FOUND_DETAIL = "User statistics not found for provided id";
+
     public static final String MUNICIPALITY_DESTINY_BLOCKED_CODE = "MUNICIPALITY_DESTINY_BLOCKED";
     public static final String MUNICIPALITY_DESTINY_BLOCKED_DETAIL = "The destiny municipality is blocked";
 

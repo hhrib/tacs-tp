@@ -1,6 +1,7 @@
 package net.tacs.game.controller;
 
 import net.tacs.game.exceptions.MatchException;
+import net.tacs.game.exceptions.MatchNotPlayerTurnException;
 import net.tacs.game.exceptions.UserNotFoundException;
 import net.tacs.game.mapper.UserToDTOMapper;
 import net.tacs.game.model.ApiError;
@@ -75,8 +76,12 @@ public class UserController {
     }
 
 	@GetMapping("/users/id/{id}/stats")
-	public ResponseEntity<UserStats> getUserStatsById(@PathVariable("id") String id) {
+	public ResponseEntity<UserStats> getUserStatsById(@PathVariable("id") String id) throws UserNotFoundException {
 		UserStats userStats = userStatisticsRepository.getById(id);
+		if(userStats == null)
+			throw new UserNotFoundException(HttpStatus.NOT_FOUND,
+					Arrays.asList(new ApiError(USER_STATS_NOT_FOUND_CODE, USER_STATS_NOT_FOUND_DETAIL)));
+
 		return new ResponseEntity<>(userStats, HttpStatus.OK);
 	}
 
@@ -87,7 +92,12 @@ public class UserController {
 		if (user == null)
 			throw new UserNotFoundException(HttpStatus.NOT_FOUND,
 					Arrays.asList(new ApiError(USER_NOT_FOUND_CODE, USER_NOT_FOUND_DETAIL)));
+
 		UserStats userStats = userStatisticsRepository.getById(user.getId());
+		if(userStats == null)
+			throw new UserNotFoundException(HttpStatus.NOT_FOUND,
+					Arrays.asList(new ApiError(USER_STATS_NOT_FOUND_CODE, USER_STATS_NOT_FOUND_DETAIL)));
+
 		return new ResponseEntity<>(userStats, HttpStatus.OK);
 	}
 
@@ -103,4 +113,8 @@ public class UserController {
 		return new ResponseEntity<>(HttpStatus.CREATED);
 	}
 
+	@ExceptionHandler(UserNotFoundException.class)
+	public ResponseEntity<List<ApiError>> handleException(UserNotFoundException ex) {
+		return new ResponseEntity<>(ex.getApiErrors(), ex.getHttpStatus());
+	}
 }
