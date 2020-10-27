@@ -1,5 +1,5 @@
-<h1 class="mat-display-1" style="text-align: center;margin:2%">Admin Panel</h1>
-<div style="margin: 40px;">
+<h1 class="md-display-1" style="text-align: center;margin:2%">Admin Panel</h1>
+<div style="margin: 40px;padding-right: 10%;padding-left: 10%;">
     <mat-grid-list cols="3" rowHeight="200px">
         <mat-grid-tile
             *ngFor="let tile of tiles"
@@ -7,7 +7,7 @@
             [rowspan]="tile.rows"
             [style.background]="tile.color">
             <app-admin-matches *ngIf="tile.text=='Matches'"></app-admin-matches>
-            <app-admin-scoreboard *ngIf="tile.text=='Scoreboard'"></app-admin-scoreboard>
+            <app-admin-scoreboard style="padding: 5px;" *ngIf="tile.text=='Scoreboard'"></app-admin-scoreboard>
             <app-admin-user-stats *ngIf="tile.text=='UserStats'"></app-admin-user-stats>
         </mat-grid-tile>
     </mat-grid-list>
