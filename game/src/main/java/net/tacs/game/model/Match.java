@@ -1,17 +1,20 @@
 package net.tacs.game.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
-import net.tacs.game.model.enums.MatchState;
-
-import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+
+import net.tacs.game.model.enums.MatchState;
+
+@Document(collection = "games")
 public class Match {
 
     private static long idCounter = 0;
@@ -142,13 +145,19 @@ public class Match {
         return false;
     }
 
-    public boolean checkVictory(User player) {
+    public boolean rivalDefeated(User player) {
         int playerMunis = player.municipalitiesOwning(new ArrayList<>(this.getMap().getMunicipalities().values()));
 
         if(playerMunis == 0)
         {
             this.getConfig().removePlayer(player);
+            return true;
         }
+
+        return false;
+    }
+
+    public boolean checkVictory() {
 
         if(getConfig().getPlayersTurns().size() == 1) //solo quedo un jugador
         {

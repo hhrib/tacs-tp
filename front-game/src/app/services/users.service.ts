@@ -15,6 +15,9 @@ export class UsersService {
 
   public getAllUsers(): Observable<any> {
     return this.http.get<any>(`${MATCH_URL}`);
-  } 
+  }
 
+  public getAllUsersNotInMatch(): Observable<any> {
+    return this.http.get<any>(`${MATCH_URL}/available`);
+  }
 }

@@ -1,21 +1,17 @@
 package net.tacs.game.services.impl;
 
-import net.tacs.game.controller.MatchController;
-import net.tacs.game.exceptions.MatchException;
-import net.tacs.game.exceptions.MatchNotPlayerTurnException;
-import net.tacs.game.exceptions.MatchNotStartedException;
-import net.tacs.game.mapper.MuniToStatsDTOMapper;
-import net.tacs.game.model.*;
-import net.tacs.game.model.dto.*;
-import net.tacs.game.model.enums.MatchState;
-import net.tacs.game.model.websocket.ChatMessage;
-import net.tacs.game.repositories.MatchRepository;
-import net.tacs.game.repositories.ProvinceRepository;
-import net.tacs.game.repositories.UserRepository;
-import net.tacs.game.services.MatchService;
-import net.tacs.game.services.ProvinceService;
-import net.tacs.game.services.MunicipalityService;
-import net.tacs.game.services.UserService;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Random;
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,15 +19,31 @@ import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static net.tacs.game.constants.Constants.*;
-import static net.tacs.game.constants.Constants.MUNICIPALITY_NOT_FOUND_DETAIL;
+import net.tacs.game.constants.Constants;
+import net.tacs.game.controller.MatchController;
+import net.tacs.game.exceptions.MatchException;
+import net.tacs.game.exceptions.MatchNotPlayerTurnException;
+import net.tacs.game.exceptions.MatchNotStartedException;
+import net.tacs.game.mapper.MuniToStatsDTOMapper;
+import net.tacs.game.model.ApiError;
+import net.tacs.game.model.Match;
+import net.tacs.game.model.MatchConfiguration;
+import net.tacs.game.model.Municipality;
+import net.tacs.game.model.Province;
+import net.tacs.game.model.User;
+import net.tacs.game.model.dto.CreateMatchDTO;
+import net.tacs.game.model.dto.MatchesStatisticsDTO;
+import net.tacs.game.model.dto.MuniStatisticsDTOResponse;
+import net.tacs.game.model.dto.NextUserTurnDTO;
+import net.tacs.game.model.dto.RetireDTO;
+import net.tacs.game.model.enums.MatchState;
+import net.tacs.game.repositories.MatchRepository;
+import net.tacs.game.repositories.ProvinceRepository;
+import net.tacs.game.repositories.UserRepository;
+import net.tacs.game.services.MatchService;
+import net.tacs.game.services.MunicipalityService;
+import net.tacs.game.services.ProvinceService;
+import net.tacs.game.services.UserService;
 
 @Service("matchService")
 public class MatchServiceImpl implements MatchService {
@@ -61,7 +73,7 @@ public class MatchServiceImpl implements MatchService {
 
     @Override
     public List<Match> findAll() {
-        List<Match> matches = matchRepository.getMatches();
+        List<Match> matches = (List<Match>) matchRepository.findAll();
         return matches;
     }
 
@@ -77,7 +89,7 @@ public class MatchServiceImpl implements MatchService {
             List<LocalDateTime> dates = validateDatesToSearch(isoDateFrom, isoDateTo);
             LocalDateTime dateFrom = dates.get(0);
             LocalDateTime dateTo = dates.get(1);
-            List<Match> matches = matchRepository.getMatches();
+            List<Match> matches = (List<Match>) matchRepository.findAll();
 
             if (matches == null || matches.isEmpty()) {
                 throw new MatchException(HttpStatus.NOT_FOUND, Arrays.asList(new ApiError("MATCHES_NOT_FOUND", "Matches not found for dates")));
@@ -141,7 +153,7 @@ public class MatchServiceImpl implements MatchService {
         newMatch.setState(MatchState.CREATED);
         LOGGER.info(newMatchBean.toString());
 
-        matchRepository.add(newMatch);
+        matchRepository.save(newMatch);
 
         return newMatch;
     }
@@ -390,6 +402,7 @@ public class MatchServiceImpl implements MatchService {
         checkMatchFinished(match);
 
         match.setState(MatchState.IN_PROGRESS);
+        matchRepository.save(match);
     }
 
     @Override
@@ -400,17 +413,17 @@ public class MatchServiceImpl implements MatchService {
         checkMatchFinished(match);
 
         Optional<Municipality> muniOptional = Optional.ofNullable(match.getMap().getMunicipalities().get(muniId));
-        Municipality muni = muniOptional.orElseThrow(() -> new MatchException(HttpStatus.NOT_FOUND, Arrays.asList(new ApiError(MUNICIPALITY_NOT_FOUND_CODE, MUNICIPALITY_NOT_FOUND_DETAIL))));
+        Municipality muni = muniOptional.orElseThrow(() -> new MatchException(HttpStatus.NOT_FOUND, Arrays.asList(new ApiError(Constants.MUNICIPALITY_NOT_FOUND_CODE, Constants.MUNICIPALITY_NOT_FOUND_DETAIL))));
 
         if(!match.getTurnPlayer().equals(muni.getOwner()))
-            throw new MatchNotPlayerTurnException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(PLAYER_DOESNT_HAVE_TURN_CODE, PLAYER_DOESNT_HAVE_TURN_DETAIL)));
+            throw new MatchNotPlayerTurnException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(Constants.PLAYER_DOESNT_HAVE_TURN_CODE, Constants.PLAYER_DOESNT_HAVE_TURN_DETAIL)));
 
         if(muni.isBlocked())
-            throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(MUNICIPALITY_DESTINY_BLOCKED_CODE, MUNICIPALITY_DESTINY_BLOCKED_DETAIL)));
+            throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(Constants.MUNICIPALITY_DESTINY_BLOCKED_CODE, Constants.MUNICIPALITY_DESTINY_BLOCKED_DETAIL)));
 
         muni.nextState();
 
-        matchRepository.update(match);
+        matchRepository.save(match);
     }
 
     @Override
@@ -431,12 +444,13 @@ public class MatchServiceImpl implements MatchService {
             match.setTurnPlayer(nextPlayer);
             municipalityService.produceGauchos(match, nextPlayer);
             NextUserTurnDTO endTurnSocketMessage = new NextUserTurnDTO();
-            endTurnSocketMessage.setUserId(nextPlayer.getId());
+            endTurnSocketMessage.setUsername(nextPlayer.getUsername());
             template.convertAndSend("/topic/" + match.getId().toString() +"/turn_end", endTurnSocketMessage);
+            matchRepository.save(match);
         }
         else //el jugador no tiene el turno
         {
-            throw new MatchNotPlayerTurnException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(PLAYER_DOESNT_HAVE_TURN_CODE, PLAYER_DOESNT_HAVE_TURN_DETAIL)));
+            throw new MatchNotPlayerTurnException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(Constants.PLAYER_DOESNT_HAVE_TURN_CODE, Constants.PLAYER_DOESNT_HAVE_TURN_DETAIL)));
         }
     }
 
@@ -496,7 +510,7 @@ public class MatchServiceImpl implements MatchService {
     @Override
     public void retireFromMatch(Match match, RetireDTO retireDTO) throws MatchException {
         Optional<User> userOptional = userRepository.findById(retireDTO.getPlayerId());
-        User user = userOptional.orElseThrow(() -> new MatchException(HttpStatus.NOT_FOUND, Arrays.asList(new ApiError(USER_NOT_FOUND_CODE, USER_NOT_FOUND_DETAIL))));
+        User user = userOptional.orElseThrow(() -> new MatchException(HttpStatus.NOT_FOUND, Arrays.asList(new ApiError(Constants.USER_NOT_FOUND_CODE, Constants.USER_NOT_FOUND_DETAIL))));
 
         if(match.getUsers().contains(user))
         {
@@ -508,7 +522,7 @@ public class MatchServiceImpl implements MatchService {
 
             if(match.getState().equals(MatchState.FINISHED))
             {
-                throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(MATCH_FINISHED_CODE, MATCH_FINISHED_DETAIL)));
+                throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(Constants.MATCH_FINISHED_CODE, Constants.MATCH_FINISHED_DETAIL)));
             }
 
             //repartir municipios
@@ -516,7 +530,7 @@ public class MatchServiceImpl implements MatchService {
         }
         else
         {
-            throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(PLAYER_NOT_IN_MATCH_CODE, PLAYER_NOT_IN_MATCH_DETAIL)));
+            throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(Constants.PLAYER_NOT_IN_MATCH_CODE, Constants.PLAYER_NOT_IN_MATCH_DETAIL)));
         }
     }
 
@@ -550,20 +564,20 @@ public class MatchServiceImpl implements MatchService {
     @Override
     public void checkMatchNotStarted(Match match) throws MatchNotStartedException {
         if(match.getState().equals(MatchState.CREATED))
-            throw new MatchNotStartedException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(MATCH_NOT_STARTED_CODE, MATCH_NOT_STARTED_DETAIL)));
+            throw new MatchNotStartedException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(Constants.MATCH_NOT_STARTED_CODE, Constants.MATCH_NOT_STARTED_DETAIL)));
     }
 
     @Override
     public void checkMatchFinished(Match match) throws MatchException {
         if(match.getState().equals(MatchState.FINISHED) || match.getState().equals(MatchState.CANCELLED))
-            throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(MATCH_FINISHED_CODE, MATCH_FINISHED_DETAIL)));
+            throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(Constants.MATCH_FINISHED_CODE,Constants.MATCH_FINISHED_DETAIL)));
     }
 
     @Override
     public Match getMatchForUserId(String userId) throws MatchException {
-        Optional<Match> optionalMatch = matchRepository.findForUserId(userId);
+        Optional<Match> optionalMatch = Optional.of(matchRepository.findByUsersId(userId));
         if (!optionalMatch.isPresent()) {
-            throw new MatchException(HttpStatus.NOT_FOUND, Arrays.asList(new ApiError(MATCH_NOT_FOUND_FOR_USER_CODE, MATCH_NOT_FOUND_FOR_USER_DETAIL)));
+            throw new MatchException(HttpStatus.NOT_FOUND, Arrays.asList(new ApiError(Constants.MATCH_NOT_FOUND_FOR_USER_CODE, Constants.MATCH_NOT_FOUND_FOR_USER_DETAIL)));
         }
         return optionalMatch.get();
     }
