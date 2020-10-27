@@ -175,6 +175,9 @@ public class Municipality {
         double multDist = 1 - (distanciaEntreMunicipios - config.getMinDist()) /
                                 (config.getMultDistance() * (config.getMaxDist() - config.getMinDist()));
 
+        if(Double.isNaN(multDist))
+            multDist = 1;
+
         double multAltura = (1 + (enemyMunicipality.getElevation() - config.getMinHeight()) /
                                 (config.getMultHeight() * (config.getMaxHeight() - config.getMinHeight())));
 

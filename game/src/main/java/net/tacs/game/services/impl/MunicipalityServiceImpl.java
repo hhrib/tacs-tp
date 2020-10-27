@@ -132,6 +132,7 @@ public class MunicipalityServiceImpl implements MunicipalityService {
             if(match.checkVictory(rival)) //si el rival perdio el municipio chequear si perdio la partida
                 userService.setWinnerAndLosersStats(match);
 
+            matchRepository.save(match);
             return new AttackResultDTO(result, muniAtk, muniDef);
 	    }
 	    else
@@ -150,6 +151,8 @@ public class MunicipalityServiceImpl implements MunicipalityService {
 				municipality.getValue().produceGauchos(match.getConfig());
 			}
 		}
+
+        matchRepository.save(match);
 	}
 
     public List<Municipality> moveGauchos(Match match, MoveGauchosDTO requestBean) throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException {

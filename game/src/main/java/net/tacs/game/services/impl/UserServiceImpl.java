@@ -76,7 +76,7 @@ public class UserServiceImpl implements UserService {
 
         for (User aUser : losers) {
             if(!userStatisticsRepository.contains(aUser.getId()))
-                userStatisticsRepository.addNewUserStats(aUser.getId(), winner.getUsername());
+                userStatisticsRepository.addNewUserStats(aUser.getId(), aUser.getUsername());
             UserStats loserStats = userStatisticsRepository.getById(aUser.getId());
             loserStats.addMatchesLost();
         }
