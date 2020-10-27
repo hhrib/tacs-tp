@@ -3,7 +3,7 @@ package net.tacs.game.model.interfaces;
 import net.tacs.game.model.MatchConfiguration;
 
 public class MunicipalityProduction implements MunicipalityState {
-	private static final String NAME = "PRODUCTION";
+	private final String NAME = "PRODUCTION";
 
 	public MunicipalityProduction() {
 	}
