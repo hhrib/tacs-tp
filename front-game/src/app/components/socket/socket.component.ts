@@ -20,7 +20,7 @@ export class SocketComponent implements OnInit, OnDestroy {
       message: ['', Validators.required]
     });
 
-    this.endTurns = service.endTurns;
+    // this.endTurns = service.endTurns;
   }
 
   ngOnInit() {

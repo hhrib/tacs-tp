@@ -444,7 +444,7 @@ public class MatchServiceImpl implements MatchService {
             match.setTurnPlayer(nextPlayer);
             municipalityService.produceGauchos(match, nextPlayer);
             NextUserTurnDTO endTurnSocketMessage = new NextUserTurnDTO();
-            endTurnSocketMessage.setUserId(nextPlayer.getId());
+            endTurnSocketMessage.setUsername(nextPlayer.getUsername());
             template.convertAndSend("/topic/" + match.getId().toString() +"/turn_end", endTurnSocketMessage);
             matchRepository.save(match);
         }

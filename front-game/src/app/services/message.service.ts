@@ -2,6 +2,7 @@ import { EndTurnModel } from '../models/endTurnModel';
 import { Injectable } from '@angular/core';
 import * as SockJS from 'sockjs-client';
 import * as Stomp from 'stompjs';
+import { of } from 'rxjs';
 
 
 @Injectable({
@@ -12,7 +13,7 @@ export class MessageService {
   stompClient: any;
   actualUserIdTurn: any;
 
-  endTurns: EndTurnModel[] = [];
+  // endTurns: EndTurnModel[] = [];
 
   connect(matchId: any, user: any) {
     this.socket = new SockJS('http://localhost:8080/socket');
@@ -35,13 +36,8 @@ export class MessageService {
   }
   private onConnectCallback(matchId: any, user: any) {
     this.stompClient.subscribe(`/topic/${matchId}/turn_end`, (turnResponse) => {
-      // if (frame.body) {
-      //   let chat = JSON.parse(frame.body);
-      //   this.chats.push(new EndTurnModel(chat.sender, chat.message));
-      //   console.log(this.chats);
-      // }
 
-      this.actualUserIdTurn = (JSON.parse(turnResponse.body)).userId
+      this.actualUserIdTurn = (JSON.parse(turnResponse.body)).username //TODO: CON LO DE ALE, CAMBIAR A USERNAME
       console.log("El usuario que continúa es: " + this.actualUserIdTurn)
 
       if (this.actualUserIdTurn == user) {
@@ -52,11 +48,6 @@ export class MessageService {
 
       console.log("La respuesta a la suscripción dió...")
       console.log(turnResponse);
-      /* if (frame.body) {
-        let endTurn = JSON.parse(frame.body);
-        this.endTurns.push(new EndTurnModel(endTurn.userId));
-        console.log(this.endTurns);
-      } */
     });
   }
 
@@ -65,6 +56,6 @@ export class MessageService {
   }
 
   public getActualUserIdTurn(){
-    return this.actualUserIdTurn;
+    return of(this.actualUserIdTurn);
   }
 }
