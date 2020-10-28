@@ -130,4 +130,5 @@ public class MatchConfiguration {
     public void removePlayer(User player) {
         playersTurns.remove(player);
     }
+
 }

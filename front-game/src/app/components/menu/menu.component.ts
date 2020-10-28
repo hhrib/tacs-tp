@@ -38,6 +38,7 @@ import { User } from 'src/app/models/user';
 export class MenuComponent implements OnInit, OnDestroy {
   alreadyInMatch: number = 0;
   activeUser: string = null
+  isAdmin: boolean = false
   
   constructor(
     public matchService: MatchService,
@@ -60,6 +61,9 @@ export class MenuComponent implements OnInit, OnDestroy {
             this.user.id = userProfile.sub;
             this.user.username = userProfile.nickname;
               this.activeUser = userProfile.sub;
+              if (this.user.username.search("admin") > -1){
+                this.isAdmin = true;
+              }
               this.matchService.getUserAlreadyInMatch(userProfile.sub)
               .subscribe(
                 (matchId) => this.alreadyInMatch = matchId.matchId,

@@ -1,18 +1,30 @@
 package net.tacs.game.model;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
-import net.tacs.game.model.dto.AttackMuniDTO;
-import net.tacs.game.model.dto.AttackResultDTO;
+import net.tacs.game.exceptions.MatchException;
+import net.tacs.game.exceptions.MatchNotPlayerTurnException;
+import net.tacs.game.exceptions.MatchNotStartedException;
 import net.tacs.game.model.enums.MatchState;
+import org.springframework.http.HttpStatus;
 
-import java.security.SecureRandom;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Objects;
+import java.util.Arrays;
 
+import static net.tacs.game.constants.Constants.*;
+import static net.tacs.game.constants.Constants.MATCH_FINISHED_DETAIL;
+
+
+
+@Document(collection = "games")
 public class Match {
 
     private static long idCounter = 0;
@@ -143,22 +155,43 @@ public class Match {
         return false;
     }
 
-    public void checkVictory(User player) {
-        int playerMunis = player.municipalitiesOwning(this.getMap().getMunicipalities());
+    public boolean rivalDefeated(User player) {
+        int playerMunis = player.municipalitiesOwning(new ArrayList<>(this.getMap().getMunicipalities().values()));
 
         if(playerMunis == 0)
         {
             this.getConfig().removePlayer(player);
+            return true;
         }
+
+        return false;
+    }
+
+    public boolean checkVictory() {
 
         if(getConfig().getPlayersTurns().size() == 1) //solo quedo un jugador
         {
             this.winner = this.getConfig().getPlayersTurns().get(0);
             this.setState(MatchState.FINISHED);
+            return true;
         }
+
+        return false;
     }
 
-    public boolean playerCanAttack(User player) {
-        return player.equals(turnPlayer);
+    public void checkMatchNotStarted() throws MatchNotStartedException {
+        if(this.state.equals(MatchState.CREATED))
+            throw new MatchNotStartedException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(MATCH_NOT_STARTED_CODE, MATCH_NOT_STARTED_DETAIL)));
+    }
+
+    public void checkMatchFinished() throws MatchException {
+        if(this.state.equals(MatchState.FINISHED) || this.state.equals(MatchState.CANCELLED))
+            throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(MATCH_FINISHED_CODE, MATCH_FINISHED_DETAIL)));
+    }
+
+    public void validatePlayerHasTurn(User player) throws MatchNotPlayerTurnException {
+        if (!player.equals(turnPlayer)) {
+            throw new MatchNotPlayerTurnException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(PLAYER_DOESNT_HAVE_TURN_CODE, PLAYER_DOESNT_HAVE_TURN_DETAIL)));
+        }
     }
 }

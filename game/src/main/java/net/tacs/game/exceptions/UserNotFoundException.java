@@ -1,7 +1,24 @@
 package net.tacs.game.exceptions;
 
-public class UserNotFoundException extends RuntimeException {
-    public UserNotFoundException(long player_id) {
-        super("User with id: " + player_id + "not found");
+import net.tacs.game.model.ApiError;
+import org.springframework.http.HttpStatus;
+
+import java.util.List;
+
+public class UserNotFoundException extends Exception {
+    private HttpStatus httpStatus;
+    private List<ApiError> apiErrors;
+
+    public UserNotFoundException(HttpStatus httpStatus, List<ApiError> apiErrors) {
+        this.httpStatus = httpStatus;
+        this.apiErrors = apiErrors;
+    }
+
+    public HttpStatus getHttpStatus() {
+        return httpStatus;
+    }
+
+    public List<ApiError> getApiErrors() {
+        return apiErrors;
     }
 }

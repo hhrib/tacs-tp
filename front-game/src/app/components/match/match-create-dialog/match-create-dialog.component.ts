@@ -35,7 +35,7 @@ export class MatchCreateDialogComponent implements OnInit {
 
   ngOnInit(): void {
   }
-  
+
   clicked = false;
 
   constructor(
@@ -52,7 +52,7 @@ export class MatchCreateDialogComponent implements OnInit {
         response => this.provinceList = response,
         err => console.log(err));
 
-      this.userService.getAllUsers().subscribe(
+      this.userService.getAllUsersNotInMatch().subscribe(
         response => this.playersList = response,
         err => console.log(err));
     }

@@ -97,4 +97,12 @@ export class MatchService {
     public passTurn(matchId: any, userId: any): Observable<any> {
         return this.http.patch<any>(`${MATCH_URL}/${matchId}/passTurn`,userId);
     }
+
+    public getAllMatchesStatistics(dateFromString: string, dateToString: string): Observable<any> {
+        let params = new HttpParams();
+        params = params.append('dateFrom', dateFromString);
+        params = params.append('dateTo', dateToString);
+
+        return this.http.get<any>(`${MATCH_URL}/statistics`,{params: params})
+    }
 }

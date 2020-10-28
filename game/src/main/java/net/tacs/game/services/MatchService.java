@@ -20,25 +20,21 @@ public interface MatchService {
 
     public Match createMatch(CreateMatchDTO createMatchDTO) throws MatchException, InterruptedException;
 
-    public Match getMatchById(String id) throws MatchException;
+    public List<MuniStatisticsDTOResponse> getAllStatisticsForMatch(Match match) throws MatchException;
 
-    public List<MuniStatisticsDTOResponse> getAllStatisticsForMatch(String id) throws MatchException;
+    public MatchesStatisticsDTO getStatisticsForMatches(String isoDateFrom, String isoDateTo) throws MatchException;
 
     public void assignPlayersOrder(Match newMatch);
 
     public void calculateConfigVariables(Match match);
 
-    public void start(String matchStringId) throws MatchException;
+    public void start(Match match) throws MatchException;
 
-    public void updateMunicipalityState(String matchId, String muniId/*, UpdateMunicipalityStateDTO dto*/) throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException;
+    public void updateMunicipalityState(Match match, String muniId) throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException;
 
-    public void passTurn(String matchId, String playerId) throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException;
+    public void passTurn(Match match, String playerId) throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException;
 
-    public void retireFromMatch(String matchId, RetireDTO retireDTO) throws MatchException;
-
-    public void checkMatchNotStarted(Match match) throws MatchNotStartedException;
-
-    public void checkMatchFinished(Match match) throws MatchException;
+    public void retireFromMatch(Match match, RetireDTO retireDTO) throws MatchException;
 
     public Match getMatchForUserId(String userId) throws MatchException;
 

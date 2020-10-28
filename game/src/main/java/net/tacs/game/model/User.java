@@ -1,28 +1,23 @@
 package net.tacs.game.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
-//@Entity
-//@Table(name = "user")
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Document(collection = "users")
 public class User {
 
     public User() {
-        String generatedString = generateRandomString();
-        this.id = generatedString;
+//        String generatedString = generateRandomString();
+//        this.id = generatedString;
     }
 
     //TODO Random para el id es temporal hasta que implementemos persistencia
     public User(String username) {
-        this.id = generateRandomString();
+//        this.id = generateRandomString();
         this.username = username;
     }
 
@@ -105,5 +100,17 @@ public class User {
         }
 
         return owningMunis;
+    }
+
+    public boolean isAvailable(List<Match> matches)
+    {
+        //si el jugador esta en una partida en progreso
+        for (Match aMatch : matches) {
+            if(aMatch.getUsers().contains(this))
+                return false;
+        }
+
+        //si el jugador esta disponible para una nueva partida
+        return true;
     }
 }
