@@ -5,24 +5,12 @@ import * as L from 'leaflet';
 import { Observable } from 'rxjs';
 import { MatchDTO } from 'src/app/models/match.dto';
 import { MatchResponse } from 'src/app/models/match.response';
+import { User } from 'src/app/models/user';
+import { AuthService } from 'src/app/services/auth.service';
+import { MapService } from 'src/app/services/map.service';
 import { MarkerService } from 'src/app/services/marker.service';
 import { MatchService } from 'src/app/services/matches.service';
 import { MessageService } from 'src/app/services/message.service';
-
-const iconRetinaUrl = 'assets/marker-icon-2x.png';
-const iconUrl = 'assets/marker-icon.png';
-const shadowUrl = 'assets/marker-shadow.png';
-const iconDefault = L.icon({
-  iconRetinaUrl,
-  iconUrl,
-  shadowUrl,
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  tooltipAnchor: [16, -28],
-  shadowSize: [41, 41]
-});
-L.Marker.prototype.options.icon = iconDefault;
 
 @Component({
   selector: 'match-map',
@@ -31,16 +19,18 @@ L.Marker.prototype.options.icon = iconDefault;
 })
 export class MatchMapComponent implements OnInit {
 
-  private map;
   private idMatch;
   public nextTurn: string;
   public firstTurn: string;
 
   constructor(
     private actRoute: ActivatedRoute, 
-    private matchService: MatchService, 
+    private matchService: MatchService,
+    private mapService: MapService, 
     private markerService: MarkerService, 
     private match: MatchResponse,
+    public auth: AuthService,
+    public user: User,
     private messageService: MessageService) {
 
       this.nextTurn = messageService.actualUserIdTurn;
@@ -64,34 +54,17 @@ export class MatchMapComponent implements OnInit {
           console.log("primer turno: ", this.firstTurn)
           console.log(this.nextTurn)
 
-          this.initMap(this.match.map?.centroide?.lat,this.match.map?.centroide?.lon);
-          this.markerService.makeMunicipalitiesMarkers(this.map);
+          this.mapService.initMap(this.match.map?.centroide?.lat,this.match.map?.centroide?.lon);
+          this.auth.userProfile$.subscribe((userProfile) => {
+            this.user.id = userProfile.sub;
+            this.user.username = userProfile.nickname;
+            this.markerService.clearMarkers(this.mapService.map);
+            this.markerService.makeMarkers(this.mapService.map);
+          });
         },
         err => {console.log(err)}
       );
     });
     
-  }
-
-  private initMap(lat: string, lon: string): void {
-    
-    if(lat == null || lon == null)
-    {
-      lat = "-37";
-      lon = "-60.5";
-    }
-
-    this.map = L.map('map', {
-      center: [Number(lat), Number(lon)],
-      zoom: 6,
-    });
-
-    const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      minZoom: 5,
-      maxZoom: 7,
-      attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-    });
-
-    tiles.addTo(this.map);
   }
 }

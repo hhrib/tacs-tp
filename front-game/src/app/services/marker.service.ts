@@ -6,6 +6,7 @@ import * as L from 'leaflet';
 import { PopUpService } from './pop-up.service';
 import { MatchResponse } from '../models/match.response';
 import { User } from '../models/user';
+import { MunicipalitiesService } from './municipalities.service';
 
 const MATCH_URL = environment.BASE_URL + 'matches';
 
@@ -25,15 +26,23 @@ const redIcon = L.icon({
 
 @Injectable()
 export class MarkerService {
-
+  private markers = new Array();
   constructor(
-    private http: HttpClient, 
     private popupService: PopUpService, 
     private match: MatchResponse,
+    private municipalities: MunicipalitiesService,
     private user: User) {
   }
 
-  makeMunicipalitiesMarkers(map: L.Map): void {
+  clearMarkers(map: L.Map): void {
+    console.log("Clear Markers");
+    this.markers?.forEach(marker => {
+      map.removeLayer(marker)
+    });
+  }
+
+  makeMarkers(map: L.Map): void {
+    console.log("Make Markers");
 
     var self = this;
     this.match.map.municipalities.forEach(function (value) {
@@ -46,8 +55,14 @@ export class MarkerService {
       else
         marker = L.marker([Number(lon), Number(lat)], {icon: redIcon}).addTo(map);
 
-
-      marker.bindPopup(self.popupService.makeMunicipalitesPopup(value));
+      self.markers.push(marker);
+      self.municipalities.getMunicipalitesPhoto(value).subscribe(
+        result => {
+          console.log(result)
+          marker.bindPopup(self.popupService.makeMunicipalitesPopup(value,result?.hits[0]?.webformatURL));
+        },
+        err => {console.log(err);}
+      );
     }); 
     
     // this.getMunicipalities().subscribe((res: any) => {

@@ -23,7 +23,6 @@ export class MatchMoveDialogComponent implements OnInit {
 
   playersList : UserDTO[] = null;
   municipalityList: Municipality[] = null;
-  gauchosQtyList: number[] = [10,20,30,40,50];
 
   ngOnInit(): void {
   }

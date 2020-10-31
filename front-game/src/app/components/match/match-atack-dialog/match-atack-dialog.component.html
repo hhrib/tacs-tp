@@ -18,13 +18,11 @@
 
         <mat-form-field>
             <mat-label>Quantity</mat-label>
-                <mat-select name="gauchosQty" ngModel [disabled]="clicked">
-                    <mat-option *ngFor="let gauchosQty of gauchosQtyList" [value]="gauchosQty">{{gauchosQty}}</mat-option>
-                </mat-select>
+                <input matInput  type="number" name="gauchosQty" min="0" ngModel [disabled]="clicked">
         </mat-form-field>
 
         <div mat-dialog-actions style="display: block;">
-            <button mat-button (click)="onNoClick()" [disabled]="clicked">Cancel</button>
+            <button mat-button type="button" (click)="onNoClick()" [disabled]="clicked">Cancel</button>
             <button mat-button type="submit" [disabled]="clicked">Ok</button>
         </div>
     </div>

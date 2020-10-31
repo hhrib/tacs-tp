@@ -15,6 +15,8 @@ import { MatchResponse } from 'src/app/models/match.response';
 import { Municipality } from 'src/app/models/municipality';
 import { Atack } from 'src/app/models/atack.dto';
 import { User } from 'src/app/models/user';
+import { MarkerService } from 'src/app/services/marker.service';
+import { MapService } from 'src/app/services/map.service';
 
 @Component({
   selector: 'app-match-atack-dialog',
@@ -33,7 +35,6 @@ export class MatchAtackDialogComponent implements OnInit {
   playersList : UserDTO[] = null;
   municipalityList: Municipality[] = null;
   municipalityEnemyList: Municipality[] = null;
-  gauchosQtyList: number[] = [10,20,30,40,50];
 
   ngOnInit(): void {
   }
@@ -47,6 +48,8 @@ export class MatchAtackDialogComponent implements OnInit {
     public user: User,
     public match: MatchResponse,
     public matchService: MatchService,
+    public mapService: MapService,
+    public markerService: MarkerService,
     public route: ActivatedRoute,
     public router: Router)
     {
@@ -75,8 +78,29 @@ export class MatchAtackDialogComponent implements OnInit {
     this.matchService.atackMatchMunicipalities(this.match.id,atack).subscribe(
       response => {
         console.log(response);
-        this.router.navigate(['/mapMatch/'+this.match.id]);
-        this.dialogRef.close();
+        
+        this.matchService.getById(this.match.id).subscribe(
+          response => {
+            console.log("SearchMatch in atack");
+            this.match.id = response.id;
+            this.match.date = response.date;
+            this.match.config = response.config;
+            this.match.map = response.map;
+            this.match.state = response.state;
+            this.match.users = response.users;
+            console.log(this.match);
+
+            this.markerService.clearMarkers(this.mapService.map);
+            this.markerService.makeMarkers(this.mapService.map);
+    
+            this.router.navigate(['/mapMatch/'+this.match.id]);
+            this.dialogRef.close();
+
+            console.log("Fin SearchMatch in atack");
+          },
+          err => {
+            console.log(err);
+          });
       },
       err => {console.log(err)}
     );
