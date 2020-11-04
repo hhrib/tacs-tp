@@ -13,6 +13,8 @@ import { MatchResponse } from 'src/app/models/match.response';
 import { Municipality } from 'src/app/models/municipality';
 import { Move } from 'src/app/models/move.dto';
 import { User } from 'src/app/models/user';
+import { MarkerService } from 'src/app/services/marker.service';
+import { MapService } from 'src/app/services/map.service';
 
 @Component({
   selector: 'app-match-move-dialog',
@@ -36,6 +38,8 @@ export class MatchMoveDialogComponent implements OnInit {
     public user: User,
     public match: MatchResponse,
     public matchService: MatchService,
+    public markerService: MarkerService,
+    public mapService: MapService,
     public route: ActivatedRoute,
     public router: Router)
     {
@@ -61,8 +65,22 @@ export class MatchMoveDialogComponent implements OnInit {
     this.matchService.moveMatchMunicipalities(this.match.id,move).subscribe(
       response => {
         console.log(response);
-        this.router.navigate(['/mapMatch/'+this.match.id]);
-        this.dialogRef.close();
+        this.matchService.getById(this.match.id).subscribe(
+          response => {
+            console.log("SearchMatch in move");
+            this.match.id = response.id;
+            this.match.date = response.date;
+            this.match.config = response.config;
+            this.match.map = response.map;
+            this.match.state = response.state;
+            this.match.users = response.users;
+            this.markerService.clearMarkers(this.mapService.map);
+            this.markerService.makeMarkers(this.mapService.map);
+            this.router.navigate(['/mapMatch/'+this.match.id]);
+            this.dialogRef.close();
+          },
+          err => {console.log(err);}
+        );
       },
       err => {console.log(err)}
     );
