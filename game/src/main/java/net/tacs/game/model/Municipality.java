@@ -5,6 +5,7 @@ import java.util.Objects;
 
 //import net.tacs.game.model.enums.MunicipalityState;
 import net.tacs.game.exceptions.MatchException;
+import net.tacs.game.model.dto.DefenseResultDTO;
 import net.tacs.game.model.interfaces.MunicipalityDefense;
 import net.tacs.game.model.interfaces.MunicipalityState;
 import org.springframework.http.HttpStatus;
@@ -202,7 +203,7 @@ public class Municipality {
      *         0  --  attack repelled
      *        -1  --  attack incomplete?
      */
-    public int attack(Municipality enemyMunicipality, MatchConfiguration config, int GauchosAttacking) {
+    public int attack(Municipality enemyMunicipality, MatchConfiguration config, int GauchosAttacking) throws MatchException {
 	    double distanciaEntreMunicipios = centroide.getDistance(enemyMunicipality.getCentroide());
 
         double multDist = 1 - (distanciaEntreMunicipios - config.getMinDist()) /
@@ -214,30 +215,41 @@ public class Municipality {
         double multAltura = (1 + (enemyMunicipality.getElevation() - config.getMinHeight()) /
                                 (config.getMultHeight() * (config.getMaxHeight() - config.getMinHeight())));
 
-        double multDefensa = enemyMunicipality.getState().getDefenseMultiplier(config);
+        DefenseResultDTO result = enemyMunicipality.defend(config, multDist, multAltura, GauchosAttacking);
+        //double multDefensa = enemyMunicipality.getState().getDefenseMultiplier(config);
 
-	    int GauchosAtacantesFinal = (int) Math.round(Math.floor(GauchosAttacking * multDist -
-                enemyMunicipality.getGauchosQty() * multAltura * multDefensa));
+	    //int GauchosAtacantesFinal = (int) Math.round(Math.floor(GauchosAttacking * multDist -
+        //       enemyMunicipality.getGauchosQty() * multAltura * multDefensa));
 
-	    int GauchosDefensaFinal = (int) Math.round(Math.ceil((enemyMunicipality.getGauchosQty() * multAltura * multDefensa -
-                GauchosAttacking * multDist) / (multAltura * multDefensa)));
+	    //int GauchosDefensaFinal = (int) Math.round(Math.ceil((enemyMunicipality.getGauchosQty() * multAltura * multDefensa -
+        //        GauchosAttacking * multDist) / (multAltura * multDefensa)));
 
         this.setBlocked(true);
 
-	    if(GauchosAtacantesFinal <= 0)
+	    switch (result.result)
         {
-            //falló el ataque
-            enemyMunicipality.setGauchosQty(GauchosDefensaFinal);
-            setGauchosQty(getGauchosQty() - GauchosAttacking);
-            return 0;
-        } else {
-            //ataque victorioso
-            enemyMunicipality.setGauchosQty(GauchosAtacantesFinal);
-            enemyMunicipality.setOwner(getOwner());
-            setGauchosQty(getGauchosQty() - GauchosAttacking);
-            return 1;
+            case 0: //falló el ataque
+            {
+                enemyMunicipality.setGauchosQty(result.gauchosDefRestantes);
+                setGauchosQty(getGauchosQty() - GauchosAttacking);
+                return 0;
+            }
+            case 1: //ataque victorioso
+            {
+                enemyMunicipality.setGauchosQty(result.gauchosAtkRestantes);
+                enemyMunicipality.setOwner(getOwner());
+                setGauchosQty(getGauchosQty() - GauchosAttacking);
+                return 1;
+            }
+            default:
+            {
+                throw new MatchException(HttpStatus.NOT_IMPLEMENTED, Arrays.asList(new ApiError("UNEXPECTED_RESULT", "Unexpected result of attack")));
+            }
         }
-
     }
 
+    public DefenseResultDTO defend(MatchConfiguration config, Double multDist, Double multAlrura, int gauchosAtk)
+    {
+        return this.getState().defend(config, multDist, multAlrura, gauchosAtk, this.getGauchosQty());
+    }
 }

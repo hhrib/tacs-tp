@@ -9,6 +9,7 @@ import net.tacs.game.exceptions.MatchNotStartedException;
 import net.tacs.game.mapper.MatchToDTOMapper;
 import net.tacs.game.model.ApiError;
 import net.tacs.game.model.Match;
+import net.tacs.game.model.User;
 import net.tacs.game.model.dto.CreateMatchDTO;
 import net.tacs.game.model.dto.MatchDTOResponse;
 import net.tacs.game.model.dto.MuniStatisticsDTOResponse;
@@ -18,6 +19,7 @@ import net.tacs.game.model.websocket.ChatMessage;
 import net.tacs.game.model.Municipality;
 import net.tacs.game.model.dto.*;
 import net.tacs.game.repositories.MatchRepository;
+import net.tacs.game.repositories.UserRepository;
 import net.tacs.game.services.MatchService;
 import net.tacs.game.services.MunicipalityService;
 import net.tacs.game.services.UserService;
@@ -33,8 +35,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static net.tacs.game.constants.Constants.MATCH_NOT_FOUND_CODE;
-import static net.tacs.game.constants.Constants.MATCH_NOT_FOUND_DETAIL;
+import static net.tacs.game.constants.Constants.*;
 
 
 @RestController
@@ -55,6 +56,9 @@ public class MatchController {
     @Autowired
     private MatchRepository matchRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @ApiOperation(value = "Buscar partidas", produces = "application/json")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successful matches search"),
@@ -68,7 +72,7 @@ public class MatchController {
     public ResponseEntity<List<MatchDTOResponse>> getMatches(@RequestParam(name = "dateFrom", required = false) String dateFrom, @RequestParam(name = "dateTo", required = false) String dateTo) throws MatchException {
         List<Match> matches = new ArrayList<>();
         if (dateFrom == null && dateTo == null) {
-            matches = matchService.findAll();
+            matches = matchRepository.findAll();
         } else {
             matches = matchService.findMatchesByDate(dateFrom, dateTo);
         }
@@ -186,7 +190,10 @@ public class MatchController {
 
     @GetMapping("/matches/users/{userId}")
     public ResponseEntity<MatchIdDTO> getMatchForUser(@PathVariable("userId") String userId) throws MatchException {
-        Match match = this.matchService.getMatchForUserId(userId);
+        Optional<User> optionalUser = userRepository.findById(userId);
+        User user = optionalUser.orElseThrow(() -> new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(USER_NOT_FOUND_CODE, USER_NOT_FOUND_DETAIL))));
+
+        Match match = this.matchService.getMatchForUserId(user);
         MatchIdDTO matchIdDTO = new MatchIdDTO();
         matchIdDTO.setMatchId(match.getId());
 

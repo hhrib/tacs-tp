@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 @Service("userService")
@@ -48,7 +49,8 @@ public class UserServiceImpl implements UserService {
     public List<User> findAllAvailable() throws Exception {
         //Se va temporalmente a api de Auth0 hasta que resolvamos el Webhook que nos avise del registro de un nuevo usuario
         List<User> allUsers = AuthUserToUserMapper.mapUsers(securityProviderService.getUsers(GameApplication.getToken()));
-        List<Match> matchesInProgress = matchRepository.findAll();
+        List<Match> allMatches = matchRepository.findAll();
+        List<Match> matchesInProgress = allMatches.stream().filter(m -> m.getState() != MatchState.FINISHED).collect(Collectors.toList());
 
         return allUsers.stream().filter(user -> user.isAvailable(matchesInProgress)).collect(Collectors.toList());
     }

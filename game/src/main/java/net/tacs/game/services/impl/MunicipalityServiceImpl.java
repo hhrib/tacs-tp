@@ -106,8 +106,6 @@ public class MunicipalityServiceImpl implements MunicipalityService {
             throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(SAME_ORIGIN_DESTINY_CODE, SAME_ORIGIN_DESTINY_DETAIL)));
         }
 
-        int result = -2;
-
         Municipality muniAtk = match.getMap().getMunicipalities().get(attackMuniDTO.getMuniAttackingId());
         Municipality muniDef = match.getMap().getMunicipalities().get(attackMuniDTO.getMuniDefendingId());
 
@@ -120,7 +118,7 @@ public class MunicipalityServiceImpl implements MunicipalityService {
 
         User rival = muniDef.getOwner();
 
-        result = muniAtk.attack(muniDef, match.getConfig(), attackMuniDTO.getGauchosQty());
+        int result = muniAtk.attack(muniDef, match.getConfig(), attackMuniDTO.getGauchosQty());
 
         if (match.rivalDefeated(rival)) { //si el rival perdio el municipio chequear si perdio la partida
             PlayerDefeatedDTO playerDefeatedSocketMessage = new PlayerDefeatedDTO();

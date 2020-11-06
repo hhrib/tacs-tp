@@ -1,6 +1,7 @@
 package net.tacs.game.model.interfaces;
 
 import net.tacs.game.model.MatchConfiguration;
+import net.tacs.game.model.dto.DefenseResultDTO;
 
 public interface MunicipalityState {
     public String toString();
@@ -16,4 +17,6 @@ public interface MunicipalityState {
     public boolean equals(Object o);
 
 	public double getDefenseMultiplier(MatchConfiguration config);
+
+	public DefenseResultDTO defend(MatchConfiguration config, Double multDist, Double multAltura, int gauchosAtk, int gauchosDef);
 }

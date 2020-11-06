@@ -72,13 +72,7 @@ public class MatchServiceImpl implements MatchService {
     private SimpMessagingTemplate template;
 
     @Override
-    public List<Match> findAll() {
-        List<Match> matches = (List<Match>) matchRepository.findAll();
-        return matches;
-    }
-
-    @Override
-    public List<MuniStatisticsDTOResponse> getAllStatisticsForMatch(Match match) throws MatchException {
+    public List<MuniStatisticsDTOResponse> getAllStatisticsForMatch(Match match) {
         List<Municipality> munis = new ArrayList<>(match.getMap().getMunicipalities().values());
 
         return MuniToStatsDTOMapper.mapMunis(munis);
@@ -89,7 +83,7 @@ public class MatchServiceImpl implements MatchService {
             List<LocalDateTime> dates = validateDatesToSearch(isoDateFrom, isoDateTo);
             LocalDateTime dateFrom = dates.get(0);
             LocalDateTime dateTo = dates.get(1);
-            List<Match> matches = (List<Match>) matchRepository.findAll();
+            List<Match> matches = matchRepository.findAll();
 
             if (matches == null || matches.isEmpty()) {
                 throw new MatchException(HttpStatus.NOT_FOUND, Arrays.asList(new ApiError("MATCHES_NOT_FOUND", "Matches not found for dates")));
@@ -107,12 +101,12 @@ public class MatchServiceImpl implements MatchService {
 
     @Override
     public MatchesStatisticsDTO getStatisticsForMatches(String isoDateFrom, String isoDateTo) throws MatchException {
-        List<Match> filteredMatches = null;
+        List<Match> filteredMatches;
 
         if(isoDateFrom != null && isoDateTo != null)
             filteredMatches = findMatchesByDate(isoDateFrom, isoDateTo);
         else
-            filteredMatches = findAll();
+            filteredMatches = matchRepository.findAll();
 
         MatchesStatisticsDTO matchesStatisticsDTO = new MatchesStatisticsDTO();
 
@@ -184,20 +178,11 @@ public class MatchServiceImpl implements MatchService {
 
         for(String aId : newMatchBean.getUserIds())
         {
-            boolean bUserFound = false;
-
             Optional<User> userOptional = userRepository.findById(aId);
-            if(userOptional.isPresent())
-            {
-                bUserFound = true;
-                usersInMatch.add(userOptional.get());
-            }
 
-            if(!bUserFound)
-            {
-                errors.add(new ApiError("USER_NOT_FOUND", "Users not found"));
-                throw new MatchException(HttpStatus.NOT_FOUND, errors);
-            }
+            User aUser = userOptional.orElseThrow(() -> new MatchException(HttpStatus.NOT_FOUND, Arrays.asList(new ApiError("USER_NOT_FOUND", "Users not found"))));
+
+            usersInMatch.add(aUser);
         }
 
         newMatch.setUsers(usersInMatch);
@@ -218,80 +203,75 @@ public class MatchServiceImpl implements MatchService {
 
             throw new MatchException(HttpStatus.NOT_FOUND, errors);
         }
-        else
+
+        Province selectedProvince = provinceOptional.get();
+
+        newProvince.setNombre(selectedProvince.getNombre());
+        newProvince.setCentroide(selectedProvince.getCentroide());
+
+        Random random = new Random();
+
+        List<Municipality> tempMunicipalities;
+
+        if(selectedProvince.getMunicipalities().isEmpty())
         {
-            Province selectedProvince = provinceOptional.get();
+            tempMunicipalities = provinceService.findMunicipios(selectedProvince.getId().intValue(), null);
 
-            newProvince.setNombre(selectedProvince.getNombre());
-            newProvince.setCentroide(selectedProvince.getCentroide());
-
-            Random random = new Random();
-
-            List<Municipality> tempMunicipalities;
-
-            if(selectedProvince.getMunicipalities().isEmpty())
-            {
-                tempMunicipalities = provinceService.findMunicipios(selectedProvince.getId().intValue(), null);
-
-                //Se guarda en la cache
-                selectedProvince.setMunicipalities(tempMunicipalities);
-            }
-            else {
-                tempMunicipalities = new ArrayList<>(selectedProvince.getMunicipalities().values());
-            }
-
-            if (newMatchBean.getMunicipalitiesQty() > selectedProvince.getMunicipalities().size()) {
-                errors.add(new ApiError("EXCEEDED_MUNICIPALITIES_LIMIT",
-                        "Quantity of municipalities selected exceeds province availability"));
-
-                throw new MatchException(HttpStatus.BAD_REQUEST, errors);
-            }
-
-            List<Integer> selectedIndexes = new ArrayList<>();
-
-            //Crear Municipalidades
-            for(int i = 1; i <= newMatchBean.getMunicipalitiesQty(); i++)
-            {
-                Municipality muni = new Municipality(newConfig.getMultDefense(), newConfig.getMultGauchosProduction(), newConfig.getMultGauchosDefense());
-
-                int selectedMuniIndex = random.nextInt(tempMunicipalities.size());
-                while(selectedIndexes.contains(selectedMuniIndex))
-                {
-                    selectedMuniIndex = random.nextInt(tempMunicipalities.size());
-                }
-
-                muni.setNombre(tempMunicipalities.get(selectedMuniIndex).getNombre());
-                selectedIndexes.add(selectedMuniIndex);
-
-                muni.setCentroide(tempMunicipalities.get(selectedMuniIndex).getCentroide());
-
-                muni.setGauchosQty(newMatch.getConfig().getInitialGauchos());
-
-                newProvince.addMunicipalityMap(muni);
-            }
-
-            newMatch.setMap(newProvince);
-
-            //buscar elevaciones de municipios
-            Map<Integer, Double> elevations = municipalityService.getElevations(new ArrayList<>(newMatch.getMap().getMunicipalities().values()));
-            for(Map.Entry<Integer, Double> elevation : elevations.entrySet())
-            {
-                newMatch.getMap().getMunicipalities().get(elevation.getKey()).setElevation(elevation.getValue());
-            }
-
-            //TODO: LA API SOLO ME DEJA HACER 1 REQUEST POR SEGUNDO
-            //TimeUnit.SECONDS.sleep(1);
-
-            //asignar municipalidades a usuarios
-            assignMunicipalities(new ArrayList<>(newMatch.getMap().getMunicipalities().values()), newMatch.getUsers());
-
-            calculateConfigVariables(newMatch);
-
-            //create players order
-            assignPlayersOrder(newMatch);
-
-            return newMatch;
+            //Se guarda en la cache
+            selectedProvince.setMunicipalities(tempMunicipalities);
         }
+        else {
+            tempMunicipalities = new ArrayList<>(selectedProvince.getMunicipalities().values());
+        }
+
+        if (newMatchBean.getMunicipalitiesQty() > selectedProvince.getMunicipalities().size()) {
+            errors.add(new ApiError("EXCEEDED_MUNICIPALITIES_LIMIT",
+                    "Quantity of municipalities selected exceeds province availability"));
+
+            throw new MatchException(HttpStatus.BAD_REQUEST, errors);
+        }
+
+        List<Integer> selectedIndexes = new ArrayList<>();
+
+        //Crear Municipalidades
+        for(int i = 1; i <= newMatchBean.getMunicipalitiesQty(); i++)
+        {
+            Municipality muni = new Municipality(newConfig.getMultDefense(), newConfig.getMultGauchosProduction(), newConfig.getMultGauchosDefense());
+
+            int selectedMuniIndex = random.nextInt(tempMunicipalities.size());
+            while(selectedIndexes.contains(selectedMuniIndex))
+            {
+                selectedMuniIndex = random.nextInt(tempMunicipalities.size());
+            }
+
+            muni.setNombre(tempMunicipalities.get(selectedMuniIndex).getNombre());
+            selectedIndexes.add(selectedMuniIndex);
+
+            muni.setCentroide(tempMunicipalities.get(selectedMuniIndex).getCentroide());
+
+            muni.setGauchosQty(newMatch.getConfig().getInitialGauchos());
+
+            newProvince.addMunicipalityMap(muni);
+        }
+
+        newMatch.setMap(newProvince);
+
+        //buscar elevaciones de municipios
+        Map<Integer, Double> elevations = municipalityService.getElevations(new ArrayList<>(newMatch.getMap().getMunicipalities().values()));
+        for(Map.Entry<Integer, Double> elevation : elevations.entrySet())
+        {
+            newMatch.getMap().getMunicipalities().get(elevation.getKey()).setElevation(elevation.getValue());
+        }
+
+        //asignar municipalidades a usuarios
+        assignMunicipalities(new ArrayList<>(newMatch.getMap().getMunicipalities().values()), newMatch.getUsers());
+
+        calculateConfigVariables(newMatch);
+
+        //create players order
+        assignPlayersOrder(newMatch);
+
+        return newMatch;
     }
 
     /**
@@ -561,8 +541,13 @@ public class MatchServiceImpl implements MatchService {
     }
 
     @Override
-    public Match getMatchForUserId(String userId) throws MatchException {
-        Optional<Match> optionalMatch = Optional.ofNullable(matchRepository.findByUsersId(userId));
+    public Match getMatchForUserId(User user) throws MatchException {
+        List<Match> allMatches = matchRepository.findAll();
+
+        Optional<Match> optionalMatch = allMatches.stream().filter(m ->
+                (m.getState() == MatchState.IN_PROGRESS || m.getState() == MatchState.CREATED)
+                 && m.getUsers().contains(user)).findFirst();
+
         if (!optionalMatch.isPresent()) {
             throw new MatchException(HttpStatus.NOT_FOUND, Arrays.asList(new ApiError(Constants.MATCH_NOT_FOUND_FOR_USER_CODE, Constants.MATCH_NOT_FOUND_FOR_USER_DETAIL)));
         }

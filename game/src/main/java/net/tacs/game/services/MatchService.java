@@ -4,6 +4,7 @@ import net.tacs.game.exceptions.MatchException;
 import net.tacs.game.exceptions.MatchNotPlayerTurnException;
 import net.tacs.game.exceptions.MatchNotStartedException;
 import net.tacs.game.model.Match;
+import net.tacs.game.model.User;
 import net.tacs.game.model.dto.CreateMatchDTO;
 import net.tacs.game.model.dto.MuniStatisticsDTOResponse;
 import net.tacs.game.model.dto.UpdateMunicipalityStateDTO;
@@ -14,13 +15,11 @@ import java.util.List;
 
 public interface MatchService {
 
-    public List<Match> findAll();
-
     public List<Match> findMatchesByDate(String isoDateFrom, String isoDateTo) throws MatchException;
 
     public Match createMatch(CreateMatchDTO createMatchDTO) throws MatchException, InterruptedException;
 
-    public List<MuniStatisticsDTOResponse> getAllStatisticsForMatch(Match match) throws MatchException;
+    public List<MuniStatisticsDTOResponse> getAllStatisticsForMatch(Match match);
 
     public MatchesStatisticsDTO getStatisticsForMatches(String isoDateFrom, String isoDateTo) throws MatchException;
 
@@ -36,6 +35,6 @@ public interface MatchService {
 
     public void retireFromMatch(Match match, RetireDTO retireDTO) throws MatchException;
 
-    public Match getMatchForUserId(String userId) throws MatchException;
+    public Match getMatchForUserId(User user) throws MatchException;
 
 }
