@@ -11,7 +11,7 @@ FROM openjdk:11
 COPY --from=build /build/target/game*.jar app.jar
 
 #Puertos
-EXPOSE 8080
+EXPOSE 8081
 
 #ENTRYPOINT una vez que se levanta el container
 ENTRYPOINT ["java","-jar","/app.jar"]

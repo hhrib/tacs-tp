@@ -10,4 +10,4 @@ services:
     build: game/
     #image: hhrib/tacs-utn:server-e74ef7a
     ports:
-      - "8080:8080"
+      - "8080:8081"
