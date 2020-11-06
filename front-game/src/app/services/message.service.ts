@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import * as SockJS from 'sockjs-client';
 import * as Stomp from 'stompjs';
 import { of } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 
 @Injectable({
@@ -16,7 +17,7 @@ export class MessageService {
   // endTurns: EndTurnModel[] = [];
 
   connect(matchId: any, user: any) {
-    this.socket = new SockJS('http://localhost:8080/socket');
+    this.socket = new SockJS(environment.BASE_URL + 'socket');
     this.stompClient = Stomp.over(this.socket);
     this.stompClient.connect(
       {},
