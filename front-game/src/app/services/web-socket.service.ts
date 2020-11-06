@@ -3,8 +3,7 @@ import { environment } from 'src/environments/environment';
 
 var SockJS = require("sockjs-client");
 var Stomp = require("stompjs");
-// const SOCKET_URL = environment.BASE_URL + 'socket';
-const SOCKET_URL = 'https://localhost:8081/socket';
+const SOCKET_URL = environment.BASE_URL + 'socket';
 
 @Injectable()
 export class WebSocketService {
