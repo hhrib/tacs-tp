@@ -17,7 +17,8 @@ export class MessageService {
   // endTurns: EndTurnModel[] = [];
 
   connect(matchId: any, user: any) {
-    this.socket = new SockJS(environment.BASE_URL + 'socket');
+    // this.socket = new SockJS(environment.BASE_URL + 'socket');
+    this.socket = new SockJS('https://localhost:8081/socket');
     this.stompClient = Stomp.over(this.socket);
     this.stompClient.connect(
       {},

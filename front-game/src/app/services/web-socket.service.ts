@@ -3,7 +3,8 @@ import { environment } from 'src/environments/environment';
 
 var SockJS = require("sockjs-client");
 var Stomp = require("stompjs");
-const SOCKET_URL = environment.BASE_URL + 'socket';
+// const SOCKET_URL = environment.BASE_URL + 'socket';
+const SOCKET_URL = 'https://localhost:8081/socket';
 
 @Injectable()
 export class WebSocketService {
@@ -20,13 +21,13 @@ export class WebSocketService {
         // tslint:disable-next-line:only-arrow-functions
         this.stompClient.connect({}, function(frame) {
           that.stompClient.subscribe('/statistics', (message) => {
-            if (message.body) { 
+            if (message.body) {
               that.msg.push(message.body);
             }
           });
         });
       }
-      
+
       sendMessage(message) {
         this.stompClient.send('/app/send/message' , {}, message);
       }
