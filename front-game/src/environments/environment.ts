@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  BASE_URL:'http://tacs-tp_back_1:8081/'
+  BASE_URL:'https://app.tacswololo.tk/'
 };
 
 /*
