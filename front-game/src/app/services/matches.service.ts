@@ -21,8 +21,7 @@ export class MatchService {
     constructor(private http: HttpClient) { }
 
     public getUserAlreadyInMatch(user_id: any): Observable<any> {
-      let encodedUserId = encodeURIComponent(user_id);
-      return this.http.get<any>(MATCH_URL + '/users/' + encodedUserId);
+      return this.http.get<any>(`${MATCH_URL}/users/${user_id}`);
     }
 
     public getMatches(): Observable<any> {
