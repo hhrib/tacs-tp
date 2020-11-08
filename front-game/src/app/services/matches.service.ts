@@ -14,14 +14,15 @@ const httpOptions = {
   };
 
 
-//TODO: Agregar tipos de retorno a cada función (sacar el any)!!! 
+//TODO: Agregar tipos de retorno a cada función (sacar el any)!!!
 @Injectable()
 export class MatchService {
-    
+
     constructor(private http: HttpClient) { }
-    
+
     public getUserAlreadyInMatch(user_id: any): Observable<any> {
-      return this.http.get<any>(`${MATCH_URL}/users/${user_id}`);
+      let encodedUserId = encodeURIComponent(user_id);
+      return this.http.get<any>(MATCH_URL + '/users/' + encodedUserId);
     }
 
     public getMatches(): Observable<any> {
@@ -51,7 +52,7 @@ export class MatchService {
         return this.http.get<any>(`${MATCH_URL}/${matchId}/municipalities/${munId}`);
     }
 
-    
+
     public getMatchMunicipalities(matchId: any): any {
         var result = this.http.get<any>(`${MATCH_URL}/${matchId}/municipalities`,{responseType: 'json'})
         console.log(result);
