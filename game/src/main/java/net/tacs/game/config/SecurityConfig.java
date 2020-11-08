@@ -34,7 +34,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         */
         http.cors().and().authorizeRequests()
                 .antMatchers("/").permitAll()
-                .antMatchers("/socket/**").permitAll()
                 .antMatchers("/users/**").authenticated()
                 .antMatchers("/matches/**").authenticated()
                 .antMatchers("/municipalities/**").authenticated()
@@ -66,7 +65,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         final CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200", "https://tacswololo.tk/", "https://tacswololo.tk/home",
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200", "https://tacswololo.tk", "https://tacswololo.tk/home",
                                                       "https://tacswololo.tk/searchMatches", "https://tacswololo.tk/admin" ));
 
         configuration.setAllowedMethods(Arrays.asList("HEAD", "GET", "POST", "PUT", "DELETE", "PATCH"));
