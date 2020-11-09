@@ -153,6 +153,21 @@ public class MunicipalityServiceImpl implements MunicipalityService {
 	    match.checkMatchNotStarted();
 	    match.checkMatchFinished();
 
+        List<ApiError> errors = new ArrayList<>();
+
+        if (requestBean.getIdOriginMuni() == null) {
+            errors.add(new ApiError("MUNICIPALITY_ORIGIN_EMPTY", "Origin Municipality not selected"));
+        }
+        if (requestBean.getIdDestinyMuni() == null) {
+            errors.add(new ApiError("MUNICIPALITY_DESTINY_EMPTY", "Destiny Municipality not selected"));
+        }
+        if (requestBean.getQty() == null || requestBean.getQty() == 0) {
+            errors.add(new ApiError("GAUCHOS_QUANTITY_EMPTY", "Quantity of gauchos not selected"));
+        }
+        if (!errors.isEmpty()) {
+            throw new MatchException(HttpStatus.BAD_REQUEST, errors);
+        }
+
         if(requestBean.getIdOriginMuni().equals(requestBean.getIdDestinyMuni()))
         {
             throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(SAME_ORIGIN_DESTINY_CODE, SAME_ORIGIN_DESTINY_DETAIL)));

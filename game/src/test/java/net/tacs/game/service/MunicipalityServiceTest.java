@@ -332,6 +332,60 @@ public class MunicipalityServiceTest {
         municipalityService.moveGauchos(match,dto);
     }
 
+    @Test (expected = MatchException.class)
+    public void municipalityMoveGauchosEmptyIdThrowsException() throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException {
+        Match match = new Match();
+        match.setId(1235L);
+        match.setState(MatchState.IN_PROGRESS);
+        match.setMap(buenosAires);
+        match.setConfig(configuration);
+        match.setTurnPlayer(user2);
+        buenosAires.setMunicipalities(Arrays.asList(Avellaneda, Quilmes));
+
+        Avellaneda.setId(99999);
+        Avellaneda.setOwner(user2);
+        Quilmes.setId(88888);
+        Quilmes.setOwner(user2);
+
+        Avellaneda.setGauchosQty(2500);
+        Quilmes.setGauchosQty(1500);
+
+        Quilmes.setBlocked(true);
+
+        MoveGauchosDTO dto = new MoveGauchosDTO();
+        dto.setIdDestinyMuni(88888);
+        dto.setQty(500);
+
+        municipalityService.moveGauchos(match,dto);
+    }
+
+    @Test (expected = MatchException.class)
+    public void municipalityMoveGauchosEmptyGauchosQtyThrowsException() throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException {
+        Match match = new Match();
+        match.setId(1235L);
+        match.setState(MatchState.IN_PROGRESS);
+        match.setMap(buenosAires);
+        match.setConfig(configuration);
+        match.setTurnPlayer(user2);
+        buenosAires.setMunicipalities(Arrays.asList(Avellaneda, Quilmes));
+
+        Avellaneda.setId(99999);
+        Avellaneda.setOwner(user2);
+        Quilmes.setId(88888);
+        Quilmes.setOwner(user2);
+
+        Avellaneda.setGauchosQty(2500);
+        Quilmes.setGauchosQty(1500);
+
+        Quilmes.setBlocked(true);
+
+        MoveGauchosDTO dto = new MoveGauchosDTO();
+        dto.setIdOriginMuni(99999);
+        dto.setIdDestinyMuni(88888);
+
+        municipalityService.moveGauchos(match,dto);
+    }
+
     @Test
     public void allMunicipalitiesProduceGauchos()
     {

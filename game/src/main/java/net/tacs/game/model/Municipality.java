@@ -216,13 +216,6 @@ public class Municipality {
                                 (config.getMultHeight() * (config.getMaxHeight() - config.getMinHeight())));
 
         DefenseResultDTO result = enemyMunicipality.defend(config, multDist, multAltura, GauchosAttacking);
-        //double multDefensa = enemyMunicipality.getState().getDefenseMultiplier(config);
-
-	    //int GauchosAtacantesFinal = (int) Math.round(Math.floor(GauchosAttacking * multDist -
-        //       enemyMunicipality.getGauchosQty() * multAltura * multDefensa));
-
-	    //int GauchosDefensaFinal = (int) Math.round(Math.ceil((enemyMunicipality.getGauchosQty() * multAltura * multDefensa -
-        //        GauchosAttacking * multDist) / (multAltura * multDefensa)));
 
         this.setBlocked(true);
 
