@@ -61,7 +61,7 @@ export class MatchCreateDialogComponent implements OnInit {
     this.dialogRef.close();
   }
 
-  onSubmit(form: NgForm){
+  onSubmit(form: NgForm){    
     this.clicked = true;
     this.dialogRef.disableClose = true;
     this.matchInput.municipalitiesQty = form.value.quantity;
@@ -83,17 +83,17 @@ export class MatchCreateDialogComponent implements OnInit {
         console.log("Fin CreateMatch");
         this.matchService.newTurnMatch(this.match.id).subscribe(
           response => {
-            console.log(response);
+            //console.log(response);
             // this.router.navigate(['/mapMatch/'+this.match.id]);
             this.dialogRef.close(this.matchInput);
           },
           err => {
-            console.log(err);
+            //console.log(err);
             this.clicked = false;
           });
       },
       err => {
-        console.log(err);
+        //console.log(err);
         this.clicked = false;
       });
   }
