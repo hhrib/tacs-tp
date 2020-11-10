@@ -38,6 +38,7 @@ import { StatisticsPanelComponent } from './components/match/statistics-panel/st
 import {WebSocketService} from "./services/web-socket.service";
 
 import { MatchMapComponent } from './components/match/match-map/match-map.component';
+import { MapService } from './services/map.service';
 import { MarkerService } from './services/marker.service';
 import { PopUpService } from './services/pop-up.service';
 
@@ -111,7 +112,7 @@ import {MatDatepickerModule} from '@angular/material/datepicker';
     MatchStateDialogComponent,
     MatchEndshiftDialogComponent
   ],
-  providers: [MatchDTO, MatchResponse, FindMatchDTO, MatchService, MarkerService, PopUpService, WebSocketService, User,
+  providers: [MatchDTO, MatchResponse, FindMatchDTO, MatchService, MarkerService, PopUpService, WebSocketService, User, MapService,
     { provide: HTTP_INTERCEPTORS, useClass: InterceptorService, multi: true }],
     
   bootstrap: [AppComponent]

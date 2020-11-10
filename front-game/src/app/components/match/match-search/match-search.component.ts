@@ -76,10 +76,9 @@ export class MatchSearchComponent implements AfterViewInit {
 
   viewDetail(match) {
     this.selectedMatch=match;
-    this.matchService.getById(match.id).
-    subscribe(
+    this.matchService.getById(match.id).subscribe(
       response => {
-        console.log("CreateMatch");
+        console.log("SearchMatch");
         this.match.id = response.id;
         this.match.date = response.date;
         this.match.config = response.config;
@@ -87,7 +86,7 @@ export class MatchSearchComponent implements AfterViewInit {
         this.match.state = response.state;
         this.match.users = response.users;
         console.log(this.match);
-        console.log("Fin CreateMatch");
+        console.log("Fin SearchMatch");
         this.matchService.newTurnMatch(this.match.id).subscribe(
           response => {
             console.log(response);

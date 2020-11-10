@@ -87,19 +87,22 @@ export class MenuComponent implements OnInit, OnDestroy {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
-      console.log(result);
-      setTimeout(() => {
-        this.matchService.getUserAlreadyInMatch(this.activeUser).subscribe(
-          (res) => {
-            if (res){
-              this.alreadyInMatch = res.matchId
-              console.log("El usuario actual se unió a la partida número: " + this.alreadyInMatch)
-            }
-          }
-        )
-      }, 2000); 
-    });
+      if(result){
+        console.log('The dialog was closed');
+        console.log(result);
+          setTimeout(() => {
+            this.matchService.getUserAlreadyInMatch(this.activeUser).subscribe(
+              (res) => {
+                if (res){
+                  this.alreadyInMatch = res.matchId
+                  console.log("El usuario actual se unió a la partida número: " + this.alreadyInMatch)
+                }
+              }
+            )
+          }, 2000); 
+        }
+      }
+     );
   }
 
   openMap(): void{
