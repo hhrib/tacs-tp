@@ -4,12 +4,22 @@ Segundo Cuatrimestre 2020 - UTN FRBA - El Mejor Grupo :)
 # Como levantar la aplicacion:
 
 
-# Docker:
+# Docker para levantar local:
 Una vez dentro del directorio principal, ejecutar docker-compose up
+
+# Docker si se quiere levantar dentro de la máquina en AWS:
+1. Conectarse a la Máquina de aws con el certificado .pem. En una consola con ssh:<br />
+   $ ssh -i {claves}.pem ubuntu@ec2-3-134-110-81.us-east-2.compute.amazonaws.com
+2. Ir al directorio donde está clonado el repo: /home/ubuntu/UTN/tacs-tp/
+3. Ejecutar docker-compose up -d
+4. Para revisar logs de los contenedores:<br />
+   * Back: sudo docker logs tacs-tp_back_1
+   * Front: sudo docker logs tacs-tp_front_1
 
 # Swagger UI - Ver especificación de la API Rest:
 * Se puede verificar ingresando por navegador al endpoint /swagger-ui.html <br />
-  Por ejemplo, si se levantó local -> http://localhost:8080/swagger-ui.html
+  - local -> http://localhost:8080/swagger-ui.html <br />
+  - cloud -> https://app.tacswololo.tk/swagger-ui.html
   
 # Postman
 * Se puede usar la coleccion de request para probar en Postman, primero se debe hacer un request de access token a auth0, luego se pueden hacer todos los request que quiera
