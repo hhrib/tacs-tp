@@ -12,7 +12,8 @@ Una vez dentro del directorio principal, ejecutar docker-compose up
    $ ssh -i {claves}.pem ubuntu@ec2-3-134-110-81.us-east-2.compute.amazonaws.com
 2. Ir al directorio donde está clonado el repo: /home/ubuntu/UTN/tacs-tp/
 3. Ejecutar docker-compose up -d
-4. Para revisar logs de los contenedores:<br />
+4. Acceder por un navegador a https://tacswololo.tk
+5. Para revisar logs de los contenedores. Dentro de la máquina EC2 de AWS:<br />
    * Back: sudo docker logs tacs-tp_back_1
    * Front: sudo docker logs tacs-tp_front_1
 
