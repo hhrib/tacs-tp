@@ -39,7 +39,7 @@ import static net.tacs.game.constants.Constants.*;
 
 
 @RestController
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = {"http://localhost:4200", "https://tacswololo.tk"})
 public class MatchController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MatchController.class);

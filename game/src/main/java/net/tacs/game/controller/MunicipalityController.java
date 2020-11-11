@@ -19,7 +19,7 @@ import net.tacs.game.model.User;
 import net.tacs.game.services.MunicipalityService;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = {"http://localhost:4200", "https://tacswololo.tk"})
 public class MunicipalityController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MunicipalityController.class);

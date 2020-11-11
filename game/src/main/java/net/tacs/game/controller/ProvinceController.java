@@ -17,7 +17,7 @@ import net.tacs.game.model.Province;
 import net.tacs.game.services.ProvinceService;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = {"http://localhost:4200", "https://tacswololo.tk"})
 public class ProvinceController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Province.class);
