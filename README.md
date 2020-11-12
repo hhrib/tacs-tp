@@ -31,7 +31,11 @@ Una vez dentro del directorio principal, ejecutar docker-compose up
 2. Angular
 3. Maven
 4. Diagrama de Clases (Relación Partida-Provincia-Municipio): https://drive.google.com/file/d/1OYIo54e2kQI0-9aefVhQ_q7i0KizMqq9/view?usp=sharing
-
+5. Base de datos mongodb: las deciciones de diseño que nos llevaron a utilizar mongodb son las siguientes:
+    * Poco conocimiento del dominio de la aplicación al momemnto de comenzar el desarrollo: al comenzar a desarrollar decidimos centrarnos en poder lograr un MVP poniendo más foco en la lógica del negocio en lugar de cómo persistir esa lógica, la utilización de mongodb nos permitió lograr esto debido a que la estructura de datos no es estática.
+    * Escalbilidad: mongodb nos permite escalar de formas que las bases tradicionales SQL no permiten hacerlo, esto nos da cómo ventaja que si nuestra aplicación comienza a crecer no tener un cuello de botella como puede llegar a sucede con una base de datos SQL.
+    * Cloud: Un factor que si bien no fue determinante a la hora de la elección pero si es algo a tener en cuenta es la posibilidad que nos brinda mongoaatlas de poder tener la base de datos en la nube de manera sencilla y lo principal con un espacio gratuito de 500 MB, para lo cual en una primera instancia de un proyecto nos brinda la posibilidad de no preocuparnos por este aspecto.
+    
 -----
 # Suposiciones:
 1. En el transcurso de la partida no puedan cambiar los datos obtenidos de las APIs con respecto a la altura de las municipalidades o el nombre de las provincias, por ejemplo.
