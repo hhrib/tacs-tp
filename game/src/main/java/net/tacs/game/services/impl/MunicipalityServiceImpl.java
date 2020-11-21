@@ -7,10 +7,7 @@ import net.tacs.game.exceptions.MatchException;
 import net.tacs.game.exceptions.MatchNotPlayerTurnException;
 import net.tacs.game.exceptions.MatchNotStartedException;
 import net.tacs.game.model.*;
-import net.tacs.game.model.dto.AttackMuniDTO;
-import net.tacs.game.model.dto.AttackResultDTO;
-import net.tacs.game.model.dto.MoveGauchosDTO;
-import net.tacs.game.model.dto.PlayerDefeatedDTO;
+import net.tacs.game.model.dto.*;
 import net.tacs.game.repositories.MatchRepository;
 import net.tacs.game.repositories.MunicipalityRepository;
 import net.tacs.game.services.MatchService;
@@ -121,13 +118,17 @@ public class MunicipalityServiceImpl implements MunicipalityService {
         int result = muniAtk.attack(muniDef, match.getConfig(), attackMuniDTO.getGauchosQty());
 
         if (match.rivalDefeated(rival)) { //si el rival perdio el municipio chequear si perdio la partida
-            PlayerDefeatedDTO playerDefeatedSocketMessage = new PlayerDefeatedDTO();
-            playerDefeatedSocketMessage.setUsername(rival.getUsername());
-            template.convertAndSend("/topic/" + match.getId().toString() +"/defeated_player", playerDefeatedSocketMessage);
-        }
+            if(match.checkVictory()) {
+                WinnerPlayerDTO winnerPlayerSocketMessage = new WinnerPlayerDTO();
+                winnerPlayerSocketMessage.setUsername(muniAtk.getOwner().getUsername());
+                userService.setWinnerAndLosersStats(match);
+                template.convertAndSend("/topic/" + match.getId().toString() + "/winner_player", winnerPlayerSocketMessage);
+            } else {
+                PlayerDefeatedDTO playerDefeatedSocketMessage = new PlayerDefeatedDTO();
+                playerDefeatedSocketMessage.setUsername(rival.getUsername());
+                template.convertAndSend("/topic/" + match.getId().toString() +"/defeated_player", playerDefeatedSocketMessage);
+            }
 
-        if(match.checkVictory()) {
-            userService.setWinnerAndLosersStats(match);
         }
 
         matchRepository.save(match);
