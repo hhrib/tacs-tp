@@ -50,8 +50,13 @@ public class UserServiceImpl implements UserService {
         //Se va temporalmente a api de Auth0 hasta que resolvamos el Webhook que nos avise del registro de un nuevo usuario
         List<User> allUsers = AuthUserToUserMapper.mapUsers(securityProviderService.getUsers(GameApplication.getToken()));
         List<Match> allMatches = matchRepository.findAll();
-        List<Match> matchesInProgress = allMatches.stream().filter(m -> m.getState() != MatchState.FINISHED).collect(Collectors.toList());
 
+        if(allMatches.isEmpty())
+        {
+            return allUsers;
+        }
+
+        List<Match> matchesInProgress = allMatches.stream().filter(m -> m.getState() != MatchState.FINISHED).collect(Collectors.toList());
         return allUsers.stream().filter(user -> user.isAvailable(matchesInProgress)).collect(Collectors.toList());
     }
 
