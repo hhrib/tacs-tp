@@ -13,8 +13,6 @@ import org.springframework.http.HttpStatus;
 import static net.tacs.game.constants.Constants.*;
 import static net.tacs.game.constants.Constants.NOT_ENOUGH_GAUCHOS_DETAIL;
 
-//@Entity
-//@Table(name = "municipality")
 public class Municipality {
     private static Integer idCounter = 0;
 
@@ -25,12 +23,8 @@ public class Municipality {
     private Centroide centroide;
     
     private Double elevation;
-//    @Transient
+
     private MunicipalityState state;
-//    @Transient
-//    private final MunicipalityProduction productionState = new MunicipalityProduction();
-//    @Transient
-//    private final MunicipalityDefense defenseState = new MunicipalityDefense();
 
     private User owner;
 
