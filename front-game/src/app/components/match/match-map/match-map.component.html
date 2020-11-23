@@ -25,6 +25,31 @@
 </div>
 
 
+<ng-container *ngIf="messageService.defeatedPlayerNotification">
+  <div style="text-align: center;">
+    <h1 style="text-align: center; font-size: -webkit-xxx-large;">
+      Wow! Someone  died!
+    </h1>
+    <img width="100" alt="Winner" src="assets/player-died.png" style="padding: 1%;">
+    <h2>Player defeated: {{messageService.defeatedPlayerNotification}}</h2>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="messageService.winnerPlayerNotification">
+  <div style="text-align: center;">
+    <h3 style="text-align: center; font-size: -webkit-xxx-large;">
+      Congrats to the new king:
+    </h3>
+    <img width="100" alt="Winner" src="assets/winner-king.png" style="padding: 1%;">
+    <h1 style="text-align: center;">{{messageService.winnerPlayerNotification}}!</h1>
+  </div>
+</ng-container>
+
+
+
+
+
+
 
 
 <!-- <mat-label value="actualUserIdTurn">ES TURNO DE: {{actualUserIdTurn}}</mat-label> -->

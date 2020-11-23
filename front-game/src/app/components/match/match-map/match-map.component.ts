@@ -22,6 +22,8 @@ export class MatchMapComponent implements OnInit {
   private idMatch;
   public nextTurn: string;
   public firstTurn: string;
+  public defeatedPlayerNotification: string;
+  public winnerPlayeNotification: string;
 
   constructor(
     private actRoute: ActivatedRoute, 
@@ -34,6 +36,8 @@ export class MatchMapComponent implements OnInit {
     private messageService: MessageService) {
 
       this.nextTurn = messageService.actualUserIdTurn;
+      this.defeatedPlayerNotification = messageService.defeatedPlayerNotification;
+      this.winnerPlayeNotification = messageService.winnerPlayerNotification;  
   }
 
   ngOnInit(): void {

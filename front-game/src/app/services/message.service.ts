@@ -4,6 +4,8 @@ import * as SockJS from 'sockjs-client';
 import * as Stomp from 'stompjs';
 import { of } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { Observable } from 'ol';
+import { MatDialog } from '@angular/material/dialog';
 
 
 @Injectable({
@@ -13,6 +15,8 @@ export class MessageService {
   socket: any;
   stompClient: any;
   actualUserIdTurn: any;
+  defeatedPlayerNotification: string
+  winnerPlayerNotification: string
 
   // endTurns: EndTurnModel[] = [];
 
@@ -36,9 +40,10 @@ export class MessageService {
     this.stompClient.send('/app/send', {}, JSON.stringify(message));
   }
   private onConnectCallback(matchId: any, user: any) {
+    //Suscripción a sistema de turnos
     this.stompClient.subscribe(`/topic/${matchId}/turn_end`, (turnResponse) => {
-
-      this.actualUserIdTurn = (JSON.parse(turnResponse.body)).username //TODO: CON LO DE ALE, CAMBIAR A USERNAME
+      
+      this.actualUserIdTurn = (JSON.parse(turnResponse.body)).username
       console.log("El usuario que continúa es: " + this.actualUserIdTurn)
 
       if (this.actualUserIdTurn == user) {
@@ -49,6 +54,22 @@ export class MessageService {
 
       console.log("La respuesta a la suscripción dió...")
       console.log(turnResponse);
+    });
+
+    //Suscripción a derrotas de jugadores
+    this.stompClient.subscribe(`/topic/${matchId}/defeated_player`, (defeatedResponse) => {
+      console.log("COMPARACIÓN CON NADA");
+      
+      console.log(this.defeatedPlayerNotification == "");
+      this.defeatedPlayerNotification = (JSON.parse(defeatedResponse.body)).username;
+      console.log(this.defeatedPlayerNotification)
+    });
+
+    //Suscripción a ganador del partido
+    this.stompClient.subscribe(`/topic/${matchId}/winner_player`, (winnerResponse) => {
+      this.winnerPlayerNotification = (JSON.parse(winnerResponse.body)).username;
+      this.defeatedPlayerNotification = ""
+      console.log(this.winnerPlayerNotification)
     });
   }
 
