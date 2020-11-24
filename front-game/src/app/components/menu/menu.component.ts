@@ -23,6 +23,7 @@ import { MatchAtackDialogComponent } from '../match/match-atack-dialog/match-ata
 import { MatchMoveDialogComponent } from '../match/match-move-dialog/match-move-dialog.component';
 import { MatchStateDialogComponent } from '../match/match-state-dialog/match-state-dialog.component';
 import { MatchEndshiftDialogComponent } from '../match/match-endshift-dialog/match-endshift-dialog.component';
+import {MatTooltipModule} from '@angular/material/tooltip';
 import { User } from 'src/app/models/user';
 
 @Component({

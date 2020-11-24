@@ -4,7 +4,7 @@
 
     
     <ng-container *ngIf="auth.loggedIn">
-      <img width="40" [src]="userPictureURL" class="rounded-circle img-fluid profile-picture" style="border-radius: 50%;"/>
+      <img width="40" [src]="userPictureURL" class="rounded-circle img-fluid profile-picture" style="border-radius: 50%;" matTooltip="{{user.username}}"/>
       <button mat-icon-button [matMenuTriggerFor]="menuOptions">
         <mat-icon>menu</mat-icon>
       </button>

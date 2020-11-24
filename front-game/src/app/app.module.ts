@@ -56,6 +56,7 @@ import { AdminUserStatsComponent } from './components/admin/admin-user-stats/adm
 import { AdminScoreboardComponent } from './components/admin/admin-scoreboard/admin-scoreboard.component';
 
 import {MatDatepickerModule} from '@angular/material/datepicker';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 
 @NgModule({
@@ -99,6 +100,7 @@ import {MatDatepickerModule} from '@angular/material/datepicker';
     MatGridListModule,
     MatDatepickerModule,
     MatNativeDateModule,
+    MatTooltipModule,
     AppRoutes,
     LeafletModule
   ],
