@@ -37,8 +37,9 @@ import { User } from 'src/app/models/user';
 //TODO: Limpiar OnDestroy -> websocket debe ir en otro componente
 export class MenuComponent implements OnInit, OnDestroy {
   alreadyInMatch: number = 0;
-  activeUser: string = null
-  isAdmin: boolean = false
+  activeUser: string = null;
+  isAdmin: boolean = false;
+  userPictureURL: string = null;
   
   constructor(
     public matchService: MatchService,
@@ -58,6 +59,7 @@ export class MenuComponent implements OnInit, OnDestroy {
       this.auth.isAuthenticated$.subscribe((isAuth) => {
         if(isAuth){
           this.auth.userProfile$.subscribe((userProfile) => {
+            this.userPictureURL = userProfile.picture;
             this.user.id = userProfile.sub;
             this.user.username = userProfile.nickname;
               this.activeUser = userProfile.sub;

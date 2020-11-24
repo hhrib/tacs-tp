@@ -33,7 +33,7 @@ export class MatchMapComponent implements OnInit {
     private match: MatchResponse,
     public auth: AuthService,
     public user: User,
-    private messageService: MessageService) {
+    public messageService: MessageService) {
 
       this.nextTurn = messageService.actualUserIdTurn;
       this.defeatedPlayerNotification = messageService.defeatedPlayerNotification;
