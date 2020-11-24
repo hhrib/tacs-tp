@@ -8,4 +8,4 @@ services:
    back:
     image: hhrib/tacs_server:branch_master
     ports:
-      - "8080:8081"
+      - "8081:8081"
