@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit, ViewChild } from '@angular/core';
-import {MatDialogModule, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
+import {MatDialog, MatDialogModule, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatSelectModule} from '@angular/material/select';
 import {Form, FormControl, NgForm} from '@angular/forms';
@@ -14,6 +14,7 @@ import { PassTurnDto } from 'src/app/models/passTurn.dto';
 import { User } from 'src/app/models/user';
 import { MessageService } from 'src/app/services/message.service';
 import { AuthService } from 'src/app/services/auth.service';
+import { MatchErrorDialogComponent } from '../match-error-dialog/match-error-dialog.component';
 
 @Component({
   selector: 'app-match-endshift-dialog',
@@ -42,7 +43,8 @@ export class MatchEndshiftDialogComponent implements OnInit {
     public route: ActivatedRoute,
     public router: Router,
     public messageService: MessageService,
-    public auth: AuthService)
+    public auth: AuthService,
+    public dialog: MatDialog)
     {
       this.auth.userProfile$.subscribe(
         (userProfile) => this.activeUser = userProfile.sub
@@ -61,9 +63,18 @@ export class MatchEndshiftDialogComponent implements OnInit {
       let jsonBody = {
         userId : this.activeUser
       }
-       this.matchService.passTurn(this.match.id,jsonBody).subscribe()
+       this.matchService.passTurn(this.match.id,jsonBody).subscribe(
+        result => {
+          console.log("OK");
+          console.log(result);
+        },
+        err => {
+          console.log(err);
+          this.openDialogErrorMatch(err.error[0].detail);
+        }
+       );
   
-      this.messageService.sendMessage("Le toca al otro player!")
+      this.messageService.sendMessage("Le toca al otro player!");
   
     
 
@@ -77,5 +88,20 @@ export class MatchEndshiftDialogComponent implements OnInit {
     // );
     this.messageService.sendMessage("Terminó un turno")
     this.dialogRef.close();
+  }
+
+  openDialogErrorMatch(data: string): void{
+    console.log("ERROR",data);
+    const dialogRef = this.dialog.open(MatchErrorDialogComponent, {
+      height: '200px',
+      width: '300px',
+      data: {
+        message: data,
+      },
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+    });
   }
 }

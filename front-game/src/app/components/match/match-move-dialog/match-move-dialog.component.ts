@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit, ViewChild } from '@angular/core';
-import {MatDialogModule, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
+import {MatDialog, MatDialogModule, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatSelectModule} from '@angular/material/select';
 import {Form, FormControl, NgForm} from '@angular/forms';
@@ -15,6 +15,7 @@ import { Move } from 'src/app/models/move.dto';
 import { User } from 'src/app/models/user';
 import { MarkerService } from 'src/app/services/marker.service';
 import { MapService } from 'src/app/services/map.service';
+import { MatchErrorDialogComponent } from '../match-error-dialog/match-error-dialog.component';
 
 @Component({
   selector: 'app-match-move-dialog',
@@ -41,7 +42,8 @@ export class MatchMoveDialogComponent implements OnInit {
     public markerService: MarkerService,
     public mapService: MapService,
     public route: ActivatedRoute,
-    public router: Router)
+    public router: Router,
+    public dialog: MatDialog)
     {
       this.municipalityList = match.map.municipalities
         .filter(x => x.owner.id == this.user.id); 
@@ -79,11 +81,31 @@ export class MatchMoveDialogComponent implements OnInit {
             this.router.navigate(['/mapMatch/'+this.match.id]);
             this.dialogRef.close();
           },
-          err => {console.log(err);}
+          err => {
+            console.log(err);
+            this.openDialogErrorMatch(err.error[0].detail);
+          }
         );
       },
-      err => {console.log(err)}
+      err => {
+        console.log(err)
+        this.openDialogErrorMatch(err.error[0].detail);
+      }
     );
     this.dialogRef.close();
+  }
+
+  openDialogErrorMatch(data: any): void{
+    const dialogRef = this.dialog.open(MatchErrorDialogComponent, {
+      height: '200px',
+      width: '300px',
+      data: {
+        message: data,
+      },
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+    });
   }
 }

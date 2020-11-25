@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit, ViewChild } from '@angular/core';
-import {MatDialogModule, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
+import {MatDialog, MatDialogModule, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatSelectModule} from '@angular/material/select';
 import {Form, FormControl, NgForm} from '@angular/forms';
@@ -12,6 +12,7 @@ import { UsersService } from 'src/app/services/users.service';
 import { MatchService } from 'src/app/services/matches.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatchResponse } from 'src/app/models/match.response';
+import { MatchErrorDialogComponent } from '../match-error-dialog/match-error-dialog.component';
 
 @Component({
   selector: 'app-match-create-dialog',
@@ -46,7 +47,8 @@ export class MatchCreateDialogComponent implements OnInit {
     public match: MatchResponse,
     public matchService: MatchService,
     public route: ActivatedRoute,
-    public router: Router)
+    public router: Router,
+    public dialog: MatDialog)
     {
       this.provinceService.getProvincesForCreation().subscribe(
         response => this.provinceList = response,
@@ -90,11 +92,27 @@ export class MatchCreateDialogComponent implements OnInit {
           err => {
             //console.log(err);
             this.clicked = false;
+            this.openDialogErrorMatch(err.error[0].detail);
           });
       },
       err => {
         //console.log(err);
         this.clicked = false;
+        this.openDialogErrorMatch(err.error[0].detail);
       });
+  }
+
+  openDialogErrorMatch(data: any): void{
+    const dialogRef = this.dialog.open(MatchErrorDialogComponent, {
+      height: '200px',
+      width: '300px',
+      data: {
+        message: data,
+      },
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+    });
   }
 }
