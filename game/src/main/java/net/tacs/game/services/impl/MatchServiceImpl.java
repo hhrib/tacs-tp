@@ -40,6 +40,7 @@ import net.tacs.game.model.enums.MatchState;
 import net.tacs.game.repositories.MatchRepository;
 import net.tacs.game.repositories.ProvinceRepository;
 import net.tacs.game.repositories.UserRepository;
+import net.tacs.game.services.DatabaseSequenceService;
 import net.tacs.game.services.MatchService;
 import net.tacs.game.services.MunicipalityService;
 import net.tacs.game.services.ProvinceService;
@@ -71,6 +72,9 @@ public class MatchServiceImpl implements MatchService {
     @Autowired
     private SimpMessagingTemplate template;
 
+    @Autowired
+    private DatabaseSequenceService databaseSequenceService;
+    
     @Override
     public List<MuniStatisticsDTOResponse> getAllStatisticsForMatch(Match match) {
         List<Municipality> munis = new ArrayList<>(match.getMap().getMunicipalities().values());
@@ -145,8 +149,8 @@ public class MatchServiceImpl implements MatchService {
 
         newMatch.setDate(LocalDateTime.now());
         newMatch.setState(MatchState.CREATED);
+        newMatch.setId(databaseSequenceService.generateSequence("database_sequence"));
         LOGGER.info(newMatchBean.toString());
-
         matchRepository.save(newMatch);
 
         return newMatch;
@@ -431,6 +435,7 @@ public class MatchServiceImpl implements MatchService {
         {
             throw new MatchNotPlayerTurnException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(Constants.PLAYER_DOESNT_HAVE_TURN_CODE, Constants.PLAYER_DOESNT_HAVE_TURN_DETAIL)));
         }
+        matchRepository.save(match);
     }
 
     private List<LocalDateTime> validateDatesToSearch(String isoDateFrom, String isoDateTo) throws MatchException {

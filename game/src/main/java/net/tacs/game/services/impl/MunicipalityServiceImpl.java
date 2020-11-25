@@ -146,7 +146,6 @@ public class MunicipalityServiceImpl implements MunicipalityService {
 			}
 		}
 
-        matchRepository.save(match);
 	}
 
     public List<Municipality> moveGauchos(Match match, MoveGauchosDTO requestBean) throws MatchException, MatchNotPlayerTurnException, MatchNotStartedException {
