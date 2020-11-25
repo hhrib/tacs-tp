@@ -143,7 +143,7 @@ public class Municipality {
 
     public void validateAttack(Municipality muniDef, Integer attackGauchosQty) throws MatchException {
         if (this.isBlocked()) {
-            throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(MUNICIPALITY_DESTINY_BLOCKED_CODE, MUNICIPALITY_DESTINY_BLOCKED_DETAIL)));
+            throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError("MUNICIPALITY_BLOCKED", "The Municipality is Blocked")));
         }
         if (this.owner.equals(muniDef.getOwner())) {
             throw new MatchException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(SAME_OWNER_MUNIS_CODE, SAME_OWNER_MUNIS_DETAIL)));
