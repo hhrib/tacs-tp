@@ -2,9 +2,13 @@ package net.tacs.game.service;
 
 import static org.junit.Assert.*;
 
+import net.tacs.game.GameApplication;
 import net.tacs.game.model.*;
 import net.tacs.game.model.dto.Scoreboard;
+import net.tacs.game.model.opentopodata.auth.AuthUserResponse;
+import net.tacs.game.repositories.MatchRepository;
 import net.tacs.game.repositories.UserStatisticsRepository;
+import net.tacs.game.services.SecurityProviderService;
 import net.tacs.game.services.UserService;
 import org.mockito.Mockito;
 import org.junit.Before;
@@ -17,6 +21,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 
@@ -30,6 +35,12 @@ public class UserServiceTest {
 
     @MockBean
     private UserStatisticsRepository userStatisticsRepository;
+
+    @MockBean
+    private SecurityProviderService securityProviderService;
+
+    @MockBean
+    private MatchRepository matchRepository;
 
     private User user1;
     private User user2;
@@ -93,5 +104,60 @@ public class UserServiceTest {
         assertEquals("Paula", scoreboard.getByIndex(0).getUsername());
         assertEquals("Pepe", scoreboard.getByIndex(1).getUsername());
         assertEquals("Paola", scoreboard.getByIndex(2).getUsername());
+    }
+
+    @Test
+    public void getAllUsersAvailableNoMatches() throws Exception {
+        AuthUserResponse userResponse1 = new AuthUserResponse();
+        userResponse1.setUserId("123456");
+        userResponse1.setNickname("Pepe");
+
+        AuthUserResponse userResponse2 = new AuthUserResponse();
+        userResponse2.setUserId("123457");
+        userResponse2.setNickname("Paula");
+
+        AuthUserResponse userResponse3 = new AuthUserResponse();
+        userResponse3.setUserId("123458");
+        userResponse3.setNickname("Paola");
+
+        Mockito.when(securityProviderService.getUsers(GameApplication.getToken()))
+                .thenReturn(Arrays.asList(userResponse1, userResponse2, userResponse3));
+
+        Mockito.when(matchRepository.findAll()).thenReturn(Collections.emptyList());
+
+        List<User> availableUsers = userService.findAllAvailable();
+
+        assertTrue(availableUsers.contains(user1));
+        assertTrue(availableUsers.contains(user2));
+        assertTrue(availableUsers.contains(user3));
+    }
+
+    @Test
+    public void getAllUsersAvailableWithMatches() throws Exception {
+        AuthUserResponse userResponse1 = new AuthUserResponse();
+        userResponse1.setUserId("123456");
+        userResponse1.setNickname("Pepe");
+
+        AuthUserResponse userResponse2 = new AuthUserResponse();
+        userResponse2.setUserId("123457");
+        userResponse2.setNickname("Paula");
+
+        AuthUserResponse userResponse3 = new AuthUserResponse();
+        userResponse3.setUserId("123458");
+        userResponse3.setNickname("Paola");
+
+        Match match = new Match();
+        match.setUsers(Arrays.asList(user3));
+
+        Mockito.when(securityProviderService.getUsers(GameApplication.getToken()))
+                .thenReturn(Arrays.asList(userResponse1, userResponse2, userResponse3));
+
+        Mockito.when(matchRepository.findAll()).thenReturn(Collections.singletonList(match));
+
+        List<User> availableUsers = userService.findAllAvailable();
+
+        assertTrue(availableUsers.contains(user1));
+        assertTrue(availableUsers.contains(user2));
+        assertFalse(availableUsers.contains(user3));
     }
 }
