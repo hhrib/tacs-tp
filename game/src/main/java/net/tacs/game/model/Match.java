@@ -1,33 +1,37 @@
 package net.tacs.game.model;
 
+import static net.tacs.game.constants.Constants.MATCH_FINISHED_CODE;
+import static net.tacs.game.constants.Constants.MATCH_FINISHED_DETAIL;
+import static net.tacs.game.constants.Constants.MATCH_NOT_STARTED_CODE;
+import static net.tacs.game.constants.Constants.MATCH_NOT_STARTED_DETAIL;
+import static net.tacs.game.constants.Constants.PLAYER_DOESNT_HAVE_TURN_CODE;
+import static net.tacs.game.constants.Constants.PLAYER_DOESNT_HAVE_TURN_DETAIL;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.http.HttpStatus;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+
 import net.tacs.game.exceptions.MatchException;
 import net.tacs.game.exceptions.MatchNotPlayerTurnException;
 import net.tacs.game.exceptions.MatchNotStartedException;
 import net.tacs.game.model.enums.MatchState;
-import org.springframework.http.HttpStatus;
-
-import java.util.Arrays;
-
-import static net.tacs.game.constants.Constants.*;
-import static net.tacs.game.constants.Constants.MATCH_FINISHED_DETAIL;
 
 
 
 @Document(collection = "games")
 public class Match {
 
-    private static long idCounter = 0;
+	@Id
     private Long id;
 
     private List<User> users;
@@ -111,9 +115,9 @@ public class Match {
         this.winner = winner;
     }
 
-    public Match(){
-        id = ++idCounter;
-    }
+	public Match() {
+		super();
+	}
 
     @Override
     public String toString() {
@@ -128,22 +132,29 @@ public class Match {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Match match = (Match) o;
-        return Objects.equals(id, match.id) &&
-                Objects.equals(users, match.users) &&
-                state == match.state &&
-                Objects.equals(map, match.map) &&
-                Objects.equals(winner, match.winner) &&
-                Objects.equals(date, match.date);
-    }
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Match other = (Match) obj;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		return true;
+	}
 
     @Override
-    public int hashCode() {
-        return Objects.hash(id, users, state, map, winner, date);
-    }
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		return result;
+	}
 
     public boolean userIsInMatch(String userId) {
         for(User aUser : getUsers())
@@ -194,4 +205,6 @@ public class Match {
             throw new MatchNotPlayerTurnException(HttpStatus.BAD_REQUEST, Arrays.asList(new ApiError(PLAYER_DOESNT_HAVE_TURN_CODE, PLAYER_DOESNT_HAVE_TURN_DETAIL)));
         }
     }
+    
+    
 }

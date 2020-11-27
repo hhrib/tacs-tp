@@ -1,5 +1,30 @@
 package net.tacs.game.controller;
 
+import static net.tacs.game.constants.Constants.MATCH_NOT_FOUND_CODE;
+import static net.tacs.game.constants.Constants.MATCH_NOT_FOUND_DETAIL;
+import static net.tacs.game.constants.Constants.USER_NOT_FOUND_CODE;
+import static net.tacs.game.constants.Constants.USER_NOT_FOUND_DETAIL;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -9,33 +34,22 @@ import net.tacs.game.exceptions.MatchNotStartedException;
 import net.tacs.game.mapper.MatchToDTOMapper;
 import net.tacs.game.model.ApiError;
 import net.tacs.game.model.Match;
+import net.tacs.game.model.Municipality;
 import net.tacs.game.model.User;
+import net.tacs.game.model.dto.AttackMuniDTO;
+import net.tacs.game.model.dto.AttackResultDTO;
 import net.tacs.game.model.dto.CreateMatchDTO;
 import net.tacs.game.model.dto.MatchDTOResponse;
+import net.tacs.game.model.dto.MatchIdDTO;
+import net.tacs.game.model.dto.MatchesStatisticsDTO;
+import net.tacs.game.model.dto.MoveGauchosDTO;
 import net.tacs.game.model.dto.MuniStatisticsDTOResponse;
-import net.tacs.game.model.dto.UpdateMunicipalityStateDTO;
-// import net.tacs.game.model.enums.MunicipalityState;
-import net.tacs.game.model.websocket.ChatMessage;
-import net.tacs.game.model.Municipality;
-import net.tacs.game.model.dto.*;
+import net.tacs.game.model.dto.PassTurnDTO;
+import net.tacs.game.model.dto.RetireDTO;
 import net.tacs.game.repositories.MatchRepository;
 import net.tacs.game.repositories.UserRepository;
 import net.tacs.game.services.MatchService;
 import net.tacs.game.services.MunicipalityService;
-import net.tacs.game.services.UserService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-
-import static net.tacs.game.constants.Constants.*;
 
 
 @RestController
@@ -46,9 +60,6 @@ public class MatchController {
 
     @Autowired
     private MatchService matchService;
-
-    @Autowired
-    private UserService userService;
 
     @Autowired
     private MunicipalityService municipalityService;
