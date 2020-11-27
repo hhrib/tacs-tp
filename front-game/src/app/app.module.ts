@@ -58,6 +58,7 @@ import { AdminScoreboardComponent } from './components/admin/admin-scoreboard/ad
 import {MatDatepickerModule} from '@angular/material/datepicker';
 
 import { MatchErrorDialogComponent } from './components/match/match-error-dialog/match-error-dialog.component';
+import { MatchSuccessDialogComponent } from './components/match/match-success-dialog/match-success-dialog.component';
 
 
 @NgModule({
@@ -79,6 +80,7 @@ import { MatchErrorDialogComponent } from './components/match/match-error-dialog
     AdminUserStatsComponent,
     AdminScoreboardComponent,
     MatchErrorDialogComponent,
+    MatchSuccessDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -114,7 +116,8 @@ import { MatchErrorDialogComponent } from './components/match/match-error-dialog
     MatchMoveDialogComponent,
     MatchStateDialogComponent,
     MatchEndshiftDialogComponent,
-    MatchErrorDialogComponent
+    MatchErrorDialogComponent,
+    MatchSuccessDialogComponent
   ],
   providers: [MatchDTO, MatchResponse, FindMatchDTO, MatchService, MarkerService, PopUpService, WebSocketService, User, MapService,
     { provide: HTTP_INTERCEPTORS, useClass: InterceptorService, multi: true }],

@@ -13,6 +13,7 @@ import { MatchService } from 'src/app/services/matches.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatchResponse } from 'src/app/models/match.response';
 import { MatchErrorDialogComponent } from '../match-error-dialog/match-error-dialog.component';
+import { MatchSuccessDialogComponent } from '../match-success-dialog/match-success-dialog.component';
 
 @Component({
   selector: 'app-match-create-dialog',
@@ -88,6 +89,7 @@ export class MatchCreateDialogComponent implements OnInit {
             //console.log(response);
             // this.router.navigate(['/mapMatch/'+this.match.id]);
             this.dialogRef.close(this.matchInput);
+            this.openDialogSuccessMatch();
           },
           err => {
             //console.log(err);
@@ -104,11 +106,21 @@ export class MatchCreateDialogComponent implements OnInit {
 
   openDialogErrorMatch(data: any): void{
     const dialogRef = this.dialog.open(MatchErrorDialogComponent, {
-      height: '200px',
       width: '300px',
       data: {
         message: data,
       },
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+    });
+  }
+
+  openDialogSuccessMatch(): void{
+    console.log("OK");
+    const dialogRef = this.dialog.open(MatchSuccessDialogComponent, {
+      width: '300px',
     });
 
     dialogRef.afterClosed().subscribe(result => {

@@ -18,6 +18,7 @@ import { User } from 'src/app/models/user';
 import { MarkerService } from 'src/app/services/marker.service';
 import { MapService } from 'src/app/services/map.service';
 import { MatchErrorDialogComponent } from '../match-error-dialog/match-error-dialog.component';
+import { MatchSuccessDialogComponent } from '../match-success-dialog/match-success-dialog.component';
 
 @Component({
   selector: 'app-match-atack-dialog',
@@ -99,6 +100,7 @@ export class MatchAtackDialogComponent implements OnInit {
             this.dialogRef.close();
 
             console.log("Fin SearchMatch in atack");
+            this.openDialogSuccessMatch();
           },
           err => {
             console.log(err);
@@ -115,11 +117,21 @@ export class MatchAtackDialogComponent implements OnInit {
 
   openDialogErrorMatch(data: any): void{
     const dialogRef = this.dialog.open(MatchErrorDialogComponent, {
-      height: '200px',
       width: '300px',
       data: {
         message: data,
       },
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+    });
+  }
+
+  openDialogSuccessMatch(): void{
+    console.log("OK");
+    const dialogRef = this.dialog.open(MatchSuccessDialogComponent, {
+      width: '300px',
     });
 
     dialogRef.afterClosed().subscribe(result => {

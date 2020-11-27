@@ -15,6 +15,7 @@ import { User } from 'src/app/models/user';
 import { MessageService } from 'src/app/services/message.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { MatchErrorDialogComponent } from '../match-error-dialog/match-error-dialog.component';
+import { MatchSuccessDialogComponent } from '../match-success-dialog/match-success-dialog.component';
 
 @Component({
   selector: 'app-match-endshift-dialog',
@@ -60,23 +61,25 @@ export class MatchEndshiftDialogComponent implements OnInit {
     let passTurn = new PassTurnDto();
     passTurn.userId = this.user.id;
 
-      let jsonBody = {
-        userId : this.activeUser
-      }
-       this.matchService.passTurn(this.match.id,jsonBody).subscribe(
-        result => {
-          console.log("OK");
-          console.log(result);
-        },
-        err => {
-          console.log(err);
-          this.openDialogErrorMatch(err.error[0].detail);
-        }
-       );
-  
-      this.messageService.sendMessage("Le toca al otro player!");
-  
+    let jsonBody = {
+      userId : this.activeUser
+    }
     
+    this.matchService.passTurn(this.match.id,jsonBody).subscribe(
+    result => {
+      console.log("OK");
+      console.log(result);
+      this.openDialogSuccessMatch();
+    },
+    err => {
+      console.log(err);
+      this.openDialogErrorMatch(err.error[0].detail);
+    }
+    );
+
+    this.dialogRef.close();
+
+    this.messageService.sendMessage("Le toca al otro player!");   
 
     // this.matchService.passTurnMatch(this.match.id, passTurn).subscribe(
     //   response => {
@@ -86,14 +89,13 @@ export class MatchEndshiftDialogComponent implements OnInit {
     //   },
     //   err => {console.log(err)}
     // );
+
     this.messageService.sendMessage("Terminó un turno")
-    this.dialogRef.close();
   }
 
   openDialogErrorMatch(data: string): void{
     console.log("ERROR",data);
     const dialogRef = this.dialog.open(MatchErrorDialogComponent, {
-      height: '200px',
       width: '300px',
       data: {
         message: data,
@@ -104,4 +106,16 @@ export class MatchEndshiftDialogComponent implements OnInit {
       console.log('The dialog was closed');
     });
   }
+
+  openDialogSuccessMatch(): void{
+    console.log("OK");
+    const dialogRef = this.dialog.open(MatchSuccessDialogComponent, {
+      width: '300px',
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+    });
+  }
+
 }
