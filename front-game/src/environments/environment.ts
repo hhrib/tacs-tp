@@ -4,8 +4,8 @@
 
 export const environment = {
   production: false,
-  BASE_URL:'https://app.tacswololo.tk/'
-  // BASE_URL:'http://localhost:8081/'
+  // BASE_URL:'https://app.tacswololo.tk/'
+  BASE_URL:'http://localhost:8081/'
 };
 
 /*
