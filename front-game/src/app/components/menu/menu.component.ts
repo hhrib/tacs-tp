@@ -23,6 +23,7 @@ import { MatchAtackDialogComponent } from '../match/match-atack-dialog/match-ata
 import { MatchMoveDialogComponent } from '../match/match-move-dialog/match-move-dialog.component';
 import { MatchStateDialogComponent } from '../match/match-state-dialog/match-state-dialog.component';
 import { MatchEndshiftDialogComponent } from '../match/match-endshift-dialog/match-endshift-dialog.component';
+import {MatTooltipModule} from '@angular/material/tooltip';
 import { User } from 'src/app/models/user';
 
 @Component({
@@ -37,8 +38,9 @@ import { User } from 'src/app/models/user';
 //TODO: Limpiar OnDestroy -> websocket debe ir en otro componente
 export class MenuComponent implements OnInit, OnDestroy {
   alreadyInMatch: number = 0;
-  activeUser: string = null
-  isAdmin: boolean = false
+  activeUser: string = null;
+  isAdmin: boolean = false;
+  userPictureURL: string = null;
   
   constructor(
     public matchService: MatchService,
@@ -58,6 +60,7 @@ export class MenuComponent implements OnInit, OnDestroy {
       this.auth.isAuthenticated$.subscribe((isAuth) => {
         if(isAuth){
           this.auth.userProfile$.subscribe((userProfile) => {
+            this.userPictureURL = userProfile.picture;
             this.user.id = userProfile.sub;
             this.user.username = userProfile.nickname;
               this.activeUser = userProfile.sub;
@@ -88,21 +91,20 @@ export class MenuComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe(result => {
       if(result){
-        console.log('The dialog was closed');
-        console.log(result);
-          setTimeout(() => {
-            this.matchService.getUserAlreadyInMatch(this.activeUser).subscribe(
-              (res) => {
-                if (res){
-                  this.alreadyInMatch = res.matchId
-                  console.log("El usuario actual se unió a la partida número: " + this.alreadyInMatch)
-                }
+        // console.log('The dialog was closed');
+        // console.log(result);
+        setTimeout(() => {
+          this.matchService.getUserAlreadyInMatch(this.activeUser).subscribe(
+            (res) => {
+              if (res){
+                this.alreadyInMatch = res.matchId
+                console.log("El usuario actual se unió a la partida número: " + this.alreadyInMatch)
               }
-            )
-          }, 2000); 
-        }
+            }
+          )
+        }, 2000); 
       }
-     );
+    });
   }
 
   openMap(): void{

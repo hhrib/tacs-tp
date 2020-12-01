@@ -56,6 +56,7 @@ import { AdminUserStatsComponent } from './components/admin/admin-user-stats/adm
 import { AdminScoreboardComponent } from './components/admin/admin-scoreboard/admin-scoreboard.component';
 
 import {MatDatepickerModule} from '@angular/material/datepicker';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { MatchErrorDialogComponent } from './components/match/match-error-dialog/match-error-dialog.component';
 import { MatchSuccessDialogComponent } from './components/match/match-success-dialog/match-success-dialog.component';
@@ -104,6 +105,7 @@ import { MatchSuccessDialogComponent } from './components/match/match-success-di
     MatGridListModule,
     MatDatepickerModule,
     MatNativeDateModule,
+    MatTooltipModule,
     AppRoutes,
     LeafletModule
   ],
