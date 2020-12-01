@@ -1,6 +1,7 @@
 <div class="container" style="text-align: center;">
     <form #matchCreation="ngForm" (ngSubmit)="onSubmit(matchCreation)">
     <h1 mat-dialog-title style="text-align: center;">Nice move!</h1>
+    <div mat-dialog-content>{{data.message}}</div>
     <div mat-dialog-content style="overflow: hidden;">
         <div mat-dialog-actions style="display: block;">
             <button mat-button type="submit" [disabled]="clicked">Ok</button>

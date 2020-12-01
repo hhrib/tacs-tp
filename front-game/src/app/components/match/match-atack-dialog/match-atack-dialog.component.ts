@@ -81,7 +81,12 @@ export class MatchAtackDialogComponent implements OnInit {
     this.matchService.atackMatchMunicipalities(this.match.id,atack).subscribe(
       response => {
         console.log(response);
-        
+
+        let retAtack = {
+          result : response.result,
+          code : response.code,
+        }
+
         this.matchService.getById(this.match.id).subscribe(
           response => {
             console.log("SearchMatch in atack");
@@ -92,6 +97,7 @@ export class MatchAtackDialogComponent implements OnInit {
             this.match.state = response.state;
             this.match.users = response.users;
             console.log(this.match);
+            
 
             this.markerService.clearMarkers(this.mapService.map);
             this.markerService.makeMarkers(this.mapService.map);
@@ -100,7 +106,7 @@ export class MatchAtackDialogComponent implements OnInit {
             this.dialogRef.close();
 
             console.log("Fin SearchMatch in atack");
-            this.openDialogSuccessMatch();
+            this.openDialogSuccessMatch(JSON.stringify(retAtack));
           },
           err => {
             console.log(err);
@@ -128,10 +134,13 @@ export class MatchAtackDialogComponent implements OnInit {
     });
   }
 
-  openDialogSuccessMatch(): void{
+  openDialogSuccessMatch(data: any): void{
     console.log("OK");
     const dialogRef = this.dialog.open(MatchSuccessDialogComponent, {
       width: '300px',
+      data: {
+        message: data,
+      },
     });
 
     dialogRef.afterClosed().subscribe(result => {
