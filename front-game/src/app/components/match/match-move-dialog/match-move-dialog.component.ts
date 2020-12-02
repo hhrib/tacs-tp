@@ -114,6 +114,9 @@ export class MatchMoveDialogComponent implements OnInit {
     console.log("OK");
     const dialogRef = this.dialog.open(MatchSuccessDialogComponent, {
       width: '300px',
+      data: {
+        message: '',
+      },
     });
 
     dialogRef.afterClosed().subscribe(result => {
