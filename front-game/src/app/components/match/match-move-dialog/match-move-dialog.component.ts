@@ -30,7 +30,7 @@ export class MatchMoveDialogComponent implements OnInit {
 
   ngOnInit(): void {
   }
-  
+
   clicked = false;
 
   constructor(
@@ -47,7 +47,7 @@ export class MatchMoveDialogComponent implements OnInit {
     public dialog: MatDialog)
     {
       this.municipalityList = match.map.municipalities
-        .filter(x => x.owner.id == this.user.id); 
+        .filter(x => x.owner.id == this.user.id);
 
       this.userService.getAllUsers().subscribe(
         response => this.playersList = response,
@@ -69,19 +69,19 @@ export class MatchMoveDialogComponent implements OnInit {
       response => {
         console.log(response);
         this.matchService.getById(this.match.id).subscribe(
-          response => {
+          matchResponse => {
             console.log("SearchMatch in move");
-            this.match.id = response.id;
-            this.match.date = response.date;
-            this.match.config = response.config;
-            this.match.map = response.map;
-            this.match.state = response.state;
-            this.match.users = response.users;
+            this.match.id = matchResponse.id;
+            this.match.date = matchResponse.date;
+            this.match.config = matchResponse.config;
+            this.match.map = matchResponse.map;
+            this.match.state = matchResponse.state;
+            this.match.users = matchResponse.users;
             this.markerService.clearMarkers(this.mapService.map);
             this.markerService.makeMarkers(this.mapService.map);
             this.router.navigate(['/mapMatch/'+this.match.id]);
             this.dialogRef.close();
-            this.openDialogSuccessMatch();
+            this.openDialogSuccessMatch(response);
           },
           err => {
             console.log(err);
@@ -110,10 +110,17 @@ export class MatchMoveDialogComponent implements OnInit {
     });
   }
 
-  openDialogSuccessMatch(): void{
+  openDialogSuccessMatch(data: any): void{
     console.log("OK");
+    const jsonResponse = {
+      [data[0].nombre] : data[0].gauchosQty,
+      [data[1].nombre] : data[1].gauchosQty
+    };
     const dialogRef = this.dialog.open(MatchSuccessDialogComponent, {
       width: '300px',
+      data: {
+        message: JSON.stringify(jsonResponse)
+      }
     });
 
     dialogRef.afterClosed().subscribe(result => {
