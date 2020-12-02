@@ -69,7 +69,7 @@ export class MatchEndshiftDialogComponent implements OnInit {
     result => {
       console.log("OK");
       console.log(result);
-      this.openDialogSuccessMatch();
+      //this.openDialogSuccessMatch();
     },
     err => {
       console.log(err);

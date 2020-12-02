@@ -89,7 +89,7 @@ export class MatchCreateDialogComponent implements OnInit {
             //console.log(response);
             // this.router.navigate(['/mapMatch/'+this.match.id]);
             this.dialogRef.close(this.matchInput);
-            this.openDialogSuccessMatch();
+            //this.openDialogSuccessMatch();
           },
           err => {
             //console.log(err);
